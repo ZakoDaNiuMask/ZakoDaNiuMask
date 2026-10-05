@@ -33,6 +33,7 @@ import androidx.compose.material.icons.twotone.DeleteForever
 import androidx.compose.material.icons.twotone.ElectricalServices
 import androidx.compose.material.icons.twotone.Extension
 import androidx.compose.material.icons.twotone.Fence
+import androidx.compose.material.icons.twotone.Code
 import androidx.compose.material.icons.twotone.FolderDelete
 import androidx.compose.material.icons.twotone.FolderOff
 import androidx.compose.material.icons.twotone.Info
@@ -489,6 +490,17 @@ fun SettingsPage(bottomPadding: Dp) {
                                 description = stringResource(R.string.partition_manager_summary),
                                 onClick = {
                                     navigator.push(Route.PartitionManager)
+                                }
+                            )
+                        }
+
+                        item(visible = homeState.systemStatus.isRootAvailable) {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Code,
+                                title = stringResource(R.string.boot_script_title),
+                                description = stringResource(R.string.boot_script_summary),
+                                onClick = {
+                                    navigator.push(Route.BootScript)
                                 }
                             )
                         }

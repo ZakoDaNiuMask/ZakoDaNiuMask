@@ -78,6 +78,7 @@ import com.zakodaniumask.manager.ui.screen.TemplateEditorScreen
 import com.zakodaniumask.manager.ui.screen.UmountManagerScreen
 import com.zakodaniumask.manager.ui.screen.about.AboutScreen
 import com.zakodaniumask.manager.ui.screen.about.OpenSourceLicenseScreen
+import com.zakodaniumask.manager.ui.screen.bootscript.BootScriptScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.main.MainScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.ModuleRepoScreen
@@ -614,6 +615,17 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     DynamicManagerScreen()
+                }
+            }
+            entry<Route.BootScript>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    BootScriptScreen()
                 }
             }
             entry<Route.PartitionManager>(swipeDismiss = swipeBackDirection) {

@@ -5,6 +5,7 @@ import com.zakodaniumask.manager.BuildConfig
 import com.zakodaniumask.manager.data.AppSettingsRepository
 import com.zakodaniumask.manager.data.application.ApplicationControlRepository
 import com.zakodaniumask.manager.data.application.DynamicManagerRepository
+import com.zakodaniumask.manager.data.bootscript.BootScriptRepository
 import com.zakodaniumask.manager.data.count.CountRepository
 import com.zakodaniumask.manager.data.download.DownloadRepository
 import com.zakodaniumask.manager.data.file.ModuleFileRepository
@@ -71,6 +72,7 @@ import com.zakodaniumask.manager.domain.usecase.GenerateBugreportUseCase
 import com.zakodaniumask.manager.domain.usecase.GetAppProfileUseCase
 import com.zakodaniumask.manager.domain.usecase.GetAppSepolicyUseCase
 import com.zakodaniumask.manager.domain.usecase.GetBooleanPreferenceUseCase
+import com.zakodaniumask.manager.domain.usecase.GetBootScriptUseCase
 import com.zakodaniumask.manager.domain.usecase.GetCatalogModuleUseCase
 import com.zakodaniumask.manager.domain.usecase.GetDefaultUmountModulesUseCase
 import com.zakodaniumask.manager.domain.usecase.GetDetectorActionStatesUseCase
@@ -124,6 +126,7 @@ import com.zakodaniumask.manager.domain.usecase.SaveProfileTemplateUseCase
 import com.zakodaniumask.manager.domain.usecase.SelectDynamicManagerUseCase
 import com.zakodaniumask.manager.domain.usecase.SetAppProfileUseCase
 import com.zakodaniumask.manager.domain.usecase.SetAppSepolicyUseCase
+import com.zakodaniumask.manager.domain.usecase.SetBootScriptUseCase
 import com.zakodaniumask.manager.domain.usecase.SetBooleanPreferenceUseCase
 import com.zakodaniumask.manager.domain.usecase.SetDefaultUmountModulesUseCase
 import com.zakodaniumask.manager.domain.usecase.SetKernelUmountEnabledUseCase
@@ -159,6 +162,7 @@ import com.zakodaniumask.manager.ui.viewmodel.MainIntentViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleDetailViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleRepoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
+import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SuSFSViewModel
@@ -230,6 +234,7 @@ val repositoryModule = module {
     single { com.zakodaniumask.manager.data.properties.SystemPropertiesDetector() }
     single { com.zakodaniumask.manager.data.kernel.KernelCheckDetector() }
     single { com.zakodaniumask.manager.data.selinux.SelinuxDetector() }
+    singleOf(::BootScriptRepository)
     singleOf(::CountRepository)
     singleOf(::InstalledPackageCache)
     singleOf(::AppIconDataSource)
@@ -343,6 +348,8 @@ val useCaseModule = module {
     factoryOf(::SuSFSConfigUseCase)
     factoryOf(::GetDetectorActionStatesUseCase)
     factoryOf(::ApplyDetectorActionUseCase)
+    factoryOf(::GetBootScriptUseCase)
+    factoryOf(::SetBootScriptUseCase)
     factoryOf(::ApplyLanguageUseCase)
     factoryOf(::IsSystemLanguageSettingsUseCase)
     factoryOf(::LaunchSystemLanguageSettingsUseCase)
@@ -422,6 +429,7 @@ val viewModelModule = module {
     }
     viewModelOf(::HomeViewModel)
     viewModelOf(::DetectorViewModel)
+    viewModelOf(::BootScriptViewModel)
     viewModelOf(::InstallViewModel)
     viewModelOf(::MainIntentViewModel)
     viewModelOf(::KernelFlashViewModel)
