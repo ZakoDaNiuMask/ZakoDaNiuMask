@@ -1,16 +1,16 @@
-# ReSukiSU
-<img align='right' src='ReSukiSU_blue.svg' width='220px' alt="ReSukiSU Icon">
+# ZakoDaNiuMask
+<img align='right' src='ZakoDaNiuMask_blue.svg' width='220px' alt="ZakoDaNiuMask Icon">
 
 
 [English](../README.md) | **简体中文** | [日本語](../ja/README.md) | [Türkçe](../tr/README.md) | [Русский](../ru/README.md)
 
 一个 [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-Ultra) 的下游分支,添加了一些有趣的变更，且更加稳定。
 
-[![最新发行](https://img.shields.io/github/v/release/ReSukiSU/ReSukiSU?label=Release&logo=github)](https://github.com/ReSukiSU/ReSukiSU/releases/latest)
-[![最新 CI 构建（nightly.link）](https://img.shields.io/badge/nightly.link-%E6%9C%80%E6%96%B0%20CI%20%E6%9E%84%E5%BB%BA-800080)](https://nightly.link/ReSukiSU/ReSukiSU/workflows/build-manager/main)
-[![频道](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/ReSukiSU)
+[![最新发行](https://img.shields.io/github/v/release/ZakoDaNiuMask/ZakoDaNiuMask?label=Release&logo=github)](https://github.com/ZakoDaNiuMask/ZakoDaNiuMask/releases/latest)
+[![最新 CI 构建（nightly.link）](https://img.shields.io/badge/nightly.link-%E6%9C%80%E6%96%B0%20CI%20%E6%9E%84%E5%BB%BA-800080)](https://nightly.link/ZakoDaNiuMask/ZakoDaNiuMask/workflows/build-manager/main)
+[![频道](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/ZakoDaNiuMask)
 [![Kernel License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![其他部分 License：GPL v3](https://img.shields.io/github/license/ReSukiSU/ReSukiSU?logo=gnu)](/LICENSE)
+[![其他部分 License：GPL v3](https://img.shields.io/github/license/ZakoDaNiuMask/ZakoDaNiuMask?logo=gnu)](/LICENSE)
 
 ## 特性
 
@@ -19,11 +19,11 @@
 3. [App Profile](https://kernelsu.org/zh_CN/guide/app-profile.html): 把 Root 权限关进笼子里。
 4. 支持 non-GKI 与 GKI 1.0。
 5. 可调整管理器外观，可自定义 susfs 配置。
-6. 多管理器支持，默认支持使用 [官方KernelSU](https://github.com/tiann/KernelSU)/[RKSU](https://github.com/rsuntk/KernelSU)/[MKSU](https://github.com/5ec1cff/KernelSU)/[SukiSU](https://github.com/SukiSU-Ultra/SukiSU-Ultra) 作为管理器与 ReSukiSU 内核共同工作
+6. 多管理器支持，默认支持使用 [官方KernelSU](https://github.com/tiann/KernelSU)/[RKSU](https://github.com/rsuntk/KernelSU)/[MKSU](https://github.com/5ec1cff/KernelSU)/[SukiSU](https://github.com/SukiSU-Ultra/SukiSU-Ultra) 作为管理器与 ZakoDaNiuMask 内核共同工作
 
 ## 兼容状态
 
-- ReSukiSU 官方支持 GKI 2.0 的设备（内核版本 5.10 以上）。
+- ZakoDaNiuMask 官方支持 GKI 2.0 的设备（内核版本 5.10 以上）。
 
 - 旧内核也是兼容的（3.4+），不过需要自己编译内核。
 
@@ -38,16 +38,15 @@
 
 ## 集成
 
-请参考[文档](https://Resukisu.org)
+请参考[文档](https://ZakoDaNiuMask.org)
 
 ## 参与翻译
 
-要将 ReSukiSU 翻译成您的语言，或完善现有的翻译，请使用 [Weblate](https://hosted.weblate.org/engage/resukisu/).
+要将 ZakoDaNiuMask 翻译成您的语言，或完善现有的翻译，请使用 [Weblate](https://hosted.weblate.org/engage/zakodaniumask/).
 
 ## 许可证
 
 - 目录 `kernel` 下所有文件为 [GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)。
-- 有动漫人物图片表情包的这些文件 `ic_launcher(?!.*alt.*).*` 图标以特别的形式授权，怡子曰曰绘制，版权明风OuO所有。矢量化图标由本项目提供。详见 [`LICENSE_icon_English`](./LICENSE_icon_English) 与 [`LICENSE_icon_SC`](./LICENSE_icon_SC)。
 - 除上述文件及目录的其他部分均为 [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.html)。
 
 ## 致谢
@@ -69,11 +68,11 @@
 
 ## 本地化
 
-在 Weblate 上对 ReSukiSU 的翻译做出贡献:
+在 Weblate 上对 ZakoDaNiuMask 的翻译做出贡献:
 
-https://hosted.weblate.org/engage/resukisu/
+https://hosted.weblate.org/engage/zakodaniumask/
 
-[![翻译状态](https://hosted.weblate.org/widget/resukisu/multi-auto.svg)](https://hosted.weblate.org/engage/resukisu/)
+[![翻译状态](https://hosted.weblate.org/widget/zakodaniumask/multi-auto.svg)](https://hosted.weblate.org/engage/zakodaniumask/)
 
 ## 鸣谢
 

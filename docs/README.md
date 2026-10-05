@@ -1,16 +1,16 @@
-# ReSukiSU
-<img align='right' src='ReSukiSU_blue.svg' width='220px' alt="ReSukiSU Icon">
+# ZakoDaNiuMask
+<img align='right' src='ZakoDaNiuMask_blue.svg' width='220px' alt="ZakoDaNiuMask Icon">
 
 
 **English** | [简体中文](./zh/README.md)
 
 A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-Ultra) fork, added some interesting changes, also make it more stable and build easily.
 
-[![Latest release](https://img.shields.io/github/v/release/ReSukiSU/ReSukiSU?label=Release&logo=github)](https://github.com/ReSukiSU/ReSukiSU/releases/latest)
-[![Latest CI build (nightly.link)](https://img.shields.io/badge/nightly.link-Latest%20CI%20Build-800080)](https://nightly.link/ReSukiSU/ReSukiSU/workflows/build-manager/main)
-[![Channel](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/ReSukisu)
+[![Latest release](https://img.shields.io/github/v/release/ZakoDaNiuMask/ZakoDaNiuMask?label=Release&logo=github)](https://github.com/ZakoDaNiuMask/ZakoDaNiuMask/releases/latest)
+[![Latest CI build (nightly.link)](https://img.shields.io/badge/nightly.link-Latest%20CI%20Build-800080)](https://nightly.link/ZakoDaNiuMask/ZakoDaNiuMask/workflows/build-manager/main)
+[![Channel](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/ZakoDaNiuMask)
 [![Kernel License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Other part License：GPL v3](https://img.shields.io/github/license/ReSukiSU/ReSukiSU?logo=gnu)](/LICENSE)
+[![Other part License：GPL v3](https://img.shields.io/github/license/ZakoDaNiuMask/ZakoDaNiuMask?logo=gnu)](/LICENSE)
 
 ## Features
 
@@ -19,11 +19,11 @@ A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-
 3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage
 4. Support non-GKI and GKI 1.0
 5. Tweaks to the manager theme and the built-in susfs management tool.
-6. Multi manager support, for default [Official KernelSU](https://github.com/tiann/KernelSU)/[RKSU](https://github.com/rsuntk/KernelSU)/[MKSU](https://github.com/5ec1cff/KernelSU)/[SukiSU](https://github.com/SukiSU-Ultra/SukiSU-Ultra) is supported work as manager with ReSukiSU's kernel
+6. Multi manager support, for default [Official KernelSU](https://github.com/tiann/KernelSU)/[RKSU](https://github.com/rsuntk/KernelSU)/[MKSU](https://github.com/5ec1cff/KernelSU)/[SukiSU](https://github.com/SukiSU-Ultra/SukiSU-Ultra) is supported work as manager with ZakoDaNiuMask's kernel
 
 ## Compatibility Status
 
-- ReSukiSU officially supports Android GKI 2.0 devices (kernel 5.10+).
+- ZakoDaNiuMask officially supports Android GKI 2.0 devices (kernel 5.10+).
 
 - Older kernels (3.4+) are also compatible, but the kernel will have to be built manually.
 
@@ -40,11 +40,11 @@ A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-
 
 ## Integration
 
-See the [documentation](https://Resukisu.org).
+See the [documentation](https://ZakoDaNiuMask.org).
 
 ## Translation
 
-If you need to submit a translation for the manager, please go to [Weblate](https://hosted.weblate.org/engage/resukisu/).
+If you need to submit a translation for the manager, please go to [Weblate](https://hosted.weblate.org/engage/zakodaniumask/).
 
 ## Sponsor
 
@@ -66,16 +66,15 @@ If you need to submit a translation for the manager, please go to [Weblate](http
 ## License
 
 - The file in the “kernel” directory is under [GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) license.
-- The images of the files `ic_launcher(?!.*alt.*).*` with anime character artwork are licensed under a special arrangement: drawn by [怡子曰曰](https://space.bilibili.com/10545509), the copyright is held by [明风 OuO](https://space.bilibili.com/274939213), and the vectorized icons are provided by this project. See [`LICENSE_icon_English`](./LICENSE_icon_English) and [`LICENSE_icon_SC`](./LICENSE_icon_SC) for details.
 - Except for the files or directories mentioned above, all other parts are under [GPL-3.0 or later](https://www.gnu.org/licenses/gpl-3.0.html) license.
 
 ## Localization
 
-Help translate ReSukiSU on Weblate:
+Help translate ZakoDaNiuMask on Weblate:
 
-https://hosted.weblate.org/engage/resukisu/
+https://hosted.weblate.org/engage/zakodaniumask/
 
-[![Localization Status](https://hosted.weblate.org/widget/resukisu/multi-auto.svg)](https://hosted.weblate.org/engage/resukisu/)
+[![Localization Status](https://hosted.weblate.org/widget/zakodaniumask/multi-auto.svg)](https://hosted.weblate.org/engage/zakodaniumask/)
 
 ## Credit
 
