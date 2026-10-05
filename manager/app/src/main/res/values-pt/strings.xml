@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name" tools:ignore="ExtraTranslation">杂鱼大牛面具</string>
+    <string name="app_name" tools:ignore="ExtraTranslation">Peixe pequeno vaca grande máscara</string>
 
     <string name="home">Início</string>
     <string name="home_not_installed">Não instalado</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name" tools:ignore="ExtraTranslation">杂鱼大牛面具</string>
+    <string name="app_name" tools:ignore="ExtraTranslation">ಸಣ್ಣ ಮೀನು ದೊಡ್ಡ ಹಸು ಮುಖವಾಡ</string>
 
     <string name="home">ಮನೆ</string>
     <string name="home_working">ಕೆಲಸ ಮಾಡುತ್ತಿದೆ</string>

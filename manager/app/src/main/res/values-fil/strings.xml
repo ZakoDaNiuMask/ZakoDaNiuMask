@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name" tools:ignore="ExtraTranslation">杂鱼大牛面具</string>
+    <string name="app_name" tools:ignore="ExtraTranslation">Maliit na isda malaking baka maskara</string>
 
     <string name="home">Home</string>
     <string name="home_not_installed">Hindi naka-install</string>
