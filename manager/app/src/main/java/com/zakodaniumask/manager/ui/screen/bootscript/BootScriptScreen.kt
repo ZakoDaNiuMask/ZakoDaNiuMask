@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Code
 import androidx.compose.material.icons.twotone.PowerSettingsNew
 import androidx.compose.material.icons.twotone.Schedule
 import androidx.compose.material3.Button
@@ -38,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,7 +67,6 @@ import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
 import com.zakodaniumask.manager.ui.viewmodel.BootScriptEvent
 import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -82,7 +79,6 @@ fun BootScriptScreen() {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val navigator = LocalNavigator.current
     val snackBarHost = LocalSnackbarHost.current
-    val scope = rememberCoroutineScope()
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
