@@ -237,6 +237,9 @@ private fun LKMInstallPage(
     val dialogTitle = stringResource(id = android.R.string.dialog_alert_title)
     val dialogContent = stringResource(id = R.string.install_inactive_slot_warning)
     val downloadFromUrlSummary = stringResource(R.string.install_from_url_summary)
+    val downloadDialogMessage = stringResource(R.string.download_dialog_msg)
+    val downloadNoBootPartition = stringResource(R.string.download_no_boot_partition)
+    val downloadProbeFailedTemplate = stringResource(R.string.download_probe_failed)
     val remoteBootImageSource: RemoteBootImageSource = koinInject()
     val loadingDialog = rememberLoadingDialog()
 
@@ -675,7 +678,7 @@ private fun LKMInstallPage(
                     ) {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.download_dialog_msg),
+                            downloadDialogMessage,
                             Toast.LENGTH_SHORT,
                         ).show()
                     } else {
@@ -688,7 +691,7 @@ private fun LKMInstallPage(
                                 if (probe.partitions.isEmpty()) {
                                     Toast.makeText(
                                         context,
-                                        context.getString(R.string.download_no_boot_partition),
+                                        downloadNoBootPartition,
                                         Toast.LENGTH_LONG,
                                     ).show()
                                 } else {
@@ -711,9 +714,8 @@ private fun LKMInstallPage(
                             } catch (error: Throwable) {
                                 Toast.makeText(
                                     context,
-                                    context.getString(
-                                        R.string.download_probe_failed,
-                                        error.message ?: error.javaClass.simpleName,
+                                    downloadProbeFailedTemplate.format(
+                                        error.message ?: error.javaClass.simpleName
                                     ),
                                     Toast.LENGTH_LONG,
                                 ).show()

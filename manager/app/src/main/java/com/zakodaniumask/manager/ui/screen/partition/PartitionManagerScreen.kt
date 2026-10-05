@@ -125,6 +125,16 @@ fun PartitionManagerScreen() {
 
     val confirmDialog = rememberConfirmDialog()
     val confirmDialogTitle = stringResource(android.R.string.dialog_alert_title)
+    val flashSuccessTemplate = stringResource(R.string.partition_flash_success)
+    val flashFailedTemplate = stringResource(R.string.partition_flash_failed)
+    val backupSuccessTemplate = stringResource(R.string.partition_backup_success)
+    val backupFailedTemplate = stringResource(R.string.partition_backup_failed)
+    val mapSuccessText = stringResource(R.string.partition_map_success)
+    val mapFailedText = stringResource(R.string.partition_map_failed)
+    val noAbText = stringResource(R.string.partition_no_ab)
+    val avbDisabledText = stringResource(R.string.partition_avb_disabled)
+    val avbDisableFailedText = stringResource(R.string.partition_avb_disable_failed)
+    val avbDisableConfirmText = stringResource(R.string.partition_avb_disable_confirm)
 
     suspend fun refresh() {
         isLoading = true
@@ -182,11 +192,8 @@ fun PartitionManagerScreen() {
                     )
                     staged.delete()
                     snackBarHost.showReplacingSnackbar(
-                        context.getString(
-                            if (success) R.string.partition_flash_success
-                            else R.string.partition_flash_failed,
-                            partition.name,
-                        )
+                        (if (success) flashSuccessTemplate else flashFailedTemplate)
+                            .format(partition.name)
                     )
                     if (success) selectedPartition = null
                 } catch (error: Throwable) {
@@ -389,11 +396,8 @@ fun PartitionManagerScreen() {
                                 slot = slotInfo?.currentSlot,
                             )
                             snackBarHost.showReplacingSnackbar(
-                                context.getString(
-                                    if (success) R.string.partition_backup_success
-                                    else R.string.partition_backup_failed,
-                                    if (success) output.absolutePath else partition.name,
-                                )
+                                (if (success) backupSuccessTemplate else backupFailedTemplate)
+                                    .format(if (success) output.absolutePath else partition.name)
                             )
                         } catch (error: Throwable) {
                             snackBarHost.showReplacingSnackbar(
@@ -409,9 +413,7 @@ fun PartitionManagerScreen() {
                     val slot = slotInfo?.otherSlot ?: slotInfo?.currentSlot
                     if (slot == null) {
                         scope.launch {
-                            snackBarHost.showReplacingSnackbar(
-                                context.getString(R.string.partition_no_ab)
-                            )
+                            snackBarHost.showReplacingSnackbar(noAbText)
                         }
                     } else {
                         scope.launch {
@@ -419,10 +421,7 @@ fun PartitionManagerScreen() {
                             try {
                                 val success = repository.mapLogicalPartitions(slot)
                                 snackBarHost.showReplacingSnackbar(
-                                    context.getString(
-                                        if (success) R.string.partition_map_success
-                                        else R.string.partition_map_failed,
-                                    )
+                                    if (success) mapSuccessText else mapFailedText
                                 )
                             } finally {
                                 isBusy = false
@@ -434,17 +433,14 @@ fun PartitionManagerScreen() {
                     scope.launch {
                         val result = confirmDialog.awaitConfirm(
                             title = confirmDialogTitle,
-                            content = context.getString(R.string.partition_avb_disable_confirm),
+                            content = avbDisableConfirmText,
                         )
                         if (result == com.zakodaniumask.manager.ui.component.ConfirmResult.Confirmed) {
                             isBusy = true
                             try {
                                 val success = repository.disableAvb()
                                 snackBarHost.showReplacingSnackbar(
-                                    context.getString(
-                                        if (success) R.string.partition_avb_disabled
-                                        else R.string.partition_avb_disable_failed,
-                                    )
+                                    if (success) avbDisabledText else avbDisableFailedText
                                 )
                             } finally {
                                 isBusy = false
