@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">杂鱼大牛面具</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="ExtraTranslation">杂鱼大牛面具</string>
 
     <string name="home">Inicio</string>
     <string name="settings_sucompat">Redirixir o binario su</string>
