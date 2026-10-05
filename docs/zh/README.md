@@ -4,7 +4,7 @@
 
 [English](../README.md) | **简体中文** | [日本語](../ja/README.md) | [Türkçe](../tr/README.md) | [Русский](../ru/README.md)
 
-一个 [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-Ultra) 的下游分支,添加了一些有趣的变更，且更加稳定。
+一个 [`Baka-SU/BakaSU`](https://github.com/Baka-SU/BakaSU)（前身 ReSukiSU）的下游分支,添加了一些有趣的变更，且更加稳定。
 
 [![最新发行](https://img.shields.io/github/v/release/ZakoDaNiuMask/ZakoDaNiuMask?label=Release&logo=github)](https://github.com/ZakoDaNiuMask/ZakoDaNiuMask/releases/latest)
 [![最新 CI 构建（nightly.link）](https://img.shields.io/badge/nightly.link-%E6%9C%80%E6%96%B0%20CI%20%E6%9E%84%E5%BB%BA-800080)](https://nightly.link/ZakoDaNiuMask/ZakoDaNiuMask/workflows/build-manager/main)
@@ -77,7 +77,7 @@ https://hosted.weblate.org/engage/zakodaniumask/
 ## 鸣谢
 
 - [KernelSU](https://github.com/tiann/KernelSU): 上游
-- [SukiSU-Ultra/SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra)：分叉来源
+- [Baka-SU/BakaSU](https://github.com/Baka-SU/BakaSU)：分叉来源
 
 <details>
 <summary>SukiSU 的鸣谢</summary>

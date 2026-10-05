@@ -4,7 +4,7 @@
 
 **English** | [简体中文](./zh/README.md)
 
-A based-on [`SukiSU-Ultra/SukiSU-Ultra`](https://github.com/SukiSU-Ultra/SukiSU-Ultra) fork, added some interesting changes, also make it more stable and build easily.
+A based-on [`Baka-SU/BakaSU`](https://github.com/Baka-SU/BakaSU) (formerly ReSukiSU) fork, added some interesting changes, also make it more stable and build easily.
 
 [![Latest release](https://img.shields.io/github/v/release/ZakoDaNiuMask/ZakoDaNiuMask?label=Release&logo=github)](https://github.com/ZakoDaNiuMask/ZakoDaNiuMask/releases/latest)
 [![Latest CI build (nightly.link)](https://img.shields.io/badge/nightly.link-Latest%20CI%20Build-800080)](https://nightly.link/ZakoDaNiuMask/ZakoDaNiuMask/workflows/build-manager/main)
@@ -79,7 +79,7 @@ https://hosted.weblate.org/engage/zakodaniumask/
 ## Credit
 
 - [KernelSU](https://github.com/tiann/KernelSU): upstream
-- [SukiSU-Ultra/SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra): fork source
+- [Baka-SU/BakaSU](https://github.com/Baka-SU/BakaSU): fork source
 
 <details>
 <summary>SukiSU's credit</summary>
