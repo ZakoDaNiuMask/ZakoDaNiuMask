@@ -16,9 +16,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -44,8 +42,6 @@ import com.zakodaniumask.manager.ui.util.LocalPortraitState
 import com.zakodaniumask.manager.ui.util.LocalSelectedPage
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.viewmodel.HomeViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import top.yukonga.miuix.kmp.utils.PagerGestureNestedScrollConnection
@@ -65,61 +61,29 @@ fun MainScreen(
         BottomBarDestination.getPages(homeState.systemStatus.isFullFeatured)
     }
 
-    val coroutineScope = rememberCoroutineScope()
     var uiSelectedPage by rememberSaveable { mutableIntStateOf(0) }
     val pagerState = rememberPagerState(
         initialPage = uiSelectedPage,
         pageCount = { pages.size }
     )
-    var userScrollEnabled by remember { mutableStateOf(true) }
-    var animating by remember { mutableStateOf(false) }
-    var animateJob by remember { mutableStateOf<Job?>(null) }
-    var lastRequestedPage by remember { mutableIntStateOf(pagerState.currentPage) }
 
     val pagerMode = PagerInterceptionMode.entries.getOrElse(pagerInterceptionMode) {
         PagerInterceptionMode.Native
     }
     val interceptPagerGestures = pagerMode == PagerInterceptionMode.CrossAxisInterceptor
 
-    val handlePageChange: (Int) -> Unit = remember(pagerState, coroutineScope) {
-        { page ->
-            uiSelectedPage = page
-            if (page == pagerState.currentPage) {
-                if (animateJob != null && lastRequestedPage != page) {
-                    animateJob?.cancel()
-                    animateJob = null
-                    animating = false
-                    userScrollEnabled = true
-                }
-                lastRequestedPage = page
-            } else {
-                if (animateJob != null && lastRequestedPage == page) {
-                    // Already animating to the requested page
-                } else {
-                    animateJob?.cancel()
-                    animating = true
-                    userScrollEnabled = false
-                    val job = coroutineScope.launch {
-                        try {
-                            pagerState.animateScrollToPage(page)
-                        } finally {
-                            if (animateJob === this) {
-                                userScrollEnabled = true
-                                animating = false
-                                animateJob = null
-                            }
-                        }
-                    }
-                    animateJob = job
-                    lastRequestedPage = page
-                }
-            }
-        }
+    val handlePageChange: (Int) -> Unit = { page -> uiSelectedPage = page }
+
+    // Reflect user swipes back into the selection once the pager settles.
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage to pagerState.isScrollInProgress }
+            .collect { (page, scrolling) -> if (!scrolling) uiSelectedPage = page }
     }
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (!animating) uiSelectedPage = page
+    // Selection (bottom bar, home detector preview) drives the pager.
+    LaunchedEffect(pagerState, uiSelectedPage) {
+        if (pagerState.currentPage != uiSelectedPage || pagerState.isScrollInProgress) {
+            pagerState.animateScrollToPage(uiSelectedPage)
         }
     }
 
@@ -140,10 +104,10 @@ fun MainScreen(
                     .pagerGestureOverride(
                         pagerState = pagerState,
                         mode = pagerMode,
-                        enabled = userScrollEnabled,
+                        enabled = true,
                     ),
                 state = pagerState,
-                userScrollEnabled = userScrollEnabled && !interceptPagerGestures,
+                userScrollEnabled = !interceptPagerGestures,
                 beyondViewportPageCount = 1,
                 pageNestedScrollConnection = if (interceptPagerGestures) {
                     PagerGestureNestedScrollConnection

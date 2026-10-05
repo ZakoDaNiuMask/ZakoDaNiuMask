@@ -27,7 +27,6 @@ fun DetectorPreviewCard(
         report == null -> DetectorPreviewStatus.WAITING
         report.stage == SuStage.FAILED -> DetectorPreviewStatus.ERROR
         report.hasRootIndicators -> DetectorPreviewStatus.DANGER
-        report.unobservablePathCount > 0 || !report.nativeAvailable -> DetectorPreviewStatus.SUPPORT
         else -> DetectorPreviewStatus.CLEAR
     }
 

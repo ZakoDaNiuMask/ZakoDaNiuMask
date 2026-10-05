@@ -93,14 +93,12 @@ fun rememberRootDetectionModel(report: SuReport): RootDetectionModel {
         else -> unknownText
     }
 
+    // Pass/fail is driven by visible root indicators only; incomplete coverage is reported as a
+    // detail below, not as the verdict.
     val status = when (report.stage) {
         SuStage.FAILED -> RootStatus.ERROR
         SuStage.LOADING -> RootStatus.INFO
-        SuStage.READY -> when {
-            report.hasRootIndicators -> RootStatus.DANGER
-            report.unobservablePathCount > 0 || !report.nativeAvailable -> RootStatus.SUPPORT
-            else -> RootStatus.CLEAR
-        }
+        SuStage.READY -> if (report.hasRootIndicators) RootStatus.DANGER else RootStatus.CLEAR
     }
 
     val verdict = stringResource(
@@ -108,8 +106,6 @@ fun rememberRootDetectionModel(report: SuReport): RootDetectionModel {
             report.stage == SuStage.FAILED -> R.string.root_detection_verdict_failed
             report.stage == SuStage.LOADING -> R.string.root_detection_scanning
             report.hasRootIndicators -> R.string.root_detection_verdict_detected
-            report.unobservablePathCount > 0 || !report.nativeAvailable ->
-                R.string.root_detection_verdict_support
             else -> R.string.root_detection_verdict_clean
         }
     )
