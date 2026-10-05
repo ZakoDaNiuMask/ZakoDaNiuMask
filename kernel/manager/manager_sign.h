@@ -1,6 +1,10 @@
 #ifndef MANAGER_SIGN_H
 #define MANAGER_SIGN_H
 
+// ZakoDaNiuMask/ZakoDaNiuMask
+#define EXPECTED_SIZE_ZAKO 0x0389
+#define EXPECTED_HASH_ZAKO "af7cf6952bccbb072474793559435dc42efe3d173dc5b2aed20fe6b5d24be833"
+
 // tiann/KernelSU
 #define EXPECTED_SIZE_OFFICIAL 0x033b
 #define EXPECTED_HASH_OFFICIAL "c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6"
