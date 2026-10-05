@@ -38,10 +38,6 @@
     <string name="send_log">Verzenden Logs</string>
     <string name="reboot_to_apply">Herstart om effect te hebben</string>
     <string name="module_magisk_conflict">Modules zijn niet beschikbaar vanwege een conflict met Magisk!</string>
-    <string name="home_learn_kernelsu">Leer KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">Leer hoe KernelSU te installeren en modules te gebruiken</string>
-    <string name="home_support_title">Ondersteun ons</string>
-    <string name="home_support_content">KernelSU is, en zal altijd, vrij en open source zijn. Je kan altijd je appreciatie tonen met een donatie.</string>
     <string name="profile_default">Standaard</string>
     <string name="profile_template">Sjabloon</string>
     <string name="profile_custom">Aangepast</string>
@@ -49,8 +45,8 @@
     <string name="profile_capabilities">Mogelijkheden</string>
     <string name="profile_umount_modules">Ontkoppel modules</string>
     <string name="failed_to_update_app_profile">Mislukt om App Profiel te updaten voor %s</string>
-    <string name="settings_umount_modules_default">Ontkoppel standaard de modules</string>
-    <string name="settings_umount_modules_default_summary">De globale standaardwaarde voor \"Umount modules\" in App Profile. Als dit is ingeschakeld, worden alle modulewijzigingen in het systeem verwijderd voor apps waarvoor geen profiel is ingesteld.</string>
+    <string name="settings_umount_modules_default">Automatisch ontkoppelen en verbergen met één klik</string>
+    <string name="settings_umount_modules_default_summary">Modules automatisch ontkoppelen en verbergen voor apps zonder profiel</string>
     <string name="profile_umount_modules_summary">Met deze optie ingeschakeld zal KernelSU toelaten om alle gewijzigde bestanden door de modules voor deze app te herstellen.</string>
     <string name="profile_selinux_domain">Domein</string>
     <string name="profile_selinux_rules">Regels</string>
@@ -103,8 +99,16 @@
     <string name="flash_failed">Flash is mislukt</string>
     <string name="save_log">Logboeken Opslaan</string>
     <string name="log_saved">Logs opgeslagen</string>
-    <string name="settings_sucompat">su binary omleiden</string>
-    <string name="settings_sucompat_summary">Stelt apps met Superuser-toestemming in App Profiel in staat om een superuser-shell te verkrijgen door /system/bin/su uit te voeren; alleen effectief voor nieuwe processen.</string>
+    <string name="settings_sucompat">Root-autorisatieschakelaar</string>
+    <string name="settings_sucompat_summary">Apps toegang geven tot Root (klassieke su-opdracht)</string>
     <string name="settings_kernel_umount">Kernel ontkoppelen</string>
     <string name="settings_kernel_umount_summary">Kernel-niveau ontkoppelgedrag beheerd door KernelSU</string>
+    <string name="umount_path_manager">Beheer van verborgen kernel-mountpaden</string>
+    <string name="umount_path_manager_summary">Beheer verborgen kernel-mountpaden</string>
+    <string name="settings_adb_root">Hoogste ADB-privilege</string>
+    <string name="settings_adb_root_summary">adbd-daemon met root-rechten uitvoeren</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

@@ -42,10 +42,6 @@
     <string name="safe_mode">Turvarežiim</string>
     <string name="reboot_to_apply">Muudatuste rakendamiseks taaskäivita</string>
     <string name="module_magisk_conflict">Moodulid pole saadaval Magiski konflikti tõttu!</string>
-    <string name="home_learn_kernelsu">Õpi KernelSUd</string>
-    <string name="home_click_to_learn_kernelsu">Õpi KernelSUd paigaldama ja mooduleid kasutama</string>
-    <string name="home_support_title">Toeta meid</string>
-    <string name="home_support_content">KernelSU on, ja alati jääb, tasuta ning avatud lähtekoodiga kättesaadavaks. Sellegipoolest võid sa näidata, et hoolid, ning teha annetuse.</string>
     <string name="profile_default">Vaikimisi</string>
     <string name="profile_template">Mall</string>
     <string name="profile_custom">Kohandatud</string>
@@ -54,8 +50,8 @@
     <string name="profile_selinux_context">SELinux kontekst</string>
     <string name="profile_umount_modules">Lahtihaagitud moodulid</string>
     <string name="failed_to_update_app_profile">Rakenduseprofiili uuendamine %s jaoks ebaõnnestus</string>
-    <string name="settings_umount_modules_default">Haagi moodulid vaikimisi lahti</string>
-    <string name="settings_umount_modules_default_summary">Globaalne vaikeväärtus \"Lahtihaagitud moodulitele\" rakenduseprofiilis. Lubamisel eemaldab see kõik moodulite süsteemimuudatused rakendustele, millel ei ole profiili määratud.</string>
+    <string name="settings_umount_modules_default">Automaatne ühe klikiga lahtihaakimine ja peitmine</string>
+    <string name="settings_umount_modules_default_summary">Haagi ja peida moodulid automaatselt rakendustele, millel pole profiili</string>
     <string name="profile_umount_modules_summary">Selle valiku lubamine lubab KernelSU-l taastada selle rakenduse moodulite poolt mistahes muudetud faile.</string>
     <string name="profile_selinux_domain">Domeen</string>
     <string name="profile_selinux_rules">Reeglid</string>
@@ -108,8 +104,16 @@
     <string name="flash_success">Välgutamine õnnestus</string>
     <string name="flash_failed">Välgutamine ebaõnnestus</string>
     <string name="save_log">Salvesta Logid</string>
-    <string name="settings_sucompat">Suuna su binaarfail ümber</string>
-    <string name="settings_sucompat_summary">Võimaldab rakendustel, kellele on antud Superuser luba rakenduse profiilis, saada superuser shell, käivitades /system/bin/su; kehtib ainult uute protsesside puhul.</string>
+    <string name="settings_sucompat">Root-volituse lüliti</string>
+    <string name="settings_sucompat_summary">Luba rakendustel saada Root-juurdepääs (klassikaline su käsk)</string>
     <string name="settings_kernel_umount">Kernel umount</string>
     <string name="settings_kernel_umount_summary">Kerneli tasemel lahtihaakimise käitumine, mida kontrollib KernelSU</string>
+    <string name="umount_path_manager">Kerneli peidetud mount-teede haldus</string>
+    <string name="umount_path_manager_summary">Halda kerneli peidetud mount-teid</string>
+    <string name="settings_adb_root">ADB kõrgeim õigus</string>
+    <string name="settings_adb_root_summary">Käivita adbd-deemon root-õigustega</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

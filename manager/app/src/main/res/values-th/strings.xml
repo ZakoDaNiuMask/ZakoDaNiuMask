@@ -43,10 +43,6 @@
     <string name="safe_mode">โหมดปลอดภัย</string>
     <string name="reboot_to_apply">รีบูตเพื่อให้มีผล</string>
     <string name="module_magisk_conflict">โมดูลไม่สามารถใช้งานได้ เนื่องจากขัดแย้งกับ Magisk!</string>
-    <string name="home_learn_kernelsu">เรียนรู้เกี่ยวกับ KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">เรียนรู้วิธีการติดตั้ง KernelSU และวิธีใช้งานโมดูลต่าง ๆ</string>
-    <string name="home_support_title">สนับสนุนพวกเรา</string>
-    <string name="home_support_content">KernelSU เป็นโอเพ่นซอร์สฟรีทั้งจากนี้และตลอดไป อย่างไรก็ตาม คุณสามารถแสดงความห่วงใยได้ด้วยการบริจาค</string>
     <string name="profile_default">ค่าเริ่มต้น</string>
     <string name="profile_template">เทมเพลต</string>
     <string name="profile_custom">กำหนดเอง</string>
@@ -55,8 +51,8 @@
     <string name="profile_selinux_context">บริบท SELinux</string>
     <string name="profile_umount_modules">Umount โมดูล</string>
     <string name="failed_to_update_app_profile">ไม่สามารถอัปเดตโปรไฟล์แอปสำหรับ %s ได้</string>
-    <string name="settings_umount_modules_default">Umount โมดูลตามค่าเริ่มต้น</string>
-    <string name="settings_umount_modules_default_summary">หากเปิดใช้งานค่าเริ่มต้นโดยทั่วไปสำหรับ \"Umount โมดูล\" ในโปรไฟล์แอป จะเป็นการลบการแก้ไขโมดูลทั้งหมดในระบบสำหรับแอปพลิเคชันที่ไม่มีการตั้งค่าโปรไฟล์</string>
+    <string name="settings_umount_modules_default">ยกเลิกการเมานต์และซ่อนอัตโนมัติในคลิกเดียว</string>
+    <string name="settings_umount_modules_default_summary">ยกเลิกการเมานต์และซ่อนโมดูลอัตโนมัติสำหรับแอปที่ไม่มีโปรไฟล์</string>
     <string name="profile_umount_modules_summary">การเปิดใช้งานตัวเลือกนี้จะทำให้ KernelSU สามารถกู้คืนไฟล์ที่แก้ไขโดยโมดูลสำหรับแอปนี้ได้</string>
     <string name="profile_selinux_domain">โดเมน</string>
     <string name="profile_selinux_rules">กฎ</string>
@@ -112,8 +108,8 @@
     <string name="flash_failed">แฟลชล้มเหลว</string>
     <string name="save_log">บันทึกบันทึก</string>
     <string name="log_saved">บันทึก Log แล้ว</string>
-    <string name="settings_sucompat">เปลี่ยนเส้นทางไบนารี su</string>
-    <string name="settings_sucompat_summary">อนุญาตให้แอปที่ได้รับอนุญาต Superuser ในโปรไฟล์แอปได้รับเชล superuser โดยการเรียกใช้ /system/bin/su; มีผลเฉพาะกับกระบวนการใหม่เท่านั้น</string>
+    <string name="settings_sucompat">สวิตช์อนุญาต Root</string>
+    <string name="settings_sucompat_summary">อนุญาตให้แอปเข้าถึง Root (คำสั่ง su แบบดั้งเดิม)</string>
     <string name="settings_kernel_umount">การเลิกเมานต์เคอร์เนล</string>
     <string name="settings_kernel_umount_summary">พฤติกรรมการเลิกเมานต์ระดับเคอร์เนลที่ควบคุมโดย KernelSU</string>
     <string name="learn_more">เรียนรู้เพิ่มเติม</string>
@@ -160,8 +156,15 @@
     <string name="jailbreak_flash_warning_countdown">ดำเนินการต่อ (%1$d)</string>
     <string name="settings_auto_jailbreak">เจลเบรคอัตโนมัติ</string>
     <string name="settings_auto_jailbreak_summary">ใช้ Magica เพื่อยกระดับสิทธิ์โดยอัตโนมัติเมื่อตรวจพบ SELinux ในโหมด Permissive ขณะบูตเครื่อง จำเป็นต้องให้สิทธิ์การเริ่มทำงานอัตโนมัติแก่แอปนี้</string>
-    <string name="settings_adb_root_summary">รัน adbd daemon ด้วยสิทธิ์ root</string>
+    <string name="settings_adb_root_summary">เรียกใช้ดีมอน adbd ด้วยสิทธิ์ root</string>
     <string name="settings_selinux_hide">ซ่อนการแก้ไข SELinux</string>
     <string name="settings_selinux_hide_summary">ป้องกันไม่ให้แอปพลิเคชันตรวจพบการแก้ไขปรับเปลี่ยน SELinux</string>
     <string name="settings_selinux_hide_reboot_required">รีบูตเพื่อให้มีผล</string>
+    <string name="umount_path_manager">การจัดการเส้นทางเมานต์ที่ซ่อนของเคอร์เนล</string>
+    <string name="umount_path_manager_summary">จัดการเส้นทางเมานต์ที่ซ่อนของเคอร์เนล</string>
+    <string name="settings_adb_root">สิทธิ์สูงสุดของ ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

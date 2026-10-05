@@ -47,4 +47,16 @@
     <string name="module">Modullar</string>
     <string name="module_repo">Modul Repo</string>
     <string name="module_sort_action_first">Tertiple (Ilki hereket)</string>
+    <string name="umount_path_manager">Ýadro gizlin mount ýollaryny dolandyrmak</string>
+    <string name="umount_path_manager_summary">Ýadro gizlin mount ýollaryny dolandyryň</string>
+    <string name="settings_sucompat">Root ygtyýarlyk wyklýuçateli</string>
+    <string name="settings_sucompat_summary">Programmalara Root girişine rugsat ber (klassik su buýrugy)</string>
+    <string name="settings_adb_root">ADB iň ýokary hukugy</string>
+    <string name="settings_adb_root_summary">adbd daemonyny root hukuklary bilen işlediň</string>
+    <string name="settings_umount_modules_default">Awtomatik bir basyşda aýyrmak we gizlemek</string>
+    <string name="settings_umount_modules_default_summary">Profili bolmadyk programmalar üçin modullary awtomatik aýyryň we gizläň</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

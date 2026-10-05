@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.twotone.MenuBook
 import androidx.compose.material.icons.twotone.Android
 import androidx.compose.material.icons.twotone.Block
 import androidx.compose.material.icons.twotone.DeveloperBoard
@@ -44,7 +43,6 @@ import androidx.compose.material.icons.twotone.Smartphone
 import androidx.compose.material.icons.twotone.Tag
 import androidx.compose.material.icons.twotone.TaskAlt
 import androidx.compose.material.icons.twotone.Tune
-import androidx.compose.material.icons.twotone.VolunteerActivism
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -75,7 +73,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -378,12 +375,6 @@ fun HomePage(
                     )
                 }
 
-                // 链接卡片
-                if (!uiState.isSimpleMode) {
-                    DonateCard(uiState.showHomeCardIcons)
-                    LearnMoreCard(uiState.showHomeCardIcons)
-                }
-
                 Spacer(Modifier.height(bottomPadding))
         }
     }
@@ -600,8 +591,15 @@ private fun StatusCard(
             }
 
             val workingModeSurfaceText = when {
-                systemStatus.lkmMode == true -> "LKM"
-                else -> "Built-in"
+                systemStatus.lkmMode == true -> stringResource(id = R.string.home_load_mode_lkm)
+                systemStatus.kernelVersion.major > 5 ||
+                    (systemStatus.kernelVersion.major == 5 &&
+                        systemStatus.kernelVersion.patchLevel >= 10) ->
+                    stringResource(id = R.string.home_kernel_type_gki2)
+                systemStatus.kernelVersion.major == 5 &&
+                    systemStatus.kernelVersion.patchLevel == 4 ->
+                    stringResource(id = R.string.home_kernel_type_gki1)
+                else -> stringResource(id = R.string.home_kernel_type_nongki)
             }
 
             SettingsBaseWidget(
@@ -678,56 +676,6 @@ private fun StatusCard(
                 isError = true,
                 title = stringResource(R.string.home_unsupported),
                 description = stringResource(R.string.home_unsupported_reason),
-            )
-        }
-    }
-}
-
-@Composable
-fun LearnMoreCard(
-    showIcon: Boolean,
-) {
-    val uriHandler = LocalUriHandler.current
-    val url = stringResource(R.string.home_learn_kernelsu_url)
-
-    SegmentedColumn(
-        modifier = Modifier.fillMaxWidth(),
-        title = stringResource(R.string.learn_more),
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)
-    ) {
-        item {
-            SettingsBaseWidget(
-                icon = Icons.AutoMirrored.TwoTone.MenuBook.takeIf { showIcon },
-                iconPlaceholder = false,
-                title = stringResource(R.string.home_learn_kernelsu),
-                description = stringResource(R.string.home_click_to_learn_kernelsu),
-                onClick = {
-                    uriHandler.openUri(url)
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun DonateCard(
-    showIcon: Boolean,
-) {
-    val uriHandler = LocalUriHandler.current
-    SegmentedColumn(
-        modifier = Modifier.fillMaxWidth(),
-        title = stringResource(R.string.home_support_title),
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)
-    ) {
-        item {
-            SettingsBaseWidget(
-                icon = Icons.TwoTone.VolunteerActivism.takeIf { showIcon },
-                iconPlaceholder = false,
-                title = stringResource(R.string.home_support_title),
-                description = stringResource(R.string.home_support_content),
-                onClick = {
-                    uriHandler.openUri("https://patreon.com/weishu")
-                },
             )
         }
     }

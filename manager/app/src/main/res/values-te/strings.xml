@@ -17,8 +17,18 @@
     <string name="home_click_to_install">ఇన్‌స్టాల్ చేయడానికి క్లిక్ చేయండి</string>
     <string name="home_working">పని చేస్తోంది</string>
     <string name="save_log">లాగ్‌లు సేవ్ చేయండి</string>
-    <string name="settings_sucompat">su బైనరీని మళ్ళించండి</string>
-    <string name="settings_sucompat_summary">యాప్ ప్రొఫైల్‌లో సూపర్‌యూజర్ అనుమతి ఉన్న యాప్‌ల కోసం /system/bin/su ని ksud కి మళ్ళించండి; కొత్త ప్రాసెస్‌లకు మాత్రమే పని చేస్తుంది.</string>
+    <string name="settings_sucompat">Root అనుమతి స్విచ్</string>
+    <string name="settings_sucompat_summary">యాప్‌లకు Root యాక్సెస్ ఇవ్వండి (క్లాసిక్ su కమాండ్)</string>
     <string name="settings_kernel_umount">కెర్నల్ అన్‌మౌంట్</string>
     <string name="settings_kernel_umount_summary">KernelSU ద్వారా నియంత్రించబడే కెర్నల్-స్థాయి అన్‌మౌంట్ ప్రవర్తన</string>
+    <string name="umount_path_manager">కర్నెల్ దాచిన మౌంట్ పాత్ నిర్వహణ</string>
+    <string name="umount_path_manager_summary">కర్నెల్ దాచిన మౌంట్ పాత్‌లను నిర్వహించండి</string>
+    <string name="settings_adb_root">ADB అత్యున్నత అధికారం</string>
+    <string name="settings_adb_root_summary">root అధికారాలతో adbd డీమన్‌ను నడపండి</string>
+    <string name="settings_umount_modules_default">ఆటో వన్-క్లిక్ అన్‌మౌంట్ మరియు దాచు</string>
+    <string name="settings_umount_modules_default_summary">ప్రొఫైల్ లేని యాప్‌లకు మాడ్యూళ్లను ఆటో అన్‌మౌంట్ చేసి దాచు</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

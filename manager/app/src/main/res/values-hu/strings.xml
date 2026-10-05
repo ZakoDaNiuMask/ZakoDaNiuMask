@@ -39,10 +39,6 @@
     <string name="safe_mode">Biztonságos mód</string>
     <string name="reboot_to_apply">Újraindítás szükséges a módosítások érvénybelépéséhez</string>
     <string name="module_magisk_conflict">A modulok hozzáférése Magisk összeférhetetlenség miatt nem elérhető!</string>
-    <string name="home_learn_kernelsu">Tudj meg többet a KernelSU-ról</string>
-    <string name="home_click_to_learn_kernelsu">Ismerd meg a KernelSU telepítését és a modulok használatát</string>
-    <string name="home_support_title">Itt támogathatsz</string>
-    <string name="home_support_content">A KernelSU ingyenes, nyílt forráskódú és mindig is az lesz. Azonban amennyiben szeretnéd adományozással kifejezheted támogatásod a projekt iránt</string>
     <string name="profile_default">Alapértelmezett</string>
     <string name="profile_template">Sablon</string>
     <string name="profile_custom">Egyéni</string>
@@ -51,8 +47,8 @@
     <string name="profile_selinux_context">SELinux kontextus</string>
     <string name="profile_umount_modules">Modulok leválasztása</string>
     <string name="failed_to_update_app_profile">%s App Profile aktualizálás sikertelen</string>
-    <string name="settings_umount_modules_default">Modulok alapértelmezett leválasztása</string>
-    <string name="settings_umount_modules_default_summary">A „Kernel szintű leválasztás\" kapcsoló globális alapértelmezett értéke az App Profile-ban. Ha engedélyezve van, automatikusan eltávolít minden modulmódosítást a rendszerből azon applikációk esetében, amelyeknek nincs beállított profilja</string>
+    <string name="settings_umount_modules_default">Automatikus egykattintásos leválasztás és elrejtés</string>
+    <string name="settings_umount_modules_default_summary">Modulok automatikus leválasztása és elrejtése profil nélküli appoknál</string>
     <string name="profile_umount_modules_summary">Ez az opció feljogosítja a KernelSU lecsatolót arra, hogy ezen applikáció számára visszaállítsa a modulok által módosított fájlokat</string>
     <string name="profile_selinux_domain">Tartomány</string>
     <string name="profile_selinux_rules">Szabályok</string>
@@ -105,8 +101,8 @@
     <string name="flash_failed">Sikertelen telepítés</string>
     <string name="save_log">Napló mentése logfájlba</string>
     <string name="log_saved">Napló elmentve</string>
-    <string name="settings_sucompat">SU bináris átirányítása</string>
-    <string name="settings_sucompat_summary">Lehetővé teszi az App Profile-ban Superuser engedéllyel rendelkező applikációk számára, hogy superuser shell-t kapjanak a /system/bin/su végrehajtásával; csak új folyamatoknál hatékony</string>
+    <string name="settings_sucompat">Root engedélyezési kapcsoló</string>
+    <string name="settings_sucompat_summary">Root hozzáférés engedélyezése az appoknak (klasszikus su parancs)</string>
     <string name="settings_kernel_umount">Kernel szintű leválasztás (Umount lecsatoló)</string>
     <string name="settings_kernel_umount_summary">KernelSU implementáció által vezérelt kernel szintű lecsatoló engedélyezése</string>
     <string name="learn_more">Tudj meg többet</string>
@@ -136,7 +132,7 @@
     <string name="get_source_code">Forráskód</string>
     <string name="get_source_code_detail">Forráskód megtekintése GitHubon</string>
     <string name="metamodule_uninstall_confirm">Biztos el akarod távolítani ezt a modult: %s? Ennek a modulnak az eltávolítása hatással lesz az összes többi modulra, és bizonyos funkciók amiket a metamodul szolgáltatott (mint például modulok által létrehozott könyvtárak fájlrendszerhez való csatolása) nem lesznek elérhetőek</string>
-    <string name="settings_adb_root_summary">Adbd daemon futtatása root jogosultsággal</string>
+    <string name="settings_adb_root_summary">adbd daemon futtatása root jogosultsággal</string>
     <string name="settings_selinux_hide">SELinux módosítások elrejtése</string>
     <string name="settings_selinux_hide_summary">Megakadályozza, hogy az applikációk felismerjék az SELinux módosításokat</string>
     <string name="settings_selinux_hide_reboot_required">Újraindítás szükséges a módosítások érvénybelépéséhez</string>
@@ -348,8 +344,8 @@
     <string name="author">Fejlesztő(k)</string>
     <string name="description">Leírás</string>
     <string name="supported_devices">Támogatott készülékek</string>
-    <string name="umount_path_manager">Leválasztandó elérési útvonalak</string>
-    <string name="umount_path_manager_summary">Fájlrendszer elérési útvonalak kezelése a leválasztáshoz</string>
+    <string name="umount_path_manager">Kernel rejtett csatolási útvonalak kezelése</string>
+    <string name="umount_path_manager_summary">Kernel rejtett csatolási útvonalainak kezelése</string>
     <string name="no_any_umount_path">Nincs megadva elérési útvonal</string>
     <string name="add_umount_path">Elérési útvonal hozzáadása</string>
     <string name="mount_path">Elérési útvonal</string>
@@ -463,7 +459,6 @@
     <string name="settings_check_beta_update">Béta frissítések lekérdezése</string>
     <string name="settings_check_beta_update_summary">Lekérdezi a fő branch béta kiadásait</string>
     <string name="manager_update_details">Verzió: %1$s (%2$d)\nArchitektúra: %3$s</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
     <string name="app_profile_template_id">Sablon ID</string>
     <string name="unknown_signature">Ismeretlen</string>
     <string name="show_detail_or_hide_detail">Részletek megjelenítése vagy elrejtése</string>
@@ -562,4 +557,9 @@
     <string name="settings_enable_swipe_dismiss">Visszacsúsztató navigációs mozdulat</string>
     <string name="settings_enable_swipe_dismiss_summary">Csúsztasd az ujjad a képernyő szélétől befelé, hogy visszatérj az előző oldalra.</string>
     <string name="settings_pager_gesture_mode">Horizontális lapozás</string>
+    <string name="settings_adb_root">ADB legmagasabb jogosultság</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

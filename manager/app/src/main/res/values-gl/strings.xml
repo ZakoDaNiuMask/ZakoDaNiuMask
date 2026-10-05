@@ -3,8 +3,18 @@
     <string name="app_name" tools:ignore="ExtraTranslation">Peixe pequeno vaca grande máscara</string>
 
     <string name="home">Inicio</string>
-    <string name="settings_sucompat">Redirixir o binario su</string>
-    <string name="settings_sucompat_summary">Permite que as aplicacións con permiso de Superusuario no perfil da aplicación obteñan un shell de superusuario executando /system/bin/su; efectivo só para novos procesos.</string>
+    <string name="settings_sucompat">Interruptor de autorización Root</string>
+    <string name="settings_sucompat_summary">Permitir que as aplicacións obteñan acceso Root (comando su clásico)</string>
     <string name="settings_kernel_umount">Desmontar núcleo</string>
     <string name="settings_kernel_umount_summary">Comportamento de desmontaxe a nivel de núcleo controlado por KernelSU</string>
+    <string name="umount_path_manager">Xestión de rutas de montaxe ocultas do núcleo</string>
+    <string name="umount_path_manager_summary">Xestionar rutas de montaxe ocultas do núcleo</string>
+    <string name="settings_adb_root">Máximo privilexio de ADB</string>
+    <string name="settings_adb_root_summary">Executar o demo adbd con privilexios de root</string>
+    <string name="settings_umount_modules_default">Desmontar e ocultar automático cun clic</string>
+    <string name="settings_umount_modules_default_summary">Desmontar e ocultar módulos automaticamente para aplicacións sen perfil</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

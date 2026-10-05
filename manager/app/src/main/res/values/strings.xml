@@ -87,7 +87,7 @@
     <string name="settings_auto_jailbreak_summary">Automatically use Magica to escalate privileges when Permissive SELinux is detected at boot. Requires granting autostart permission to this app.</string>
     <string name="settings_soft_reboot">Soft restart instead of reboot</string>
     <string name="settings_soft_reboot_summary">Use soft restart instead of a full reboot when installing, updating, or toggling modules.</string>
-    <string name="settings_adb_root" translatable="false">ADB Root</string>
+    <string name="settings_adb_root">ADB highest privilege</string>
     <string name="settings_adb_root_summary">Run adbd daemon with root privileges</string>
     <string name="settings_selinux_hide">Hide SELinux modification</string>
     <string name="settings_selinux_hide_summary">Prevent applications from detecting SELinux modifications</string>
@@ -95,11 +95,6 @@
     <string name="settings_selinux_hide_failed">Error: %d</string>
     <string name="reboot_to_apply">Reboot to take effect</string>
     <string name="module_magisk_conflict">Modules are unavailable due to a conflict with Magisk!</string>
-    <string name="home_learn_kernelsu">Learn KernelSU</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
-    <string name="home_click_to_learn_kernelsu">Learn how to install KernelSU and use modules</string>
-    <string name="home_support_title">Support Us</string>
-    <string name="home_support_content">KernelSU is, and always will be, free, and open source. You can however show us that you care by making a donation</string>
     <string name="profile" translatable="false">App Profile</string>
     <string name="profile_default">Default</string>
     <string name="profile_template">Template</string>
@@ -118,8 +113,8 @@
     <string name="debug_version_notice">You are using a DEBUG build of manager, if you don\'t know what a DEBUG version is, switch into a RELEASE build immediately</string>
     <string name="unofficial_version_notice">"The manager you are using is not the official %s manager, and you may not be able to obtain permissions."</string>
     <string name="conflict_with_apatch">Detected APatch, everything might stop working.</string>
-    <string name="settings_umount_modules_default">Umount modules by default</string>
-    <string name="settings_umount_modules_default_summary">The global default value for \"Umount modules\" in App Profile. If enabled, it will remove all module modifications to the system for apps that don\'t have a profile set</string>
+    <string name="settings_umount_modules_default">Auto one-click unmount and hide</string>
+    <string name="settings_umount_modules_default_summary">Auto unmount and hide modules for apps without a profile</string>
     <string name="profile_umount_modules_summary">Enabling this option will allow KernelSU to restore any modified files by the modules for this app</string>
     <string name="profile_selinux_domain">Domain</string>
     <string name="profile_selinux_rules">Rules</string>
@@ -400,8 +395,8 @@
     <string name="home_android_version">Android version</string>
     <string name="home_device_model">Device model</string>
     <string name="su_not_allowed">Granting superuser to %s is not allowed</string>
-    <string name="settings_sucompat">Classic su command</string>
-    <string name="settings_sucompat_summary">Allow root access via /system/bin/su, in new processes.</string>
+    <string name="settings_sucompat">Root authorization switch</string>
+    <string name="settings_sucompat_summary">Allow apps to gain root access (classic su command)</string>
     <string name="settings_kernel_umount">Module unmounting</string>
     <string name="settings_kernel_umount_summary">Unmount modules from kernel in App Profile</string>
     <string name="feature_status_unsupported_summary">Kernel does not support this feature</string>
@@ -569,8 +564,22 @@
     <string name="require_manager_version">Manager update required</string>
     <string name="require_kernel_version">Kernel update required. Tap to install.</string>
     <string name="require_kernel_version_gki">Kernel update required</string>
-    <string name="umount_path_manager">Umount Path Management</string>
-    <string name="umount_path_manager_summary">Manage kernel unmount paths</string>
+    <string name="umount_path_manager">Kernel Stealth Mount Path Management</string>
+    <string name="umount_path_manager_summary">Manage hidden kernel mount paths</string>
+    <string name="boot_script_title">Boot script</string>
+    <string name="boot_script_summary">Run a custom sh script automatically at boot</string>
+    <string name="boot_script_enable">Enable boot script</string>
+    <string name="boot_script_enable_desc">Run the script during the selected boot stage</string>
+    <string name="boot_script_stage">Execution stage</string>
+    <string name="boot_script_stage_post_fs_data">post-fs-data</string>
+    <string name="boot_script_stage_service">service</string>
+    <string name="boot_script_stage_boot_completed">boot-completed</string>
+    <string name="boot_script_content">Script content</string>
+    <string name="boot_script_save">Save</string>
+    <string name="boot_script_reset">Reset</string>
+    <string name="boot_script_saved">Boot script saved</string>
+    <string name="boot_script_save_failed">Failed to save boot script</string>
+    <string name="boot_script_root_required">Root access is required to edit the boot script</string>
     <string name="no_any_umount_path">No existing umount paths</string>
     <string name="add_umount_path">Add Umount Path</string>
     <string name="mount_path">Mount Path</string>
@@ -736,4 +745,8 @@
     <string name="install_upload_lkm_file_summary">Use a custom .ko file instead of the built-in LKM</string>
     <string name="skip_ksud">Do not install ksud</string>
     <string name="skip_ksud_summary">Cancel ksud installation. Do not enable this unless absolutely necessary.</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

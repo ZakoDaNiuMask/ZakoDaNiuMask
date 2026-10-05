@@ -30,10 +30,6 @@
     <string name="safe_mode">ಸುರಕ್ಷಿತ ಮೋಡ್</string>
     <string name="reboot_to_apply">ಪರಿಣಾಮ ಬೀರಲು ರೀಬೂಟ್ ಮಾಡಿ</string>
     <string name="module_magisk_conflict">ಮಾಡ್ಯೂಲ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ ಇದು ಮ್ಯಾಜಿಸ್ಕ್‌ನೊಂದಿಗೆ ಸಂಘರ್ಷವಾಗಿದೆ!</string>
-    <string name="home_learn_kernelsu">KernelSU ಕಲಿಯಿರಿ</string>
-    <string name="home_click_to_learn_kernelsu">KernelSU ಅನ್ನು ಹೇಗೆ ಸ್ಥಾಪಿಸಬೇಕು ಮತ್ತು ಮಾಡ್ಯೂಲ್‌ಗಳನ್ನು ಬಳಸುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ</string>
-    <string name="home_support_title">ನಮ್ಮನ್ನು ಬೆಂಬಲಿಸಿ</string>
-    <string name="home_support_content">KernelSU ಉಚಿತ ಮತ್ತು ಮುಕ್ತ ಮೂಲವಾಗಿದೆ ಮತ್ತು ಯಾವಾಗಲೂ ಇರುತ್ತದೆ. ಆದಾಗ್ಯೂ ನೀವು ದೇಣಿಗೆ ನೀಡುವ ಮೂಲಕ ನೀವು ಕಾಳಜಿ ವಹಿಸುತ್ತೀರಿ ಎಂದು ನಮಗೆ ತೋರಿಸಬಹುದು.</string>
     <string name="profile_default">ಡೀಫಾಲ್ಟ್</string>
     <string name="profile_template">ಟೆಂಪ್ಲೇಟ್</string>
     <string name="profile_custom">ಕಸ್ಟಮ್</string>
@@ -42,8 +38,8 @@
     <string name="profile_selinux_context">SELinux ಸಂದರ್ಭ</string>
     <string name="profile_umount_modules">Umount ಮಾಡ್ಯೂಲ್‌ಗಳು</string>
     <string name="failed_to_update_app_profile">%s ಗಾಗಿ ಅಪ್ಲಿಕೇಶನ್ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ</string>
-    <string name="settings_umount_modules_default">ಡೀಫಾಲ್ಟ್ ಆಗಿ Umount ಮಾಡ್ಯೂಲ್</string>
-    <string name="settings_umount_modules_default_summary">ಅಪ್ಲಿಕೇಶನ್ ಪ್ರೊಫೈಲ್‌ಗಳಲ್ಲಿ \"Umount ಮಾಡ್ಯೂಲ್\" ಗಾಗಿ ಜಾಗತಿಕ ಡೀಫಾಲ್ಟ್ ಮೌಲ್ಯ. ಸಕ್ರಿಯಗೊಳಿಸಿದರೆ, ಪ್ರೊಫೈಲ್ ಸೆಟ್ ಅನ್ನು ಹೊಂದಿರದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಿಗಾಗಿ ಸಿಸ್ಟಮ್‌ಗೆ ಎಲ್ಲಾ ಮಾಡ್ಯೂಲ್ ಮಾರ್ಪಾಡುಗಳನ್ನು ಇದು ತೆಗೆದುಹಾಕುತ್ತದೆ.</string>
+    <string name="settings_umount_modules_default">ಸ್ವಯಂ ಒಂದು-ಕ್ಲಿಕ್ ಅನ್‌ಮೌಂಟ್ ಮತ್ತು ಮರೆಮಾಡಿ</string>
+    <string name="settings_umount_modules_default_summary">ಪ್ರೊಫೈಲ್ ಇಲ್ಲದ ಆ್ಯಪ್‌ಗಳಿಗೆ ಮಾಡ್ಯೂಲ್‌ಗಳನ್ನು ಸ್ವಯಂ ಅನ್‌ಮೌಂಟ್ ಮತ್ತು ಮರೆಮಾಡಿ</string>
     <string name="profile_umount_modules_summary">ಈ ಆಯ್ಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವುದರಿಂದ ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ಮಾಡ್ಯೂಲ್‌ಗಳ ಮೂಲಕ ಯಾವುದೇ ಮಾರ್ಪಡಿಸಿದ ಫೈಲ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು KernelSU ಗೆ ಅನುಮತಿಸುತ್ತದೆ.</string>
     <string name="profile_selinux_domain">ಡೊಮೇನ್</string>
     <string name="profile_selinux_rules">ನಿಯಮಗಳು</string>
@@ -54,8 +50,16 @@
     <string name="force_stop_app" formatted="false">ಫೋರ್ಸ್ ಸ್ಟಾಪ್</string>
     <string name="module_changelog">ಚೇಂಜ್ಲಾಗ್</string>
     <string name="save_log">ಲಾಗ್ಗಳನ್ನು ಉಳಿಸಿ</string>
-    <string name="settings_sucompat">su ಬೈನರಿ ಮರುಮಾರ್ಗಗೊಳಿಸಿ</string>
-    <string name="settings_sucompat_summary">ಆಪ್ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಸೂಪರ್‌ಯೂಸರ್ ಅನುಮತಿ ಪಡೆದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಿಗೆ /system/bin/su ಅನ್ನು ksud ಗೆ ಮರು ನಿರ್ದೇಶಿಸಿ; ಹೊಸ ಪ್ರಕ್ರಿಯೆಗಳಿಗೆ ಮಾತ್ರ ಪರಿಣಾಮಕಾರಿ.</string>
+    <string name="settings_sucompat">Root ಅಧಿಕಾರ ಸ್ವಿಚ್</string>
+    <string name="settings_sucompat_summary">ಆ್ಯಪ್‌ಗಳಿಗೆ Root ಪ್ರವೇಶ ನೀಡಿ (ಸಾಂಪ್ರದಾಯಿಕ su ಆಜ್ಞೆ)</string>
     <string name="settings_kernel_umount">ಕರ್ನಲ್ ಅನ್‌ಮೌಂಟ್</string>
     <string name="settings_kernel_umount_summary">KernelSU ನಿಂದ ನಿಯಂತ್ರಿಸಲ್ಪಡುವ ಕರ್ನಲ್-ಮಟ್ಟದ ಅನ್‌ಮೌಂಟ್ ನಡವಳಿಕೆ</string>
+    <string name="umount_path_manager">ಕರ್ನಲ್ ಗುಪ್ತ ಮೌಂಟ್ ಪಾತ್ ನಿರ್ವಹಣೆ</string>
+    <string name="umount_path_manager_summary">ಕರ್ನಲ್‌ನ ಗುಪ್ತ ಮೌಂಟ್ ಪಾತ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</string>
+    <string name="settings_adb_root">ADB ಗರಿಷ್ಠ ಸವಲತ್ತು</string>
+    <string name="settings_adb_root_summary">root ಸವಲತ್ತುಗಳೊಂದಿಗೆ adbd ಡೀಮನ್ ಚಲಾಯಿಸಿ</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

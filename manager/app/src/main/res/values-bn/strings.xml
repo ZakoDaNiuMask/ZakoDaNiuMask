@@ -40,11 +40,6 @@
     <string name="safe_mode">সেইফ মোড</string>
     <string name="reboot_to_apply">রিবুট এপ্লাই</string>
     <string name="module_magisk_conflict">মডিউলগুলি অক্ষম কারণ তারা ম্যাজিস্কের সাথে বিরোধিতা করে!</string>
-    <string name="home_learn_kernelsu">লার্ন কার্নেলএসইউ</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
-    <string name="home_click_to_learn_kernelsu">কিভাবে কার্নেলএসইউ ইনস্টল করতে হয় এবং মডিউল ব্যবহার করতে হয় তা শিখুন</string>
-    <string name="home_support_title">সাপোর্ট টাইটেল</string>
-    <string name="home_support_content">কার্নেলএসইউ বিনামূল্যে এবং ওপেন সোর্স, এবং সবসময় থাকবে। আপনি সবসময় একটি অনুদান দিয়ে আপনার কৃতজ্ঞতা প্রদর্শন করতে পারেন.</string>
     <string name="profile_groups">গ্রুপস</string>
     <string name="profile_capabilities">যোগ্যতা</string>
     <string name="profile_selinux_context">এসই লিনাক্স কনটেক্সট</string>
@@ -53,11 +48,21 @@
     <string name="profile_custom">কাস্টম</string>
     <string name="profile_umount_modules">আনমাউন্ট মোডিউল</string>
     <string name="save_log">লগ সংরক্ষণ করুন</string>
-    <string name="settings_sucompat">su বাইনারি রি-রুট করুন</string>
-    <string name="settings_sucompat_summary">অ্যাপ প্রোফাইলে সুপার ইউজার অনুমতি প্রাপ্ত অ্যাপগুলির জন্য /system/bin/su কে ksud এ রিডাইরেক্ট করুন; শুধুমাত্র নতুন প্রসেসের জন্য কার্যকর।</string>
+    <string name="settings_sucompat">Root অনুমোদন সুইচ</string>
+    <string name="settings_sucompat_summary">অ্যাপগুলোকে Root অ্যাক্সেস দিন (ক্লাসিক su কমান্ড)</string>
     <string name="settings_kernel_umount">কার্নেল আনমাউন্ট</string>
     <string name="settings_kernel_umount_summary">KernelSU দ্বারা নিয়ন্ত্রিত কার্নেল-লেভেল আনমাউন্ট আচরণ</string>
     <string name="learn_more">বিস্তারিত জানুন</string>
     <string name="home_susfs_version">SuSFS সংস্করণ</string>
     <string name="home_seccomp_status">Seccomp-এর অবস্থা</string>
+    <string name="umount_path_manager">কার্নেল স্টেলথ মাউন্ট পাথ ম্যানেজমেন্ট</string>
+    <string name="umount_path_manager_summary">কার্নেলের লুকানো মাউন্ট পাথ পরিচালনা করুন</string>
+    <string name="settings_adb_root">ADB সর্বোচ্চ বিশেষাধিকার</string>
+    <string name="settings_adb_root_summary">root বিশেষাধিকার সহ adbd ডেমন চালান</string>
+    <string name="settings_umount_modules_default">অটো এক-ক্লিক আনমাউন্ট ও লুকান</string>
+    <string name="settings_umount_modules_default_summary">প্রোফাইল ছাড়া অ্যাপের জন্য মডিউল অটো আনমাউন্ট ও লুকান</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

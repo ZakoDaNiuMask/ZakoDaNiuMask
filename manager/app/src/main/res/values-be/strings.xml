@@ -94,11 +94,6 @@
     <string name="settings_selinux_hide_failed">Памылка: %d</string>
     <string name="reboot_to_apply">Перазагрузіце, каб змены ўступілі ў сілу</string>
     <string name="module_magisk_conflict">Модулі недаступныя з-за канфлікту з Magisk!</string>
-    <string name="home_learn_kernelsu">Вывучыце KernelSU</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
-    <string name="home_click_to_learn_kernelsu">Даведайцеся, як усталяваць KernelSU і выкарыстоўваць модулі</string>
-    <string name="home_support_title">Падтрымайце нас</string>
-    <string name="home_support_content">KernelSU з\'яўляецца і заўсёды будзе бясплатным праграмным забеспячэннем з адкрытым зыходным кодам. Аднак вы можаце паказаць нам, што вам неабыякава, зрабіўшы ахвяраванне</string>
     <string name="profile_default">Па змаўчанні</string>
     <string name="profile_template">Шаблон</string>
     <string name="profile_custom">Кастом</string>
@@ -116,8 +111,8 @@
     <string name="debug_version_notice">Вы выкарыстоўваеце адладкавую зборку мэнэджара. Калі вы не ведаеце, што такое адладкавая версія, неадкладна пераключыцеся на зборку RELEASE</string>
     <string name="unofficial_version_notice">Менеджар, якім вы карыстаецеся, не з\'яўляецца афіцыйным менеджарам %s, і вы можаце не мець магчымасці атрымаць дазволы.</string>
     <string name="conflict_with_apatch">Выяўлены APatch, усё можа перастаць працаваць.</string>
-    <string name="settings_umount_modules_default">Размантаваць модулі па змаўчанні</string>
-    <string name="settings_umount_modules_default_summary">Глабальнае значэнне па змаўчанні для «Umount modules» у профілі праграмы. Калі ўключана, гэта выдаліць усе мадыфікацыі модуляў сістэмы для праграм, для якіх не зададзены профіль</string>
+    <string name="settings_umount_modules_default">Аўтаматычнае адмантаванне і хаванне ў адзін клік</string>
+    <string name="settings_umount_modules_default_summary">Аўтаматычна адмантаваць і хаваць модулі для праграм без профілю</string>
     <string name="profile_umount_modules_summary">Уключэнне гэтай опцыі дазволіць KernelSU аднавіць любыя змененыя модулямі для гэтага прыкладання файлы</string>
     <string name="profile_selinux_domain">Дамен</string>
     <string name="profile_selinux_rules">Правілы</string>
@@ -227,8 +222,8 @@
     <string name="home_android_version">Версія Android</string>
     <string name="home_device_model">Мадэль прылады</string>
     <string name="su_not_allowed">Наданне правоў суперюзера %s не дазваляецца</string>
-    <string name="settings_sucompat">Класічная каманда su</string>
-    <string name="settings_sucompat_summary">Дазволіць root-доступ праз /system/bin/su ў новых працэсах.</string>
+    <string name="settings_sucompat">Пераключальнік аўтарызацыі Root</string>
+    <string name="settings_sucompat_summary">Дазволіць праграмам атрымліваць Root-доступ (класічная каманда su)</string>
     <string name="settings_kernel_umount">Адмантаванне модуля</string>
     <string name="settings_kernel_umount_summary">Адмантаваць модулі з ядра ў профілі праграмы</string>
     <string name="feature_status_unsupported_summary">Ядро не падтрымлівае гэтую функцыю</string>
@@ -389,8 +384,8 @@
     <string name="require_manager_version">Патрабуецца абнаўленне адміністратара</string>
     <string name="require_kernel_version">Патрабуецца абнаўленне ядра. Націсніце, каб усталяваць.</string>
     <string name="require_kernel_version_gki">Патрабуецца абнаўленне ядра</string>
-    <string name="umount_path_manager">Кіраванне шляхам адмантавання</string>
-    <string name="umount_path_manager_summary">Кіраванне шляхамі адмантавання ядра</string>
+    <string name="umount_path_manager">Кіраванне схаванымі шляхамі мантавання ядра</string>
+    <string name="umount_path_manager_summary">Кіраванне схаванымі шляхамі мантавання ядра</string>
     <string name="no_any_umount_path">Няма існуючых шляхоў адмантавання</string>
     <string name="add_umount_path">Дадаць шлях размантавання</string>
     <string name="mount_path">Пуць манціравання</string>
@@ -556,4 +551,9 @@
     <string name="install_upload_lkm_file_summary">Выкарыстоўвайце карыстальніцкі файл .ko замест убудаванага LKM</string>
     <string name="skip_ksud">Не ўсталёўваць ksud</string>
     <string name="skip_ksud_summary">Адмяніць усталёўку ksud. Не ўключайце гэту функцыю, калі ў гэтым няма абсалютнай неабходнасці.</string>
+    <string name="settings_adb_root">Найвышэйшыя правы ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

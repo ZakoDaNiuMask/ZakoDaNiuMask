@@ -32,8 +32,18 @@
     <string name="reboot_edl">Reboot ke EDL</string>
     <string name="about">Tentang</string>
     <string name="module_uninstall_confirm">Apakah anda pasti ingin membuang modul %s?</string>
-    <string name="settings_sucompat">Ubaḥ hala binari su</string>
-    <string name="settings_sucompat_summary">Ubaḥ hala /system/bin/su ke ksud untuk aplikasi yang diberikan kebenaran Superuser dalam Profil Aplikasi; berkesan untuk proses baharu sahaja.</string>
+    <string name="settings_sucompat">Suis kebenaran Root</string>
+    <string name="settings_sucompat_summary">Benarkan apl mendapat akses Root (perintah su klasik)</string>
     <string name="settings_kernel_umount">Umount kernel</string>
     <string name="settings_kernel_umount_summary">Tingkah laku umount peringkat kernel dikawal oleh KernelSU</string>
+    <string name="umount_path_manager">Pengurusan Laluan Mount Tersembunyi Kernel</string>
+    <string name="umount_path_manager_summary">Urus laluan mount tersembunyi kernel</string>
+    <string name="settings_adb_root">Keistimewaan tertinggi ADB</string>
+    <string name="settings_adb_root_summary">Jalankan daemon adbd dengan keistimewaan root</string>
+    <string name="settings_umount_modules_default">Auto nyahlekap dan sembunyi satu klik</string>
+    <string name="settings_umount_modules_default_summary">Auto nyahlekap dan sembunyi modul untuk apl tanpa profil</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

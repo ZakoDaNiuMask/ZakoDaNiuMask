@@ -44,10 +44,6 @@
     <string name="settings_auto_jailbreak">Jailbreak automatique</string>
     <string name="reboot_to_apply">Redémarrer pour appliquer les modifications</string>
     <string name="module_magisk_conflict">Modules indisponibles en raison d\'un conflit avec Magisk !</string>
-    <string name="home_learn_kernelsu">Découvrir KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">Découvrir comment installer KernelSU et utiliser les modules</string>
-    <string name="home_support_title">Nous soutenir</string>
-    <string name="home_support_content">KernelSU est, et restera toujours gratuit et en open source. Vous pouvez cependant nous témoigner de votre soutien en nous faisant un don.</string>
     <string name="profile_default">Par défaut</string>
     <string name="profile_template">Modèle</string>
     <string name="profile_custom">Personnalisé</string>
@@ -56,8 +52,8 @@
     <string name="profile_selinux_context">Contexte SELinux</string>
     <string name="profile_umount_modules">Démontage des modules</string>
     <string name="failed_to_update_app_profile">Échec de la modification du profil d\'application de %s</string>
-    <string name="settings_umount_modules_default">Démontage des modules par défaut</string>
-    <string name="settings_umount_modules_default_summary">Valeur globale par défaut pour l\'option \"Démontage des modules\" dans les profils d\'application. Lorsque l\'option est activée, les modifications apportées au système par les modules sont supprimées pour les applications qui n\'ont pas de profil défini</string>
+    <string name="settings_umount_modules_default">Démontage et masquage automatiques en un clic</string>
+    <string name="settings_umount_modules_default_summary">Démonter et masquer automatiquement les modules pour les applications sans profil</string>
     <string name="profile_umount_modules_summary">L\'activation de cette option permettra à KernelSU de restaurer tous les fichiers modifiés par les modules pour cette application</string>
     <string name="profile_selinux_domain">Domaine</string>
     <string name="profile_selinux_rules">Règles</string>
@@ -126,8 +122,8 @@
     <string name="home_android_version">Version d\'Android</string>
     <string name="home_device_model">Modèle de l\'appareil</string>
     <string name="su_not_allowed">Octroi des privilèges superutilisateur à %s non autorisé</string>
-    <string name="settings_sucompat">Commande su classique</string>
-    <string name="settings_sucompat_summary">Permet aux applications ayant l\'autorisation superutilisateur dans leur profil d\'accéder à un shell superutilisateur par la commande /system/bin/su ; effectif uniquement pour les nouveaux processus.</string>
+    <string name="settings_sucompat">Interrupteur d\'autorisation Root</string>
+    <string name="settings_sucompat_summary">Autoriser les applications à obtenir l\'accès Root (commande su classique)</string>
     <string name="settings_kernel_umount">Démontage du noyau</string>
     <string name="settings_kernel_umount_summary">Comportement de démontage des modules au niveau du noyau contrôlé par KernelSU dans le profil d\'application</string>
     <string name="simple_mode">Mode simplifié</string>
@@ -228,7 +224,7 @@
     <string name="jailbreak_timeout">Le jailbreak a peut-être échoué, consulter les journaux</string>
     <string name="jailbreak_flash_warning">Appareil en **mode jailbreak**. Flasher une partition sur un appareil avec un **bootloader verrouillé** désactivera AVB (Android Verified Boot) et pourrait **empêcher le démarrage** de l\'appareil.\n\nVérifier que le bootloader de cet appareil est déverrouillé avant de continuer !</string>
     <string name="settings_auto_jailbreak_summary">Utilise automatiquement Magica pour l\'élévation de privilèges lorsque SELinux en mode permissif est détecté au démarrage. Nécessite l\'autorisation de démarrage automatique pour cette application.</string>
-    <string name="settings_adb_root_summary">Exécute le démon adbd avec les privilèges root</string>
+    <string name="settings_adb_root_summary">Exécuter le démon adbd avec les privilèges root</string>
     <string name="settings_selinux_hide">Dissimulation des modifications SELinux</string>
     <string name="settings_selinux_hide_summary">Empêche les applications de détecter les modifications SELinux</string>
     <string name="settings_selinux_hide_reboot_required">Redémarrer pour appliquer les modifications</string>
@@ -280,7 +276,6 @@
     <string name="current_slot">Emplacement actuel du système par défaut : %1$s</string>
     <string name="dpi_applied_success">Densité d\'affichage définie à %1$d ppp</string>
     <string name="settings_background_dim">Ajustement de la luminosité de l\'arrière-plan</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
     <string name="settings_mode_disable_until_reboot">Désactiver jusqu\'au redémarrage</string>
     <string name="settings_mode_disable_always">Toujours désactiver</string>
     <string name="settings_sulog">Journalisation de SU</string>
@@ -427,8 +422,8 @@
     <string name="dynamic_manager_clear_confirm_title">Effacement de la configuration du gestionnaire dynamique</string>
     <string name="dynamic_manager_clear_confirm_message">Effacer la configuration du gestionnaire dynamique ?</string>
     <string name="manage_managers">Gestionnaires dynamiques</string>
-    <string name="umount_path_manager">Gestion des chemins de démontage</string>
-    <string name="umount_path_manager_summary">Gère les chemins de démontage du noyau</string>
+    <string name="umount_path_manager">Gestion des chemins de montage masqués du noyau</string>
+    <string name="umount_path_manager_summary">Gérer les chemins de montage masqués du noyau</string>
     <string name="no_any_umount_path">Aucun chemin de démontage existant</string>
     <string name="add_umount_path">Ajouter un chemin de démontage</string>
     <string name="mount_path">Chemin de montage</string>
@@ -562,4 +557,9 @@
     <string name="settings_pager_gesture_native">Par défaut</string>
     <string name="settings_pager_gesture_cross_axis">Transversal</string>
     <string name="settings_pager_gesture_ios_like">Comme sur iOS</string>
+    <string name="settings_adb_root">Privilège maximal ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

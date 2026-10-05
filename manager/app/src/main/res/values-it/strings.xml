@@ -37,10 +37,6 @@
     <string name="safe_mode">Modalità provvisoria</string>
     <string name="reboot_to_apply">Riavvia per applicare la modifica</string>
     <string name="module_magisk_conflict">I moduli sono disabilitati perché in conflitto con Magisk!</string>
-    <string name="home_learn_kernelsu">Scopri KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">Scopri come installare KernelSU e utilizzare i moduli</string>
-    <string name="home_support_title">Supportaci</string>
-    <string name="home_support_content">KernelSU è, e sempre sarà, gratuito e open source. Puoi comunque mostrarci il tuo apprezzamento facendo una donazione.</string>
     <string name="profile_default">Predefinito</string>
     <string name="profile_template">Modello</string>
     <string name="profile_custom">Personalizzato</string>
@@ -49,8 +45,8 @@
     <string name="profile_selinux_context">Contesto SELinux</string>
     <string name="profile_umount_modules">Scollega moduli</string>
     <string name="failed_to_update_app_profile">Aggiornamento App Profile per %s fallito</string>
-    <string name="settings_umount_modules_default">Scollega moduli da default</string>
-    <string name="settings_umount_modules_default_summary">Il valore predefinito per \"Scollega moduli\" in App Profile. Se attivato, rimuoverà tutte le modifiche al sistema da parte dei moduli per le applicazioni che non hanno un profilo impostato.</string>
+    <string name="settings_umount_modules_default">Smontaggio e occultamento automatici con un clic</string>
+    <string name="settings_umount_modules_default_summary">Smonta e nascondi automaticamente i moduli per le app senza profilo</string>
     <string name="profile_umount_modules_summary">Attivando questa opzione permetterai a KernelSU di ripristinare ogni file modificato dai moduli per questa app.</string>
     <string name="profile_selinux_domain">Dominio</string>
     <string name="profile_selinux_rules">Regole</string>
@@ -103,8 +99,8 @@
     <string name="flash_success">Installazione completata</string>
     <string name="flash_failed">Installazione fallita</string>
     <string name="save_log">Salva Registri</string>
-    <string name="settings_sucompat">Reindirizza binario su</string>
-    <string name="settings_sucompat_summary">Consente alle app con autorizzazione Superuser nel profilo app di ottenere una shell superuser eseguendo /system/bin/su; efficace solo per i nuovi processi.</string>
+    <string name="settings_sucompat">Interruttore autorizzazione Root</string>
+    <string name="settings_sucompat_summary">Consenti alle app di ottenere l\'accesso Root (comando su classico)</string>
     <string name="settings_kernel_umount">Umount del kernel</string>
     <string name="settings_kernel_umount_summary">Comportamento di umount a livello di kernel controllato da KernelSU</string>
     <string name="home_susfs_version">Versione di SUSFS</string>
@@ -129,7 +125,6 @@
     <string name="home_jailbreak">Jailbreak</string>
     <string name="settings_selinux_hide_summary">Impedisce alle applicazioni di rilevare modifiche a SELinux</string>
     <string name="settings_selinux_hide_failed">Errore: %d</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
     <string name="profile_namespace">Spazio dei nomi di Mount</string>
     <string name="debug_version_notice">Stai usando una versione di DEBUG del manager, se non sai cos\'è, installa una versione RELEASE immediatamente</string>
     <string name="module_action_success">Azione del modulo eseguita con successo.</string>
@@ -182,7 +177,7 @@
     <string name="settings_auto_jailbreak_summary">Usa Magica automaticamente per aumentare i privilegi quando viene rilevato SELinux Permissivo all\'avvio. Richiede di garantire i permessi di avvio automatico a quest\'app.</string>
     <string name="settings_soft_reboot">Riavvio software invece di riavvio completo</string>
     <string name="settings_soft_reboot_summary">Usa il riavvio software invece di un riavvio completo quando si installa, aggiorna, o quando si attivano/disattivano moduli.</string>
-    <string name="settings_adb_root_summary">Avvia il demone adbd con privilegi di root</string>
+    <string name="settings_adb_root_summary">Esegui il demone adbd con privilegi di root</string>
     <string name="profile_namespace_inherited">Ereditato</string>
     <string name="profile_namespace_global">Globale</string>
     <string name="profile_namespace_individual">Individuale</string>
@@ -388,8 +383,8 @@
     <string name="require_manager_version">Aggiornamento del Manager richiesto</string>
     <string name="require_kernel_version">Aggiornamento del kernel richiesto. Clicca per installare.</string>
     <string name="require_kernel_version_gki">Aggiornamento del kernel richiesto</string>
-    <string name="umount_path_manager">Gestione del Umount Path</string>
-    <string name="umount_path_manager_summary">Gestione dei percorsi umount del kernel</string>
+    <string name="umount_path_manager">Gestione dei percorsi di mount nascosti del kernel</string>
+    <string name="umount_path_manager_summary">Gestisci i percorsi di mount nascosti del kernel</string>
     <string name="no_any_umount_path">Non esistono percorsi di umount</string>
     <string name="add_umount_path">Aggiungi Percorso di Umount</string>
     <string name="mount_path">Percorso Mount</string>
@@ -556,4 +551,9 @@
     <string name="skip_ksud">Non installare ksud</string>
     <string name="home">Pagina Principale</string>
     <string name="sulog_filter_root_execve">Root execve</string>
+    <string name="settings_adb_root">Privilegio massimo ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

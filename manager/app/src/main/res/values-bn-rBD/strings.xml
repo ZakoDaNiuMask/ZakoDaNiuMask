@@ -40,10 +40,19 @@
     <string name="profile_selinux_context">এসইলিনাক্স কন্টেক্সট</string>
     <string name="profile_umount_modules">আনমাউন্ট মোডিউলস</string>
     <string name="failed_to_update_app_profile">%s এর জন্য অ্যাপ প্রফাইল আপডেট করা যায়নি</string>
-    <string name="settings_umount_modules_default">বাইডিফল্ট মোডিউল আনমাউন্ট</string>
+    <string name="settings_umount_modules_default">অটো এক-ক্লিক আনমাউন্ট ও লুকান</string>
     <string name="save_log">লগ সংরক্ষণ করুন</string>
-    <string name="settings_sucompat">su বাইনারি পুনর্নির্দেশ করুন</string>
-    <string name="settings_sucompat_summary">অ্যাপ প্রোফাইলে সুপারইউজার অনুমতি সহ অ্যাপের জন্য /system/bin/su কে ksud-এ পুনর্নির্দেশ করুন; শুধুমাত্র নতুন প্রক্রিয়ার জন্য কার্যকর।</string>
+    <string name="settings_sucompat">Root অনুমোদন সুইচ</string>
+    <string name="settings_sucompat_summary">অ্যাপগুলোকে Root অ্যাক্সেস দিন (ক্লাসিক su কমান্ড)</string>
     <string name="settings_kernel_umount">কার্নেল আনমাউন্ট</string>
     <string name="settings_kernel_umount_summary">KernelSU দ্বারা নিয়ন্ত্রিত কার্নেল-লেভেল আনমাউন্ট আচরণ</string>
+    <string name="umount_path_manager">কার্নেল স্টেলথ মাউন্ট পাথ ম্যানেজমেন্ট</string>
+    <string name="umount_path_manager_summary">কার্নেলের লুকানো মাউন্ট পাথ পরিচালনা করুন</string>
+    <string name="settings_adb_root">ADB সর্বোচ্চ বিশেষাধিকার</string>
+    <string name="settings_adb_root_summary">root বিশেষাধিকার সহ adbd ডেমন চালান</string>
+    <string name="settings_umount_modules_default_summary">প্রোফাইল ছাড়া অ্যাপের জন্য মডিউল অটো আনমাউন্ট ও লুকান</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

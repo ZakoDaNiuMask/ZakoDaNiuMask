@@ -42,10 +42,6 @@
     <string name="safe_mode">Tryb bezpieczny</string>
     <string name="reboot_to_apply">Uruchom ponownie, aby zastosować zmiany</string>
     <string name="module_magisk_conflict">Moduły są niedostępne z powodu konfliktu z Magiskiem!</string>
-    <string name="home_learn_kernelsu">Poznaj KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">Dowiedz się jak zainstalować KernelSU i jak korzystać z modułów</string>
-    <string name="home_support_title">Wesprzyj nas</string>
-    <string name="home_support_content">KernelSU jest i zawsze będzie darmowy oraz otwarty. Niemniej jednak możesz nam pokazać, że Ci zależy, wysyłając darowiznę.</string>
     <string name="profile_default">Domyślny</string>
     <string name="profile_template">Szablon</string>
     <string name="profile_custom">Niestandardowy</string>
@@ -54,8 +50,8 @@
     <string name="profile_selinux_context">Kontekst SELinux</string>
     <string name="profile_umount_modules">Odmontuj moduły</string>
     <string name="failed_to_update_app_profile">Nie udało się zaktualizować profilu aplikacji dla %s</string>
-    <string name="settings_umount_modules_default">Domyślnie odmontuj moduły</string>
-    <string name="settings_umount_modules_default_summary">Globalna wartość domyślna opcji \"Odmontuj moduły\" w profilu aplikacji. Jeśli jest włączona, wycofuje wszystkie modyfikacje dokonane przez moduły dla aplikacji, które nie mają ustawionego profilu.</string>
+    <string name="settings_umount_modules_default">Automatyczne odmontowanie i ukrycie jednym kliknięciem</string>
+    <string name="settings_umount_modules_default_summary">Automatycznie odmontuj i ukryj moduły dla aplikacji bez profilu</string>
     <string name="profile_umount_modules_summary">Włączenie tej opcji umożliwi KernelSU przywrócenie wszelkich zmodyfikowanych plików przez moduły dla tej aplikacji.</string>
     <string name="profile_selinux_domain">Domena</string>
     <string name="profile_selinux_rules">Reguły</string>
@@ -110,8 +106,8 @@
     <string name="flash_failed">Flashowanie nieudane</string>
     <string name="save_log">Zapisz dzienniki</string>
     <string name="log_saved">Dzienniki zapisane</string>
-    <string name="settings_sucompat">Przekieruj binarkę su</string>
-    <string name="settings_sucompat_summary">Pozwala aplikacjom z uprawnieniami Superużytkownika w profilu aplikacji uzyskać shell superużytkownika przez wykonanie /system/bin/su; skuteczne tylko dla nowych procesów.</string>
+    <string name="settings_sucompat">Przełącznik autoryzacji Root</string>
+    <string name="settings_sucompat_summary">Zezwól aplikacjom na dostęp Root (klasyczne polecenie su)</string>
     <string name="settings_kernel_umount">Odmontowywanie modułów</string>
     <string name="settings_kernel_umount_summary">Zachowanie odmontowania na poziomie jądra kontrolowane przez KernelSU</string>
     <string name="home_susfs_version">Wersja SuSFS</string>
@@ -157,10 +153,9 @@
     <string name="jailbreak_flash_warning_countdown">Kontynuuj (%1$d)</string>
     <string name="settings_auto_jailbreak">Automatyczny jailbreak</string>
     <string name="settings_auto_jailbreak_summary">Automatycznie użyj Magica aby eskalować uprawnienia, gdy zezwalający SELinux zostanie wykryty podczas uruchamiania. Wymaga udzielenia tej aplikacji uprawnienia do autostartu.</string>
-    <string name="settings_adb_root_summary">Uruchamiaj daemon adbd z uprawnieniami root</string>
+    <string name="settings_adb_root_summary">Uruchom demona adbd z uprawnieniami root</string>
     <string name="settings_selinux_hide_reboot_required">Uruchom ponownie, aby zastosować zmiany</string>
     <string name="settings_selinux_hide_failed">Błąd: %d</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
     <string name="profile_namespace">Przestrzeń nazw montowania</string>
     <string name="profile_namespace_inherited">Odziedziczony</string>
     <string name="profile_namespace_global">Globalny</string>
@@ -362,8 +357,8 @@
     <string name="sus_maps_description_text">Ukrywa prawdziwe ścieżki plików map pamięci przed /proc/self/[maps|smaps|smaps_rollup|map_files|mem|pagemap]. Ta funkcja nie wspiera ukrywania anonimowy map pamięci, ani nie może ukryć inline hooków lub PLT haków wywołanych przez wstrzykniętą bibliotekę</string>
     <string name="sus_maps_warning">Dla aplikacji z dobrą implementacją mechanizmu wykrywania wstrzyknięć ta funkcja może nie być skuteczna</string>
     <string name="sus_maps_debug_info">Najpierw znajdź PID oraz UID wybranej aplikacji używając ps -enf, a następnie sprawdź znaczące ścieżki w /proc/&lt;pod&gt;/maps i porównaj liczby urządzenia z tymi, które znajdują się w /proc/1/mountinfo. Funkcja może działać poprawnie tylko, gdy te liczby się zgadzają</string>
-    <string name="umount_path_manager">Zarządzanie ścieżkami odmontowywania</string>
-    <string name="umount_path_manager_summary">Zarządzaj ścieżkami odmontowywania przez jądra</string>
+    <string name="umount_path_manager">Zarządzanie ukrytymi ścieżkami montowania jądra</string>
+    <string name="umount_path_manager_summary">Zarządzaj ukrytymi ścieżkami montowania jądra</string>
     <string name="no_any_umount_path">Brak ścieżek</string>
     <string name="add_umount_path">Dodaj ścieżkę</string>
     <string name="mount_path">Ścieżka montowania</string>
@@ -529,4 +524,9 @@
     <string name="susfs_enable_config">Menadżer SUSFS</string>
     <string name="susfs_enable_config_summary">Włącz wbudowany menadżer SUSFS. Może konfliktować z innymi modułami.</string>
     <string name="susfs_config_disable_warning">Wbudowany menadżer SUSFS jest wyłączony. Włącz go lub zainstaluj zewnętrzny moduł, aby używać funkcji SUSFS.</string>
+    <string name="settings_adb_root">Najwyższe uprawnienia ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

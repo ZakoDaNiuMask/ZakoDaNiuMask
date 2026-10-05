@@ -37,10 +37,6 @@
     <string name="safe_mode">Sicherer Modus</string>
     <string name="reboot_to_apply">Neustarten, damit Änderungen wirksam werden</string>
     <string name="module_magisk_conflict">Module sind aufgrund eines Konfliktes mit Magisk nicht verfügbar!</string>
-    <string name="home_learn_kernelsu">KernelSU verstehen</string>
-    <string name="home_click_to_learn_kernelsu">Erfahre, wie KernelSU installiert wird und wie Module verwendet werden</string>
-    <string name="home_support_title">Unterstütze uns</string>
-    <string name="home_support_content">KernelSU ist und wird immer frei und quelloffen sein. Du kannst uns jedoch deine Unterstützung zeigen, indem du eine Spende tätigst.</string>
     <string name="profile_default">Standard</string>
     <string name="profile_template">Vorlage</string>
     <string name="profile_custom">Benutzerdefiniert</string>
@@ -49,8 +45,8 @@
     <string name="profile_selinux_context">SELinux-Kontext</string>
     <string name="profile_umount_modules">Module aushängen</string>
     <string name="failed_to_update_app_profile">App-Profilaktualisierung für %s fehlgeschlagen</string>
-    <string name="settings_umount_modules_default">Module standardmäßig aushängen</string>
-    <string name="settings_umount_modules_default_summary">Globaler Standardwert für \"Module aushängen\" im App-Profil. Falls er aktiviert ist, werden alle Moduländerungen im System für alle Apps entfernt, für die kein Profil festgelegt ist.</string>
+    <string name="settings_umount_modules_default">Automatisches Aushängen und Verstecken per Klick</string>
+    <string name="settings_umount_modules_default_summary">Module für Apps ohne Profil automatisch aushängen und verstecken</string>
     <string name="profile_umount_modules_summary">Wenn du diese Option aktivierst, kann KernelSU alle von den Modulen für diese App geänderten Dateien wiederherstellen.</string>
     <string name="profile_selinux_domain">Domäne</string>
     <string name="profile_selinux_rules">Regeln</string>
@@ -119,8 +115,8 @@
     <string name="home_android_version">Androidversion</string>
     <string name="home_device_model">Geräteausführung</string>
     <string name="su_not_allowed">Superuser %s zu erlauben ist nicht erlaubt</string>
-    <string name="settings_sucompat">Su-Binärdatei umleiten</string>
-    <string name="settings_sucompat_summary">Ermöglicht Anwendungen mit Superuser-Berechtigung im App-Profil, eine Superuser-Shell durch Ausführung von /system/bin/su zu erhalten; wirksam nur für neue Prozesse.</string>
+    <string name="settings_sucompat">Root-Autorisierungsschalter</string>
+    <string name="settings_sucompat_summary">Apps Root-Zugriff gewähren (klassischer su-Befehl)</string>
     <string name="simple_mode">Einfachheit Modus</string>
     <string name="simple_mode_summary">Versteckt unnötige Karten beim Einschalten</string>
     <string name="theme_mode">Thema</string>
@@ -176,4 +172,12 @@
     <string name="installing_module">Modul wird installiert %1$d/%2$d</string>
     <string name="module_failed_count">%d Fehler bei der Installation eines neuen Moduls</string>
     <string name="kernel_flashing">Kernel-Flashen</string>
+    <string name="umount_path_manager">Verwaltung versteckter Kernel-Mountpfade</string>
+    <string name="umount_path_manager_summary">Versteckte Kernel-Mountpfade verwalten</string>
+    <string name="settings_adb_root">Höchste ADB-Berechtigung</string>
+    <string name="settings_adb_root_summary">adbd-Daemon mit Root-Rechten ausführen</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

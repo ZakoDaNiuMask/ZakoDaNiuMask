@@ -68,10 +68,6 @@
     <string name="safe_mode">الوضع الآمن</string>
     <string name="reboot_to_apply">إعادة التشغيل لتطبيق التغييرات</string>
     <string name="module_magisk_conflict">الوحدات غير متاحة بسبب تعارضها مع Magisk!</string>
-    <string name="home_learn_kernelsu">تعلم KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">تعرف على كيفية تثبيت KernelSU واستخدام الإضافات</string>
-    <string name="home_support_title">إدعمنا</string>
-    <string name="home_support_content">KernelSU مجاني، و سيظل دائماً مجانياً، ومفتوح المصدر. مع ذلك، يمكنك أن تظهر لنا أنك تهتم عبر التبرع</string>
     <string name="profile_default">الإفتراضي</string>
     <string name="profile_template">نموذج</string>
     <string name="profile_custom">مُخصّص</string>
@@ -80,8 +76,8 @@
     <string name="profile_selinux_context">سياق SELinux</string>
     <string name="profile_umount_modules">الغاء تحميل الإضافات</string>
     <string name="failed_to_update_app_profile">فشل تحديث ملف تعريف التطبيق لـ %s</string>
-    <string name="settings_umount_modules_default">الغاء تحميل الإضافات بشكل افتراضي</string>
-    <string name="settings_umount_modules_default_summary">القيمة الافتراضية العامة لـ\"إلغاء تحميل الإضافات\" في ملفات تعريف التطبيقات. إذا تم تمكينه، سيزيل جميع تعديلات الإضافات على النظام للتطبيقات التي لا تحتوي على مجموعة ملف تعريف</string>
+    <string name="settings_umount_modules_default">إلغاء التركيب والإخفاء التلقائي بنقرة واحدة</string>
+    <string name="settings_umount_modules_default_summary">إلغاء تركيب وإخفاء الوحدات تلقائيًا للتطبيقات التي ليس لها ملف تعريف</string>
     <string name="profile_umount_modules_summary">سيسمح تمكين هذا الخيار لـKernelSU باستعادة أي ملفات معدلة بواسطة الإضافات لهذا التطبيق</string>
     <string name="profile_selinux_domain">المجال</string>
     <string name="profile_selinux_rules">القواعد</string>
@@ -153,8 +149,8 @@
     <string name="home_android_version">‏إصدار Android</string>
     <string name="home_device_model">نوع الجهاز</string>
     <string name="su_not_allowed">لا يسمح بمنح المستخدم المتميز ل %s</string>
-    <string name="settings_sucompat">إعادة توجيه ثنائي su</string>
-    <string name="settings_sucompat_summary">يسمح للتطبيقات التي تم منحها صلاحيات Superuser في ملف تعريف التطبيق بالحصول على shell superuser من خلال تنفيذ /system/bin/su؛ فعال فقط للعمليات الجديدة.</string>
+    <string name="settings_sucompat">مفتاح تفويض Root</string>
+    <string name="settings_sucompat_summary">السماح للتطبيقات بالحصول على صلاحيات Root (أمر su الكلاسيكي)</string>
     <string name="settings_kernel_umount">إلغاء تحميل النواة</string>
     <string name="settings_kernel_umount_summary">فك تثبيت الإضافات من النواة في ملف تعريف التطبيق</string>
     <string name="simple_mode">وضع البساطة</string>
@@ -232,7 +228,6 @@
     <string name="settings_auto_jailbreak">جيلبريك تلقائي</string>
     <string name="settings_selinux_hide_reboot_required">أعد التشغيل ليبدأ العمل</string>
     <string name="settings_selinux_hide_failed">خطأ: %d</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
     <string name="profile_namespace">مكان التثبيت</string>
     <string name="profile_namespace_inherited">موروث</string>
     <string name="profile_namespace_global">كلّي</string>
@@ -241,7 +236,7 @@
     <string name="conflict_with_apatch">تم رصد مدير APatch، كل شيء قد يتوقف عن العمل.</string>
     <string name="module_action_success">تم تنفيذ عمل الإضافة بنجاح.</string>
     <string name="metamodule_uninstall_confirm">هل أنت متأكد من رغبتك في إلغاء تثبيت الإضافة %s؟ سيؤثر هذا الإجراء على جميع الإضافات، ولن تعمل بعض الميزات التي توفرها الإضافة المتعددة metamodule (مثل التثبيت)</string>
-    <string name="settings_adb_root_summary">قم بتشغيل خدمة adbd بصلاحيات مستخدم روت</string>
+    <string name="settings_adb_root_summary">تشغيل خدمة adbd بصلاحيات Root</string>
     <string name="settings_selinux_hide">أخفي تعديلات SELinux</string>
     <string name="settings_selinux_hide_summary">إمنع التطبيقات من اكتشاف التعديلات على SELinux</string>
     <string name="debug_version_notice">انت تستخدم نسخة المطورين من التطبيق، اذا لم تكن تعلم ماهي نسخة المطورين انتقل الى نسخة الإصدار الرسمي فوراً</string>
@@ -394,8 +389,8 @@
     <string name="home_hook_type">نوع الهوك</string>
     <string name="add_umount_path">أضف مسار تثبيت ديناميكي</string>
     <string name="no_any_umount_path">لاتوجد مسارات تثبيت ديناميكية</string>
-    <string name="umount_path_manager_summary">ادارة مسارات النواة الديناميكية</string>
-    <string name="umount_path_manager">ادارة المسار الديناميكي</string>
+    <string name="umount_path_manager_summary">إدارة مسارات التركيب المخفية للنواة</string>
+    <string name="umount_path_manager">إدارة مسارات التركيب المخفية للنواة</string>
     <string name="mount_path">مسار التثبيت</string>
     <string name="umount_flags">أعلام ازالة التثبيت</string>
     <string name="confirm_delete_umount_path">متأكد من حذف المسار %s؟</string>
@@ -464,4 +459,9 @@
     <string name="beta_version_available">نسخة بيتا الجديدة %1$d متوفرة، إضغط للترقية</string>
     <string name="beta_update_check_failed">فشل التحقق من نسخ بيتا جديدة. إسحب لأسفل للتحديث والمحاولة مجدداً.</string>
     <string name="manager_update_details">النسخة: %1$s (%2$d) \nالمعمارية: %3$s</string>
+    <string name="settings_adb_root">أعلى صلاحيات ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

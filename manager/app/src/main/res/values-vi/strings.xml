@@ -56,10 +56,6 @@
     <string name="safe_mode">Chế độ an toàn</string>
     <string name="reboot_to_apply">Khởi động lại để có hiệu lực</string>
     <string name="module_magisk_conflict">Các module không khả dụng do xung đột với Magisk!</string>
-    <string name="home_learn_kernelsu">Tìm hiểu về KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">Tìm hiểu cách cài đặt KernelSU và sử dụng các module!</string>
-    <string name="home_support_title">Ủng hộ chúng tôi</string>
-    <string name="home_support_content">KernelSU sẽ luôn là miễn phí và mã nguồn mở. Tuy nhiên, bạn có thể cho chúng tôi thấy rằng bạn quan tâm bằng cách quyên góp!</string>
     <string name="profile_default">Mặc định</string>
     <string name="profile_template">Bản mẫu</string>
     <string name="profile_custom">Tuỳ chỉnh</string>
@@ -67,8 +63,8 @@
     <string name="profile_capabilities">Tính tương thích</string>
     <string name="profile_selinux_context">Bối cảnh SELinux</string>
     <string name="failed_to_update_app_profile">Cập nhật Hồ sơ ứng dụng cho %s thất bại</string>
-    <string name="settings_umount_modules_default">Umount modules</string>
-    <string name="settings_umount_modules_default_summary">Giá trị mặc định chung cho \"Umount modules\" trong Hồ sơ ứng dụng. Nếu được bật, mọi thay đổi hệ thống do các module gây ra sẽ bị gỡ bỏ khỏi hệ thống và các ứng dụng chưa thiết lập hồ sơ</string>
+    <string name="settings_umount_modules_default">Tự động gỡ mount và ẩn bằng một chạm</string>
+    <string name="settings_umount_modules_default_summary">Tự động gỡ mount và ẩn module cho ứng dụng không có hồ sơ</string>
     <string name="profile_umount_modules_summary">Bật tùy chọn này sẽ cho phép SukiSU Ultra khôi phục mọi file đã được các module sửa đổi trong ứng dụng này</string>
     <string name="profile_selinux_domain">Tên miền</string>
     <string name="profile_selinux_rules">Quy tắc</string>
@@ -141,8 +137,8 @@
     <string name="home_android_version">Phiên bản Android</string>
     <string name="home_device_model">Model thiết bị</string>
     <string name="su_not_allowed">Không thể cấp quyền Superuser cho %s</string>
-    <string name="settings_sucompat">Lệnh su truyền thống</string>
-    <string name="settings_sucompat_summary">Cho phép truy cập root qua /system/bin/su, trong các quy trình mới.</string>
+    <string name="settings_sucompat">Công tắc cấp quyền Root</string>
+    <string name="settings_sucompat_summary">Cho phép ứng dụng nhận quyền Root (lệnh su cổ điển)</string>
     <string name="settings_kernel_umount">Gỡ kết nối mô-đun</string>
     <string name="settings_kernel_umount_summary">Gỡ kết nối các mô-đun khỏi hạt nhân trong Hồ sơ ứng dụng</string>
     <string name="feature_status_unsupported_summary">Kernel không hỗ trợ tính năng này</string>
@@ -258,8 +254,8 @@
     <string name="sus_maps_description_text">Ẩn đường dẫn tệp của bộ nhớ map khỏi /proc/self/[maps|smaps|smaps_rollup|map_files|mem|pagemap]. Lưu ý: Tính năng này không hỗ trợ ẩn bộ nhớ map ẩn danh, cũng như không thể ẩn các hook nội tuyến hoặc hook PLT do chính thư viện được đưa vào gây ra</string>
     <string name="sus_maps_warning">Quan trọng: Đối với các ứng dụng có cơ chế phát hiện tấn công mạnh mẽ, tính năng này có thể không hiệu quả trong việc bỏ qua khả năng phát hiện</string>
     <string name="sus_maps_debug_info">Trước tiên, hãy tìm PID và UID của ứng dụng đích bằng lệnh ps -enf. Sau đó kiểm tra các đường dẫn liên quan trong /proc/&lt;pid&gt;/maps và so sánh chúng với số thiết bị trong /proc/1/mountinfo để đảm bảo tính nhất quán. Chỉ khi số thiết bị khớp nhau thì chức năng ẩn map mới hoạt động bình thường</string>
-    <string name="umount_path_manager">Quản lý Đường dẫn Umount</string>
-    <string name="umount_path_manager_summary">Quản lý Đường dẫn Kernel Umount</string>
+    <string name="umount_path_manager">Quản lý đường dẫn mount ẩn của kernel</string>
+    <string name="umount_path_manager_summary">Quản lý đường dẫn mount ẩn của kernel</string>
     <string name="add_umount_path">Thêm Đường dẫn Umount</string>
     <string name="mount_path">Đường dẫn Mount</string>
     <string name="umount_flags">Umount Flags</string>
@@ -398,4 +394,9 @@
     <string name="profile_flags">Cờ</string>
     <string name="background_crop_method_title">Chọn 1 phương thức crop</string>
     <string name="background_crop_failed">Cắt ảnh thất bại</string>
+    <string name="settings_adb_root">Quyền cao nhất của ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

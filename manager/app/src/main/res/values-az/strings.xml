@@ -40,10 +40,6 @@
     <string name="safe_mode">Təhlükəsiz rejimi</string>
     <string name="reboot_to_apply">Qüvvəyə minməsi üçün yenidən başlat</string>
     <string name="module_magisk_conflict">Modular deaktiv edilir,çünki o Magisk-in modulları ilə toqquşur!</string>
-    <string name="home_learn_kernelsu">KernelSU-yu öyrən</string>
-    <string name="home_click_to_learn_kernelsu">KernelSU-yu necə quraşdırılacağını və modulların necə istifadə ediləcəyini öyrən</string>
-    <string name="home_support_title">Bizi dəstəkləyin</string>
-    <string name="home_support_content">KernelSU pulsuz və açıq mənbəlidir,həmişə belə olacaqdır. Bununla belə, ianə etməklə bizə qayğı göstərdiyinizi göstərə bilərsiniz.</string>
     <string name="profile_default">Defolt</string>
     <string name="profile_template">Şablon</string>
     <string name="profile_custom">Özəl</string>
@@ -52,8 +48,8 @@
     <string name="profile_selinux_context">SELinux konteksi</string>
     <string name="profile_umount_modules">Modulları umount et</string>
     <string name="failed_to_update_app_profile">%s görə tətbiq profillərini güncəlləmək mümkün olmadı</string>
-    <string name="settings_umount_modules_default">Defolt olaraq modulları umount et</string>
-    <string name="settings_umount_modules_default_summary">Tətbiq Profillərində \"Umount modulları\" üçün qlobal standart dəyər. Aktivləşdirilərsə, o, Profil dəsti olmayan proqramlar üçün sistemdəki bütün modul dəyişikliklərini siləcək.</string>
+    <string name="settings_umount_modules_default">Avtomatik bir kliklə ayrışdır və gizlət</string>
+    <string name="settings_umount_modules_default_summary">Profili olmayan tətbiqlər üçün modulları avtomatik ayrışdır və gizlət</string>
     <string name="profile_umount_modules_summary">Bu seçimi aktivləşdirmək KernelSU-ya bu proqram üçün modullar tərəfindən hər hansı dəyişdirilmiş faylları bərpa etməyə imkan verəcək.</string>
     <string name="profile_selinux_domain">Domen</string>
     <string name="profile_selinux_rules">Qaydalar</string>
@@ -67,8 +63,16 @@
     <string name="failed_to_update_sepolicy">%s görə SELinux qaydalarını güncəlləmək mümkün olmadı</string>
     <string name="settings_profile_template_summary">Manage local and online template of App Profile</string>
     <string name="save_log">Girişləri Saxla</string>
-    <string name="settings_sucompat">su binary yönləndirmə</string>
-    <string name="settings_sucompat_summary">Tətbiq Profilinə Superuser icazəsi verilmiş proqramları /system/bin/su vasitəsilə superuser shell əldə etməyə icazə verir; yalnız yeni proseslər üçün effektivdir.</string>
+    <string name="settings_sucompat">Root icazə açarı</string>
+    <string name="settings_sucompat_summary">Tətbiqlərə Root icazəsi verin (klassik su əmri)</string>
     <string name="settings_kernel_umount">Nüvə umount</string>
     <string name="settings_kernel_umount_summary">KernelSU tərəfindən idarə olunan nüvə səviyyəsində umount davranışı</string>
+    <string name="umount_path_manager">Nüvə Gizli Quraşdırma Yolu İdarəetməsi</string>
+    <string name="umount_path_manager_summary">Nüvənin gizli quraşdırma yollarını idarə edin</string>
+    <string name="settings_adb_root">ADB ən yüksək imtiyazı</string>
+    <string name="settings_adb_root_summary">adbd demonunu root imtiyazları ilə işə salın</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

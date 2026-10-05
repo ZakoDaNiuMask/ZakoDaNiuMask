@@ -44,11 +44,6 @@
     <string name="safe_mode">セーフモード</string>
     <string name="reboot_to_apply">再起動すると有効化されます</string>
     <string name="module_magisk_conflict">モジュールが Magisk との競合により利用できません！</string>
-    <string name="home_learn_kernelsu">KernelSU について学ぶ</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/ja_JP/guide/what-is-kernelsu.html</string>
-    <string name="home_click_to_learn_kernelsu">KernelSU のインストール方法やモジュールの使い方を学習できます。</string>
-    <string name="home_support_title">支援する</string>
-    <string name="home_support_content">KernelSU は今後も無料でオープンソースです。ですが、寄付をして頂けると開発者への貢献になります。</string>
     <string name="profile_default">デフォルト</string>
     <string name="profile_template">テンプレート</string>
     <string name="profile_custom">カスタム</string>
@@ -57,8 +52,8 @@
     <string name="profile_selinux_context">SELinux コンテキスト</string>
     <string name="profile_umount_modules">モジュールのアンマウント</string>
     <string name="failed_to_update_app_profile">%s のアプリのプロファイルの更新をできませでした</string>
-    <string name="settings_umount_modules_default">デフォルトでモジュールのマウントを解除する</string>
-    <string name="settings_umount_modules_default_summary">アプリプロファイルの「モジュールのアンマウント」の共通となるデフォルト値です。 有効にすると、プロファイルセットを持たないアプリのシステムに対するすべてのモジュールの変更が削除されます。</string>
+    <string name="settings_umount_modules_default">ワンクリック自動アンマウントと隠蔽</string>
+    <string name="settings_umount_modules_default_summary">プロファイル未設定のアプリのモジュールを自動でアンマウントして隠蔽</string>
     <string name="profile_umount_modules_summary">このオプションを有効にすると、KernelSU はこのアプリのモジュールによって変更されたファイルを復元できるようになります。</string>
     <string name="profile_selinux_domain">ドメイン</string>
     <string name="profile_selinux_rules">ルール</string>
@@ -133,8 +128,8 @@
     <string name="home_android_version">Android バージョン</string>
     <string name="home_device_model">デバイスモデル</string>
     <string name="su_not_allowed">「%s」にスーパーユーザー権限を付与することはできません</string>
-    <string name="settings_sucompat">従来の su コマンド</string>
-    <string name="settings_sucompat_summary">新規プロセスにおいて、/system/bin/su を経由して root アクセスを許可します。</string>
+    <string name="settings_sucompat">Root 認可スイッチ</string>
+    <string name="settings_sucompat_summary">アプリに Root アクセスを許可（従来の su コマンド）</string>
     <string name="settings_kernel_umount">モジュールのアンマウント（カーネルレベル）</string>
     <string name="settings_kernel_umount_summary">アプリ プロファイルに基づいて、カーネルからモジュールをアンマウントします</string>
     <string name="feature_status_unsupported_summary">カーネルはこの機能に対応していません</string>
@@ -252,8 +247,8 @@
     <string name="author">作者</string>
     <string name="description">説明</string>
     <string name="supported_devices">対応しているデバイス</string>
-    <string name="umount_path_manager">アンマウントパスの管理</string>
-    <string name="umount_path_manager_summary">カーネルアンマウントパスの管理</string>
+    <string name="umount_path_manager">カーネル隠蔽マウントパスの管理</string>
+    <string name="umount_path_manager_summary">カーネルの隠蔽マウントパスを管理</string>
     <string name="add_umount_path">アンマウントパスを追加</string>
     <string name="mount_path">マウントパス</string>
     <string name="umount_flags">アンマウントフラグ</string>
@@ -277,4 +272,10 @@
     <string name="sulog_clean_title">ログを消去</string>
     <string name="sulog_filter_ioctl_grant_root">Root権限の付与</string>
     <string name="sulog_filter_daemon_restart">デーモンの再起動</string>
+    <string name="settings_adb_root">ADB 最高権限</string>
+    <string name="settings_adb_root_summary">root 権限で adbd デーモンを実行</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

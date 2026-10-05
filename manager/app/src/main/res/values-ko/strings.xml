@@ -47,10 +47,6 @@
     <string name="safe_mode">안전 모드</string>
     <string name="reboot_to_apply">다시 시작하여 변경 사항 적용</string>
     <string name="module_magisk_conflict">Magisk와 충돌로 모듈을 사용할 수 없습니다!</string>
-    <string name="home_learn_kernelsu">KernelSU 알아보기</string>
-    <string name="home_click_to_learn_kernelsu">KernelSU 설치 방법과 모듈 사용 방법을 확인합니다</string>
-    <string name="home_support_title">지원이 필요합니다</string>
-    <string name="home_support_content">KernelSU는 지금도, 앞으로도 항상 무료이며 오픈 소스로 유지됩니다. 기부를 통해 여러분의 관심을 보여주세요.</string>
     <string name="profile_default">기본값</string>
     <string name="profile_template">템플릿</string>
     <string name="profile_custom">사용자 지정</string>
@@ -64,8 +60,8 @@
     <string name="profile_umount_modules">모듈 사용 해제</string>
     <string name="failed_to_update_app_profile">%s에 대한 앱 프로필 업데이트 실패</string>
     <string name="debug_version_notice">현재 매니저의 DEBUG 빌드를 사용 중입니다. DEBUG 버전이 무엇인지 모른다면 즉시 RELEASE 빌드로 전환하세요.</string>
-    <string name="settings_umount_modules_default">기본값으로 모듈 사용 해제</string>
-    <string name="settings_umount_modules_default_summary">앱 프로필 메뉴의 \"모듈 마운트 해제\" 설정에 대한 전역 기본값을 설정합니다. 활성화 시, 개별 프로필이 설정되지 않은 앱은 시스템에 대한 모듈의 모든 수정사항이 적용되지 않습니다.</string>
+    <string name="settings_umount_modules_default">자동 원클릭 마운트 해제 및 숨기기</string>
+    <string name="settings_umount_modules_default_summary">프로필이 없는 앱의 모듈을 자동으로 마운트 해제하고 숨김</string>
     <string name="profile_umount_modules_summary">이 옵션이 활성화되면, KernelSU는 이 앱에 대한 모듈의 모든 수정사항을 복구합니다.</string>
     <string name="profile_selinux_domain">도메인</string>
     <string name="profile_selinux_rules">규칙</string>
@@ -140,8 +136,8 @@
     <string name="home_android_version">Android 버전</string>
     <string name="home_device_model">기기 모델</string>
     <string name="su_not_allowed">%s에 슈퍼유저 권한을 부여할 수 없습니다.</string>
-    <string name="settings_sucompat">기존 su 명령</string>
-    <string name="settings_sucompat_summary">/system/bin/su를 통한 루트 권한 획득 허용 (새 프로세스 전용)</string>
+    <string name="settings_sucompat">Root 인증 스위치</string>
+    <string name="settings_sucompat_summary">앱에 Root 접근 허용 (기존 su 명령)</string>
     <string name="settings_kernel_umount">모듈 언마운트</string>
     <string name="settings_kernel_umount_summary">앱 프로필에 따라 커널에서 모듈을 언마운트합니다</string>
     <string name="feature_status_unsupported_summary">커널이 이 기능을 지원하지 않습니다.</string>
@@ -268,8 +264,8 @@
     <string name="sus_maps_description_text">메모리 매핑의 실제 파일 경로를 /proc/self/[maps|smaps|smaps_rollup|map_files|mem|pagemap]에서 숨깁니다. 참고: 이 기능은 익명 메모리 매핑을 숨기거나 삽입된 라이브러리 자체로 인한 인라인 Hook 또는 PLT Hook을 숨길 수 없습니다.</string>
     <string name="sus_maps_warning">중요 공지: 인젝션 감지 메커니즘이 잘 구현된 앱의 경우, 이 기능이 감지를 효과적으로 우회하지 못할 수 있습니다.</string>
     <string name="sus_maps_debug_info">먼저 ps -enf를 사용하여 대상 앱의 PID 및 UID를 찾은 다음 /proc/&lt;pid&gt;/maps의 관련 경로를 확인하고, 기기 번호를 /proc/1/mountinfo와 비교하여 일치하는지 확인하세요. 기기 번호가 일치해야 맵 숨기기 기능이 제대로 작동할 수 있습니다.</string>
-    <string name="umount_path_manager">마운트 해제 경로 관리</string>
-    <string name="umount_path_manager_summary">커널 마운트 해제 경로를 관리합니다.</string>
+    <string name="umount_path_manager">커널 은폐 마운트 경로 관리</string>
+    <string name="umount_path_manager_summary">커널 은폐 마운트 경로 관리</string>
     <string name="no_any_umount_path">마운트 해제 경로 없음</string>
     <string name="add_umount_path">마운트 해제 경로 추가</string>
     <string name="mount_path">마운트 경로</string>
@@ -314,4 +310,10 @@
     <string name="module_shortcut_permission_tip_xiaomi">Xiaomi 설정에서 이 앱에 대한 \"데스크탑 바로가기 만들기\" 권한을 활성화하세요.</string>
     <string name="module_shortcut_permission_tip_oppo">OPPO 설정에서 이 앱에 대한 \"데스크탑 바로가기\" 권한을 활성화하세요.</string>
     <string name="module_shortcut_permission_tip_default">바로가기 만들기에 실패한 경우 시스템 설정에서 이 앱에 대한 데스크탑 바로가기 권한을 활성화하세요.</string>
+    <string name="settings_adb_root">ADB 최고 권한</string>
+    <string name="settings_adb_root_summary">root 권한으로 adbd 데몬 실행</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

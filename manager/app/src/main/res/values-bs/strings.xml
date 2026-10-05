@@ -41,11 +41,6 @@
     <string name="safe_mode">Sigurnosni mod</string>
     <string name="reboot_to_apply">Ponovo pokrenite da bi proradilo</string>
     <string name="module_magisk_conflict">Module su isključene jer je u sukobu sa Magisk-om!</string>
-    <string name="home_learn_kernelsu">Naučite KernelSU</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
-    <string name="home_click_to_learn_kernelsu">Naučite kako da instalirate KernelSU i da koristite module</string>
-    <string name="home_support_title">Podržite Nas</string>
-    <string name="home_support_content">KernelSU je, i uvijek če biti, besplatan, i otvorenog izvora. Možete nam međutim pokazati da vas je briga s time da napravite donaciju.</string>
     <string name="profile_default">Zadano</string>
     <string name="profile_template">Šablon</string>
     <string name="profile_custom">Prilagođeno</string>
@@ -54,8 +49,8 @@
     <string name="profile_selinux_context">SELinux kontekst</string>
     <string name="profile_umount_modules">Umount module</string>
     <string name="failed_to_update_app_profile">Ažuriranje Profila Aplikacije za %s nije uspjelo</string>
-    <string name="settings_umount_modules_default">Umount module po zadanom</string>
-    <string name="settings_umount_modules_default_summary">Globalna zadana vrijednost za \"Umount module\" u Profilima Aplikacije. Ako je omogućeno, uklonit će sve izmjene modula na sistemu za aplikacije koje nemaju postavljen Profil.</string>
+    <string name="settings_umount_modules_default">Automatsko demontiranje i skrivanje jednim klikom</string>
+    <string name="settings_umount_modules_default_summary">Automatski demontiraj i sakrij module za aplikacije bez profila</string>
     <string name="profile_umount_modules_summary">Uključivanjem ove opcije omogućit će KernelSU-u da vrati sve izmjenute datoteke od strane modula za ovu aplikaciju.</string>
     <string name="profile_selinux_domain">Domena</string>
     <string name="profile_selinux_rules">Pravila</string>
@@ -68,8 +63,16 @@
     <string name="restart_app">Resetujte</string>
     <string name="failed_to_update_sepolicy">Neuspješno ažuriranje SELinux pravila za: %s</string>
     <string name="horizon_flash_complete">Flash Complete</string>
-    <string name="settings_sucompat">Preusmjeri su binarnu datoteku</string>
-    <string name="settings_sucompat_summary">Preusmjeri /system/bin/su na ksud za aplikacije kojima je dodijeljeno dopuštenje Superuser u Profilu aplikacije; učinkovito samo za nove procese.</string>
+    <string name="settings_sucompat">Prekidač Root autorizacije</string>
+    <string name="settings_sucompat_summary">Dozvoli aplikacijama Root pristup (klasična su naredba)</string>
     <string name="settings_kernel_umount">Kernel umount</string>
     <string name="settings_kernel_umount_summary">Ponašanje umount na razini kernela kontrolira KernelSU</string>
+    <string name="umount_path_manager">Upravljanje skrivenim putanjama montiranja kernela</string>
+    <string name="umount_path_manager_summary">Upravljajte skrivenim putanjama montiranja kernela</string>
+    <string name="settings_adb_root">Najviša ADB privilegija</string>
+    <string name="settings_adb_root_summary">Pokreni adbd daemon s root privilegijama</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

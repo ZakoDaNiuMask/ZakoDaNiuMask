@@ -3,19 +3,17 @@
     <string name="app_name" tools:ignore="ExtraTranslation">דג קטן פרה גדולה מסכה</string>
 
     <string name="reboot_to_apply">הפעל מחדש כדי להכניס לתוקף</string>
-    <string name="home_click_to_learn_kernelsu">למד כיצד להתקין את KernelSU ולהשתמש במודולים</string>
     <string name="unknown">לא ידוע</string>
     <string name="show_system_apps">הצג אפליקציות מערכת</string>
     <string name="module_uninstall_success">%s הוסר</string>
     <string name="profile_umount_modules">הסרת טעינת מודולים</string>
     <string name="send_log">שלח לוג</string>
     <string name="selinux_status_disabled">מושבת</string>
-    <string name="home_support_title">תמכו בנו</string>
     <string name="module_magisk_conflict">מודולים מושבתים מכיוון שהם מתנגשים עם זה של Magisk!</string>
     <string name="module_changelog">יומן שינויים</string>
     <string name="selinux_status_permissive">התרים</string>
     <string name="reboot_download">הפעלה מחדש למצב הורדה</string>
-    <string name="settings_umount_modules_default">טעינת מודולים כברירת מחדל</string>
+    <string name="settings_umount_modules_default">ביטול mount והסתרה אוטומטיים בלחיצה אחת</string>
     <string name="profile_umount_modules_summary">הפעלת אפשרות זו תאפשר ל-KernelSU לשחזר קבצים שהשתנו על ידי המודולים עבור יישום זה.</string>
     <string name="module_failed_to_enable">הפעלת המודל נכשלה: %s</string>
     <string name="force_stop_app">עצירה בכח</string>
@@ -23,7 +21,7 @@
     <string name="restart_app">איתחול</string>
     <string name="profile_capabilities">יכולת</string>
     <string name="module_start_downloading">מפעיל מודל: %s</string>
-    <string name="settings_umount_modules_default_summary">ערך ברירת המחדל הגלובלי עבור \"טעינת מודולים\" בפרופילי אפליקציה. אם מופעל, זה יסיר את כל שינויי המודול למערכת עבור יישומים שאין להם ערכת פרופיל.</string>
+    <string name="settings_umount_modules_default_summary">בטל mount והסתר מודולים אוטומטית לאפליקציות ללא פרופיל</string>
     <string name="selinux_status_enforcing">אכיפה</string>
     <string name="profile_selinux_context">הקשר SELinux</string>
     <string name="profile_default">ברירת מחדל</string>
@@ -31,7 +29,6 @@
     <string name="safe_mode">מצב בטוח</string>
     <string name="reboot_recovery">הפעלה מחדש לריקברי</string>
     <string name="reboot_userspace">רך Reboot</string>
-    <string name="home_support_content">KernelSU הוא, ותמיד יהיה, חינמי וקוד פתוח. עם זאת, תוכל להראות לנו שאכפת לך על ידי תרומה.</string>
     <string name="uninstall">הסרה</string>
     <string name="home_click_to_install">לחץ להתקנה</string>
     <string name="profile_selinux_rules">כללים</string>
@@ -50,7 +47,6 @@
     <string name="profile_template">תבנית</string>
     <string name="module_downloading">מוריד מודל: %s</string>
     <string name="module_update">עדכון</string>
-    <string name="home_learn_kernelsu">למד אודות KernelSU</string>
     <string name="module_uninstall_confirm">האם אתה בטוח שברצונך להסיר את התקנת המודל %s?</string>
     <string name="module_uninstall_failed">הסרת התקנת %s נכשלה:</string>
     <string name="superuser">משתמש על</string>
@@ -67,8 +63,16 @@
     <string name="home_manager_version">גרסת מנהל</string>
     <string name="new_version_available">גרסה חדשה עבור: %s זמינה, לחץ כדי לשדרג</string>
     <string name="save_log">שמור יומנים</string>
-    <string name="settings_sucompat">ניתוב מחדש של su binary</string>
-    <string name="settings_sucompat_summary">הפנה מחדש את /system/bin/su ל-ksud עבור אפליקציות שקיבלו הרשאת Superuser בפרופיל האפליקציה; יעיל לתהליכים חדשים בלבד.</string>
+    <string name="settings_sucompat">מתג הרשאת Root</string>
+    <string name="settings_sucompat_summary">אפשר לאפליקציות לקבל גישת Root (פקודת su קלאסית)</string>
     <string name="settings_kernel_umount">ביטול טעינת קרנל</string>
     <string name="settings_kernel_umount_summary">התנהגות ביטול טעינה ברמת הקרנל הנשלטת על ידי KernelSU</string>
+    <string name="umount_path_manager">ניהול נתיבי mount מוסתרים של הקרנל</string>
+    <string name="umount_path_manager_summary">נהל נתיבי mount מוסתרים של הקרנל</string>
+    <string name="settings_adb_root">הרשאת ADB הגבוהה ביותר</string>
+    <string name="settings_adb_root_summary">הפעל דמון adbd עם הרשאות root</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

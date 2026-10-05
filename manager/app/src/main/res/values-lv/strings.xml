@@ -40,10 +40,6 @@
     <string name="safe_mode">Drošais režīms</string>
     <string name="reboot_to_apply">Restartējiet, lai stātos spēkā</string>
     <string name="module_magisk_conflict">Moduļi ir atspējoti, jo tie konfliktē ar Magisk!</string>
-    <string name="home_learn_kernelsu">Uzzināt par KernelSU</string>
-    <string name="home_click_to_learn_kernelsu">Uzzināt, kā instalēt KernelSU un izmantot moduļus</string>
-    <string name="home_support_title">Atbalsti mūs</string>
-    <string name="home_support_content">KernelSU ir un vienmēr būs bezmaksas un atvērtā koda. Tomēr jūs varat parādīt mums, ka jums rūp, veicot ziedojumu.</string>
     <string name="profile_default">Noklusējums</string>
     <string name="profile_template">Veidne</string>
     <string name="profile_custom">Pielāgots</string>
@@ -52,8 +48,8 @@
     <string name="profile_selinux_context">SELinux konteksts</string>
     <string name="profile_umount_modules">Atvienot moduļus</string>
     <string name="failed_to_update_app_profile">Neizdevās atjaunināt lietotnes profilu %s</string>
-    <string name="settings_umount_modules_default">Pēc noklusējuma atvienot moduļus</string>
-    <string name="settings_umount_modules_default_summary">Globālā noklusējuma vērtība vienumam “Atvienot moduļus” lietotņu profilos. Ja tas ir iespējots, lietojumprogrammām, kurām nav iestatīts profils, tiks noņemtas visas sistēmas moduļu modifikācijas.</string>
+    <string name="settings_umount_modules_default">Automātiska viena klikšķa atmontēšana un slēpšana</string>
+    <string name="settings_umount_modules_default_summary">Automātiski atmontēt un paslēpt moduļus lietotnēm bez profila</string>
     <string name="profile_umount_modules_summary">Iespējojot šo opciju, KernelSU varēs atjaunot visus moduļos šīs lietojumprogrammas modificētos failus.</string>
     <string name="profile_selinux_domain">Domēns</string>
     <string name="profile_selinux_rules">Noteikumi</string>
@@ -106,8 +102,16 @@
     <string name="flash_success">Instalēts veiksmīgi</string>
     <string name="flash_failed">Instalēšana neizdevās</string>
     <string name="save_log">Išsaugoti Žurnalus</string>
-    <string name="settings_sucompat">Pārvirzīt su bināro failu</string>
-    <string name="settings_sucompat_summary">Pārvirzīt /system/bin/su uz ksud lietotnēm, kurām piešķirta Superuser atļauja lietotnes profilā; efektīva tikai jauniem procesiem.</string>
+    <string name="settings_sucompat">Root autorizācijas slēdzis</string>
+    <string name="settings_sucompat_summary">Ļaut lietotnēm iegūt Root piekļuvi (klasiskā su komanda)</string>
     <string name="settings_kernel_umount">Kodola atvienošana</string>
     <string name="settings_kernel_umount_summary">Kodola līmeņa atvienošanas uzvedība, ko kontrolē KernelSU</string>
+    <string name="umount_path_manager">Kodola slēpto montēšanas ceļu pārvaldība</string>
+    <string name="umount_path_manager_summary">Pārvaldīt kodola slēptos montēšanas ceļus</string>
+    <string name="settings_adb_root">Augstākā ADB privilēģija</string>
+    <string name="settings_adb_root_summary">Palaist adbd dēmonu ar root privilēģijām</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

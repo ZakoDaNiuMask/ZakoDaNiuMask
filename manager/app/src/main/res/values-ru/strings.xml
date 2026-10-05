@@ -84,18 +84,13 @@
     <string name="jailbreak_flash_warning_countdown">Продолжить (%1$d)</string>
     <string name="settings_auto_jailbreak">Автоматический Jailbreak</string>
     <string name="settings_auto_jailbreak_summary">Автоматически повышать права через Magica, если при загрузке обнаружен разрешающий режим SELinux (Permissive). Требуется разрешение на автозапуск приложения.</string>
-    <string name="settings_adb_root_summary">Запустить сервис adbd с Root правами</string>
+    <string name="settings_adb_root_summary">Запустить демон adbd с правами root</string>
     <string name="settings_selinux_hide">Скрыть модификации SELinux</string>
     <string name="settings_selinux_hide_summary">Предотвратить обнаружение приложениями изменений SELinux</string>
     <string name="settings_selinux_hide_reboot_required">Перезагрузите для применения изменений</string>
     <string name="settings_selinux_hide_failed">Ошибка: %d</string>
     <string name="reboot_to_apply">Перезагрузите, чтобы изменения вступили в силу</string>
     <string name="module_magisk_conflict">Модули недоступны из-за конфликта с Magisk!</string>
-    <string name="home_learn_kernelsu">Узнайте о KernelSU</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/ru_RU/guide/what-is-kernelsu.html</string>
-    <string name="home_click_to_learn_kernelsu">Узнайте, как установить KernelSU и использовать модули</string>
-    <string name="home_support_title">Поддержите нас</string>
-    <string name="home_support_content">KernelSU был и всегда будет бесплатным и открытым проектом. Однако Вы всегда можете поддержать нас, отправив небольшое пожертвование.</string>
     <string name="profile_default">По умолчанию</string>
     <string name="profile_template">Шаблон</string>
     <string name="profile_custom">Пользовательский</string>
@@ -111,8 +106,8 @@
     <string name="debug_version_notice">Вы используете DEBUG-сборку менеджера. Если вы не знаете, что это такое, немедленно переключитесь на RELEASE-сборку</string>
     <string name="unofficial_version_notice">Менеджер, который вы используете, не является официальным менеджером %s, и вы можете не иметь возможности получить необходимые разрешения.</string>
     <string name="conflict_with_apatch">Обнаружен APatch, возможны сбои в работе системы.</string>
-    <string name="settings_umount_modules_default">Размонтировать модули по умолчанию</string>
-    <string name="settings_umount_modules_default_summary">Глобальное значение по умолчанию для \"Размонтировать модули\" в профиле приложения. При включении будут удалены все модификации модулей в системе для приложений, у которых не задан профиль</string>
+    <string name="settings_umount_modules_default">Автоотмонтирование и скрытие в один клик</string>
+    <string name="settings_umount_modules_default_summary">Автоматически отмонтировать и скрывать модули для приложений без профиля</string>
     <string name="profile_umount_modules_summary">Включение этой опции позволит KernelSU восстанавливать любые измененные модулями файлы для данного приложения.</string>
     <string name="profile_selinux_domain">Домен</string>
     <string name="profile_selinux_rules">Правила</string>
@@ -199,8 +194,8 @@
     <string name="home_android_version">Версия Android</string>
     <string name="home_device_model">Модель устройства</string>
     <string name="su_not_allowed">Предоставление рут-доступа %s запрещено</string>
-    <string name="settings_sucompat">Классическая команда su</string>
-    <string name="settings_sucompat_summary">Разрешить root-доступ через /system/bin/su в новых процессах.</string>
+    <string name="settings_sucompat">Переключатель авторизации Root</string>
+    <string name="settings_sucompat_summary">Разрешить приложениям получать Root-доступ (классическая команда su)</string>
     <string name="settings_kernel_umount">Размонтирование модулей</string>
     <string name="settings_kernel_umount_summary">Размонтировать модули в ядре для профиля приложения</string>
     <string name="feature_status_unsupported_summary">Ядро не поддерживает данную функцию</string>
@@ -343,8 +338,8 @@
     <string name="sus_maps_description_text">Скрыть реальные пути к папкам памяти из /proc/self/[maps|smaps_rollup|map_files|mem|pagemap]. Обратите внимание: эта функция не поддерживает скрытие анонимных карт и может скрыть встроенные хуки или PLT хуки вызванные инъекцией самой библиотеки.</string>
     <string name="sus_maps_warning">Важное уведомление: для приложений с хорошо реализованными механизмами обнаружений эта функция может работать не эффективно .</string>
     <string name="sus_maps_debug_info">Сначала найдите PID и UID целевого приложения, используя ps -enf, затем проверьте соответствующие пути в /proc/&lt;pid&gt;/maps и сравните номера устройства с номерами в /proc/1/mountinfo. Функция скрытия будет работать должным образом только если номера устройств совпадают.</string>
-    <string name="umount_path_manager">Управление путями размонтирования</string>
-    <string name="umount_path_manager_summary">Управления путями размонтирования ядра</string>
+    <string name="umount_path_manager">Управление скрытыми путями монтирования ядра</string>
+    <string name="umount_path_manager_summary">Управление скрытыми путями монтирования ядра</string>
     <string name="no_any_umount_path">Нет существующих путей для размонтирования</string>
     <string name="add_umount_path">Добавить путь размонтирования</string>
     <string name="mount_path">Смонтировать путь</string>
@@ -556,4 +551,9 @@
     <string name="install_upload_lkm_file_summary">Использовать собственный файл .ko вместо встроенного LKM</string>
     <string name="skip_ksud">Не устанавливать ksud</string>
     <string name="skip_ksud_summary">Отмена установки ksud. Не включайте это, если в этом нет крайней необходимости.</string>
+    <string name="settings_adb_root">Наивысшие права ADB</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

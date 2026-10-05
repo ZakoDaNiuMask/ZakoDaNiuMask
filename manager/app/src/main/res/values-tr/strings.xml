@@ -85,13 +85,9 @@
     <string name="jailbreak_flash_warning_countdown">Devam et (%1$d)</string>
     <string name="settings_auto_jailbreak">Otomatik jailbreak</string>
     <string name="settings_auto_jailbreak_summary">Boot sırasında SELinux durumu Permissive olarak algılanırsa otomatik olarak Magica\'yı kullanıp yetkileri yükseltir. Uygulamaya otomatik başlatma izni vermeyi gerektirir.</string>
-    <string name="settings_adb_root_summary">Adbd arka plan hizmetini root yetkisi ile çalıştır</string>
+    <string name="settings_adb_root_summary">adbd arka plan hizmetini root yetkileriyle çalıştır</string>
     <string name="reboot_to_apply">Etkili olması için yeniden başlatın</string>
     <string name="module_magisk_conflict">Modüller Magisk\'le çakıştığı için kullanılamıyor!</string>
-    <string name="home_learn_kernelsu">KernelSU\'yu öğrenin</string>
-    <string name="home_click_to_learn_kernelsu">KernelSU\'yu nasıl yükleyeceğinizi ve modülleri nasıl kullanacağınızı öğrenin</string>
-    <string name="home_support_title">Bizi destekleyin</string>
-    <string name="home_support_content">KernelSU, her zaman olduğu gibi ücretsiz ve açık kaynaklıdır. Ancak bir bağış yaparak bizi destekleyebilirsiniz</string>
     <string name="profile_default">Varsayılan</string>
     <string name="profile_template">Şablon</string>
     <string name="profile_custom">Özel</string>
@@ -106,8 +102,8 @@
     <string name="debug_version_notice">Yöneticinin DEBUG sürümünü kullanıyorsunuz. Eğer DEBUG sürümünün ne anlama geldiğini bilmiyorsanız hemen RELEASE sürümüne geçin</string>
     <string name="unofficial_version_notice">Kullandığınız yönetici orijinal %s yöneticisi değil, kök erişimi alamayabilirsiniz.</string>
     <string name="conflict_with_apatch">APatch tespit edildi, her şey çalışmayı durdurabilir.</string>
-    <string name="settings_umount_modules_default">Modüllerin bağlantısını varsayılan olarak kes</string>
-    <string name="settings_umount_modules_default_summary">Uygulama Profilindeki \"Modüllerin bağlantısını kes\" seçeneği için küresel varsayılan değer. Etkinleştirilirse, profili ayarlanmamış uygulamalar için sistemdeki tüm modül değişikliklerini kaldırır</string>
+    <string name="settings_umount_modules_default">Otomatik tek tıkla bağlantıyı kes ve gizle</string>
+    <string name="settings_umount_modules_default_summary">Profili olmayan uygulamalar için modüllerin bağlantısını otomatik kes ve gizle</string>
     <string name="profile_umount_modules_summary">Bu seçeneği etkinleştirmek, KernelSU\'nun bu uygulama için modüller tarafından değiştirilen dosyaları geri yüklemesine izin verecektir</string>
     <string name="profile_selinux_domain">Etki alanı</string>
     <string name="profile_selinux_rules">Kurallar</string>
@@ -185,8 +181,8 @@
     <string name="home_android_version">Android sürümü</string>
     <string name="home_device_model">Cihaz modeli</string>
     <string name="su_not_allowed">%s için süper kullanıcı yetkisi verilemiyor</string>
-    <string name="settings_sucompat">Klasik su komutu</string>
-    <string name="settings_sucompat_summary">Uygulama Profilinde Süper Kullanıcı izni verilen uygulamaların /system/bin/su yürütülerek süper kullanıcı kabuğu almasına izin verir; yalnızca yeni işlemler için etkilidir.</string>
+    <string name="settings_sucompat">Root yetkilendirme anahtarı</string>
+    <string name="settings_sucompat_summary">Uygulamalara Root erişimi verin (klasik su komutu)</string>
     <string name="settings_kernel_umount">Çekirdek bağlantısını kes</string>
     <string name="settings_kernel_umount_summary">Uygulama profilindeki modüllerin bağlantısını çekirdek düzeyinde kesin</string>
     <string name="feature_status_unsupported_summary">Çekirdek bu özelliği desteklemiyor</string>
@@ -319,8 +315,8 @@
     <string name="sus_maps_description_text">/proc/self/[maps|smaps|smaps_rollup|map_files|mem|pagemap] içindeki bellek eşlemelerinin gerçek dosya yollarını gizleyin. Lütfen dikkat: Bu özellik, anonim bellek eşlemelerini gizlemeyi desteklemez ve enjekte edilen kütüphanenin kendisinin neden olduğu satır içi (inline) veya PLT kancalarını gizleyemez</string>
     <string name="sus_maps_warning">Önemli Not: İyi uygulanmış enjeksiyon tespit mekanizmalarına sahip uygulamalar için bu özellik, tespiti etkili bir şekilde atlatamayabilir</string>
     <string name="sus_maps_debug_info">Öncelikle, ps -enf komutunu kullanarak hedef uygulamanın PID ve UID\'sini bulun, ardından /proc/&lt;pid&gt;/maps içindeki ilgili yolları kontrol edin ve tutarlılığı sağlamak için cihaz numaralarını /proc/1/mountinfo içindekilerle karşılaştırın. Yalnızca cihaz numaraları eşleştiğinde eşleme gizleme işlevi düzgün çalışabilir</string>
-    <string name="umount_path_manager">Bağlantı Kaldırma Yolu Yönetimi</string>
-    <string name="umount_path_manager_summary">Çekirdek bağlantı kaldırma yollarını yönetin</string>
+    <string name="umount_path_manager">Çekirdek Gizli Bağlama Yolu Yönetimi</string>
+    <string name="umount_path_manager_summary">Çekirdeğin gizli bağlama yollarını yönetin</string>
     <string name="no_any_umount_path">Mevcut hiçbir umount yolu yok</string>
     <string name="add_umount_path">Bağlantı Kaldırma Yolu Ekle</string>
     <string name="mount_path">Bağlama Yolu</string>
@@ -368,7 +364,6 @@
     <string name="settings_selinux_hide_summary">Uygulamaların SELinux değişikliklerini algılamasını engelleyin</string>
     <string name="settings_selinux_hide_reboot_required">Değişikliklerin geçerli olması için yeniden başlatın</string>
     <string name="settings_selinux_hide_failed">Hata: %d</string>
-    <string name="home_learn_kernelsu_url">https://kernelsu.org/guide/what-is-kernelsu.html</string>
     <string name="manage_app_profile">Uygulama Profili Şablonunu Yönet</string>
     <string name="profile_namespace">Ad alanı bağlama</string>
     <string name="profile_flags">Flags (Bayraklar)</string>
@@ -556,4 +551,9 @@
     <string name="skip_ksud_summary">ksud kurulumunu iptal edin. Gerekmedikçe kesinlikle etkinleştirmeyin.</string>
     <string name="settings_soft_reboot_summary">Modülleri yüklerken, güncellerken veya etkinleştirip devre dışı bırakırken, tam bir yeniden başlatma yerine yumuşak yeniden başlatma işlemini kullanın.</string>
     <string name="settings_soft_reboot">Yeniden başlatma yerine yumuşak yeniden başlatma</string>
+    <string name="settings_adb_root">ADB en yüksek yetkisi</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>

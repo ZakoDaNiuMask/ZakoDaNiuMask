@@ -7,8 +7,18 @@
     <string name="home_not_installed">Није инсталирано</string>
     <string name="home_working">Ради</string>
     <string name="save_log">Сачувај Дневнике</string>
-    <string name="settings_sucompat">Preusmeri su binarni fajl</string>
-    <string name="settings_sucompat_summary">Preusmeri /system/bin/su na ksud za aplikacije sa dozvolom Superkorisnika u Profilu aplikacije; efektivno samo za nove procese.</string>
+    <string name="settings_sucompat">Прекидач Root ауторизације</string>
+    <string name="settings_sucompat_summary">Дозволи апликацијама Root приступ (класична su команда)</string>
     <string name="settings_kernel_umount">Kernel umount</string>
     <string name="settings_kernel_umount_summary">Ponašanje umount-a na nivou kernela kontrolisano od strane KernelSU-a</string>
+    <string name="umount_path_manager">Управљање скривеним путањама монтирања кернела</string>
+    <string name="umount_path_manager_summary">Управљај скривеним путањама монтирања кернела</string>
+    <string name="settings_adb_root">Највиша ADB привилегија</string>
+    <string name="settings_adb_root_summary">Покрени adbd демон са root привилегијама</string>
+    <string name="settings_umount_modules_default">Аутоматско демонтирање и сакривање једним кликом</string>
+    <string name="settings_umount_modules_default_summary">Аутоматски демонтирај и сакриј модуле за апликације без профила</string>
+    <string name="home_kernel_type_gki2">GKI 2.0</string>
+    <string name="home_kernel_type_gki1">GKI 1.0</string>
+    <string name="home_kernel_type_nongki">Non-GKI</string>
+    <string name="home_load_mode_lkm">LKM</string>
 </resources>
