@@ -170,6 +170,9 @@
     <string name="install_next">Next</string>
     <string name="install_from_url">Install from URL</string>
     <string name="install_from_url_summary">Download a boot image from an HTTPS URL and patch it</string>
+    <string name="ak3_from_url_summary">Download an AnyKernel3 ZIP from an HTTPS URL and flash it</string>
+    <string name="ak3_download_failed">Failed to download the package: %s</string>
+    <string name="ak3_preflight_confirm">Flash this package now?</string>
     <string name="download_dialog_msg">HTTPS URL</string>
     <string name="download_no_boot_partition">No boot partition found in the provided image</string>
     <string name="download_probe_failed">Failed to read the image: %s</string>

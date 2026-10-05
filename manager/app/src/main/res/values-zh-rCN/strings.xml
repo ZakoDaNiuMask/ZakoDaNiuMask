@@ -170,6 +170,9 @@
     <string name="install_next">下一步</string>
     <string name="install_from_url">从 URL 安装</string>
     <string name="install_from_url_summary">从 HTTPS 链接下载 boot 镜像并修补</string>
+    <string name="ak3_from_url_summary">从 HTTPS 链接下载 AnyKernel3 压缩包并刷入</string>
+    <string name="ak3_download_failed">下载安装包失败：%s</string>
+    <string name="ak3_preflight_confirm">现在刷入此安装包？</string>
     <string name="download_dialog_msg">HTTPS 链接</string>
     <string name="download_no_boot_partition">在提供的镜像中未找到可修补的分区</string>
     <string name="download_probe_failed">读取镜像失败：%s</string>

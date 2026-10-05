@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -67,8 +68,11 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
+import com.zakodaniumask.manager.data.partition.PartitionManagerRepository
 import com.zakodaniumask.manager.domain.model.LkmSelection
+import com.zakodaniumask.manager.ui.component.ConfirmResult
 import com.zakodaniumask.manager.ui.component.DialogHandle
+import com.zakodaniumask.manager.ui.component.WarningCard
 import com.zakodaniumask.manager.ui.component.HorizontalPagerWithInteraction
 import com.zakodaniumask.manager.ui.component.rememberConfirmDialog
 import com.zakodaniumask.manager.ui.component.rememberCustomDialog
@@ -746,12 +750,24 @@ private fun Anykernel3InstallPage(
     preselectedKernelUri: String?,
 ) {
     val navigator = LocalNavigator.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val summary = stringResource(R.string.horizon_kernel_summary)
+    val remoteBootImageSource: RemoteBootImageSource = koinInject()
+    val partitionManagerRepository: PartitionManagerRepository = koinInject()
+    val loadingDialog = rememberLoadingDialog()
+    val urlDialogLabel = stringResource(R.string.download_dialog_msg)
+    val rootRequiredText = stringResource(R.string.root_required)
+    val ak3DownloadFailedTemplate = stringResource(R.string.ak3_download_failed)
+    val ak3FromUrlSummary = stringResource(R.string.ak3_from_url_summary)
+    val ak3PreflightConfirmText = stringResource(R.string.ak3_preflight_confirm)
     var ak3InstallMethod by remember { mutableStateOf<InstallMethod?>(null) }
     var skipKsud by remember { mutableStateOf(false) }
     var showSlotSelectionDialog by remember { mutableStateOf(false) }
     var tempKernelUri by remember { mutableStateOf<Uri?>(null) }
     var advancedOptionsShown by remember { mutableStateOf(false) }
+    var showUrlDialog by remember { mutableStateOf(false) }
+    var urlText by remember { mutableStateOf("") }
 
     val ak3AdvRotation by animateFloatAsState(
         targetValue = if (advancedOptionsShown) 180f else 0f,
@@ -795,16 +811,86 @@ private fun Anykernel3InstallPage(
         }
     }
 
+    val confirmDialog = rememberConfirmDialog()
+
     val onClickNext = {
-        (ak3InstallMethod as? InstallMethod.HorizonKernel)?.let { method ->
-            method.uri?.let { uri ->
-                navigator.push(
-                    Route.KernelFlash(
-                        kernelUri = uri.toString(),
-                        selectedSlot = method.slot,
-                        skipKsud = skipKsud,
+        if (!rootAvailable) {
+            Toast.makeText(context, rootRequiredText, Toast.LENGTH_SHORT).show()
+        } else {
+            (ak3InstallMethod as? InstallMethod.HorizonKernel)?.let { method ->
+                method.uri?.let { uri ->
+                    navigator.push(
+                        Route.KernelFlash(
+                            kernelUri = uri.toString(),
+                            selectedSlot = method.slot,
+                            skipKsud = skipKsud,
+                        )
                     )
-                )
+                }
+            }
+        }
+    }
+
+    val startAk3FromUrl: (String) -> Unit = { rawUrl ->
+        val url = rawUrl.trim()
+        val parsed = runCatching { url.toUri() }.getOrNull()
+        if (parsed?.scheme?.equals("https", ignoreCase = true) != true ||
+            parsed?.host.isNullOrBlank()
+        ) {
+            Toast.makeText(context, urlDialogLabel, Toast.LENGTH_SHORT).show()
+        } else if (!rootAvailable) {
+            Toast.makeText(context, rootRequiredText, Toast.LENGTH_SHORT).show()
+        } else {
+            showUrlDialog = false
+            scope.launch {
+                try {
+                    val file = loadingDialog.withLoading {
+                        remoteBootImageSource.downloadFile(url, "anykernel3.zip")
+                    }
+                    val preflight = runCatching {
+                        partitionManagerRepository.inspectAk3Package(file.absolutePath)
+                    }.getOrNull()
+                    val confirmContent = if (preflight != null) {
+                        buildString {
+                            append("kernel: ")
+                            append(preflight.kernelName.ifBlank { "-" })
+                            append('\n')
+                            append("devices: ")
+                            append(preflight.devices.joinToString(", ").ifBlank { "-" })
+                            append('\n')
+                            append("slot_policy: ")
+                            append(preflight.packageSlotPolicy ?: "-")
+                            append("\n\n")
+                            append(ak3PreflightConfirmText)
+                        }
+                    } else {
+                        ak3PreflightConfirmText
+                    }
+                    val confirmed = confirmDialog.awaitConfirm(
+                        title = summary,
+                        content = confirmContent,
+                    )
+                    if (confirmed != ConfirmResult.Confirmed) return@launch
+                    val slotSuffix = activeSlotSuffix.removePrefix("_")
+                        .takeIf { it == "a" || it == "b" }
+                    navigator.push(
+                        Route.KernelFlash(
+                            kernelUri = remoteBootImageSource.contentUri(file).toString(),
+                            selectedSlot = if (isAbDevice) slotSuffix else null,
+                            skipKsud = skipKsud,
+                        )
+                    )
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Throwable) {
+                    Toast.makeText(
+                        context,
+                        ak3DownloadFailedTemplate.format(
+                            error.message ?: error.javaClass.simpleName
+                        ),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
             }
         }
     }
@@ -831,12 +917,22 @@ private fun Anykernel3InstallPage(
             Spacer(modifier = Modifier.height(topPadding))
         }
 
-        if (rootAvailable) {
-            val horizonSelected = ak3InstallMethod is InstallMethod.HorizonKernel
-
+        if (!rootAvailable) {
             item {
-                SegmentedColumn {
-                    item {
+                WarningCard(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    message = rootRequiredText,
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.errorContainer,
+                )
+            }
+        }
+
+        val horizonSelected = ak3InstallMethod is InstallMethod.HorizonKernel
+
+        item {
+            SegmentedColumn {
+                item {
                         SettingsBaseWidget(
                             title = stringResource(R.string.GKI_install_methods),
                             description = stringResource(R.string.ak3_select_zip),
@@ -851,6 +947,15 @@ private fun Anykernel3InstallPage(
                                     )
                                 })
                             },
+                        )
+                    }
+
+                    item {
+                        SettingsBaseWidget(
+                            title = stringResource(R.string.install_from_url),
+                            description = ak3FromUrlSummary,
+                            icon = Icons.TwoTone.FileUpload,
+                            onClick = { showUrlDialog = true },
                         )
                     }
 
@@ -914,7 +1019,6 @@ private fun Anykernel3InstallPage(
                     )
                 }
             }
-        }
 
         item {
             Column(
@@ -940,6 +1044,31 @@ private fun Anykernel3InstallPage(
         item {
             Spacer(modifier = Modifier.height(bottomPadding))
         }
+    }
+
+    if (showUrlDialog) {
+        AlertDialog(
+            onDismissRequest = { showUrlDialog = false },
+            title = { Text(stringResource(R.string.install_from_url)) },
+            text = {
+                OutlinedTextField(
+                    value = urlText,
+                    onValueChange = { urlText = it },
+                    label = { Text(urlDialogLabel) },
+                    singleLine = true,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { startAk3FromUrl(urlText) }) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUrlDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
     }
 }
 

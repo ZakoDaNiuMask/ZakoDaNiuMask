@@ -69,6 +69,36 @@ class RemoteBootImageSource(
         )
     }
 
+    suspend fun downloadFile(
+        url: String,
+        fileName: String,
+    ): File = withContext(Dispatchers.IO) {
+        validateDownloadUrl(url)
+        val outFile = File(application.cacheDir, fileName)
+        if (outFile.exists() && !outFile.delete()) {
+            throw IOException("Cannot clear the previous download")
+        }
+        val request = okhttp3.Request.Builder().url(url).build()
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("HTTP ${response.code} for $url")
+            }
+            val body = response.body ?: throw IOException("Empty response body")
+            body.byteStream().use { input ->
+                outFile.outputStream().buffered().use { output ->
+                    input.copyTo(output)
+                }
+            }
+        }
+        outFile
+    }
+
+    fun contentUri(file: File): Uri = FileProvider.getUriForFile(
+        application,
+        "${application.packageName}.fileprovider",
+        file,
+    )
+
     private fun validateDownloadUrl(url: String) {
         val uri = url.toUri()
         check(uri.scheme.equals("https", ignoreCase = true) && !uri.host.isNullOrBlank()) {
