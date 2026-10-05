@@ -74,6 +74,7 @@ import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
+import com.zakodaniumask.manager.ui.viewmodel.toReportText
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -250,16 +251,21 @@ private fun BootloaderSection(report: BootloaderReport) {
         item { ValueRow(stringResource(R.string.bootloader_row_device_locked), yesNo(report.locked)) }
         item { ValueRow(stringResource(R.string.bootloader_row_trust_root), report.trustRoot.name) }
         item { ValueRow(stringResource(R.string.bootloader_row_chain), yesNo(report.chainValid)) }
-        report.osVersion?.let { item { ValueRow(stringResource(R.string.bootloader_row_os_version), it) } }
-        report.osPatchLevel?.let { item { ValueRow(stringResource(R.string.bootloader_row_os_patch), it) } }
-        report.properties.firstOrNull { it.value != null }?.let {
+        val osVersion = report.osVersion
+        if (osVersion != null) {
+            item { ValueRow(stringResource(R.string.bootloader_row_os_version), osVersion) }
+        }
+        val osPatch = report.osPatchLevel
+        if (osPatch != null) {
+            item { ValueRow(stringResource(R.string.bootloader_row_os_patch), osPatch) }
+        }
+        val properties = report.properties.filter { it.value != null }
+        if (properties.isNotEmpty()) {
             item {
                 ValueRow(
                     label = stringResource(R.string.bootloader_row_properties),
-                    value = report.properties.count { p -> p.value != null }.toString(),
-                    detail = report.properties
-                        .filter { p -> p.value != null }
-                        .joinToString("\n") { p -> "${p.name} = ${p.value}" },
+                    value = properties.size.toString(),
+                    detail = properties.joinToString("\n") { "${it.name} = ${it.value}" },
                 )
             }
         }
@@ -288,8 +294,14 @@ private fun TeeSection(report: TeeReport) {
             )
         }
         item { ValueRow(stringResource(R.string.tee_row_tier), report.tier.name) }
-        report.attestationTier?.let { item { ValueRow(stringResource(R.string.tee_row_attestation_tier), it.name) } }
-        report.keymasterTier?.let { item { ValueRow(stringResource(R.string.tee_row_keymaster_tier), it.name) } }
+        val attestationTier = report.attestationTier
+        if (attestationTier != null) {
+            item { ValueRow(stringResource(R.string.tee_row_attestation_tier), attestationTier.name) }
+        }
+        val keymasterTier = report.keymasterTier
+        if (keymasterTier != null) {
+            item { ValueRow(stringResource(R.string.tee_row_keymaster_tier), keymasterTier.name) }
+        }
         item { ValueRow(stringResource(R.string.tee_row_attestation_version), report.attestationVersion?.toString() ?: unknown()) }
         item { ValueRow(stringResource(R.string.tee_row_keymaster_version), report.keymasterVersion?.toString() ?: unknown()) }
         item { ValueRow(stringResource(R.string.tee_row_verified_boot), report.verifiedBootState ?: unknown()) }
