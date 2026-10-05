@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">杂鱼大牛面具</string>
+
     <string name="home">Ana səhifə</string>
     <string name="home_not_installed">Yüklənmədi</string>
     <string name="home_click_to_install">Yükləmək üçün toxunun</string>

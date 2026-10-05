@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">杂鱼大牛面具</string>
+
     <string name="home">Accueil</string>
     <string name="learn_more">En savoir plus</string>
     <string name="home_not_installed">Non installé</string>

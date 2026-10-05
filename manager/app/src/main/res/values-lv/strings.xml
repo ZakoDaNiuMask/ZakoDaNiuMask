@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">杂鱼大牛面具</string>
+
     <string name="home">Sākums</string>
     <string name="home_not_installed">Nav ieinstalēts</string>
     <string name="home_click_to_install">Noklikšķiniet, lai instalētu</string>

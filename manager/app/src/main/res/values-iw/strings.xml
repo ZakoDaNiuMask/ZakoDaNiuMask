@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">杂鱼大牛面具</string>
+
     <string name="reboot_to_apply">הפעל מחדש כדי להכניס לתוקף</string>
     <string name="home_click_to_learn_kernelsu">למד כיצד להתקין את KernelSU ולהשתמש במודולים</string>
     <string name="unknown">לא ידוע</string>
