@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Portions ported from Duck-Detector-Refactoring (Apache-2.0),
+// Portions adapted from Duck-Detector-Refactoring (Apache-2.0),
 // https://github.com/eltavine/Duck-Detector-Refactoring
 
 package com.zakodaniumask.manager.ui.screen.detection
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,15 +17,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Refresh
+import androidx.compose.material.icons.twotone.CheckCircle
+import androidx.compose.material.icons.twotone.ExpandLess
+import androidx.compose.material.icons.twotone.ExpandMore
+import androidx.compose.material.icons.twotone.Info
+import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -40,16 +49,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.detection.RootProbeClientRepository
-import com.zakodaniumask.manager.data.detection.SuMethodOutcome
 import com.zakodaniumask.manager.data.detection.SuReport
-import com.zakodaniumask.manager.data.detection.SuStage
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.WarningCard
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
+import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
 import com.zakodaniumask.manager.ui.component.settings.lazySegmentColumn
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
@@ -60,6 +71,7 @@ import com.zakodaniumask.manager.ui.theme.blurEffect
 import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
+import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -72,6 +84,8 @@ fun RootDetectionScreen() {
     val navigator = LocalNavigator.current
     val scope = rememberCoroutineScope()
     val snackBarHost = LocalSnackbarHost.current
+    val clipboard = LocalClipboardManager.current
+    val copiedText = stringResource(R.string.root_detection_copied)
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -122,7 +136,8 @@ fun RootDetectionScreen() {
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
     ) { paddingValues ->
-        if (isScanning && report == null) {
+        val data = report
+        if (data == null) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -134,7 +149,8 @@ fun RootDetectionScreen() {
             return@Scaffold
         }
 
-        val data = report
+        val model = rememberRootDetectionModel(data)
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -155,107 +171,51 @@ fun RootDetectionScreen() {
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            if (data != null) {
-                item {
-                    VerdictCard(data)
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+            item {
+                HeadlineCard(model)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-                item {
-                    SegmentedBlock {
-                        FactRow(
-                            label = stringResource(R.string.root_detection_fact_artifacts),
-                            value = if (data.suBinaries.isEmpty()) {
-                                stringResource(R.string.root_detection_none)
-                            } else {
-                                data.suBinaries.size.toString()
-                            },
-                            tone = if (data.suBinaries.isEmpty()) Tone.Clean else Tone.Danger,
-                        )
-                        FactRow(
-                            label = stringResource(R.string.root_detection_fact_daemons),
-                            value = if (data.daemons.isEmpty()) {
-                                stringResource(R.string.root_detection_none)
-                            } else {
-                                data.daemons.joinToString("/") { it.name }
-                            },
-                            tone = if (data.daemons.isEmpty()) Tone.Clean else Tone.Danger,
-                        )
-                        FactRow(
-                            label = stringResource(R.string.root_detection_fact_context),
-                            value = when {
-                                data.selfContextAbnormal ->
-                                    stringResource(R.string.root_detection_context_abnormal)
-                                data.selfContext.isNotBlank() ->
-                                    stringResource(R.string.root_detection_context_normal)
-                                else -> stringResource(R.string.root_detection_unknown)
-                            },
-                            tone = when {
-                                data.selfContextAbnormal -> Tone.Danger
-                                data.selfContext.isNotBlank() -> Tone.Clean
-                                else -> Tone.Support
-                            },
-                        )
-                        FactRow(
-                            label = stringResource(R.string.root_detection_fact_processes),
-                            value = if (!data.nativeAvailable) {
-                                stringResource(R.string.root_detection_na)
-                            } else {
-                                data.suspiciousProcesses.size.toString()
-                            },
-                            tone = when {
-                                !data.nativeAvailable -> Tone.Support
-                                data.suspiciousProcesses.isEmpty() -> Tone.Clean
-                                else -> Tone.Danger
-                            },
-                        )
+            item {
+                FactsBlock(model.facts)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            rootSection(R.string.root_detection_section_artifacts, model.artifactRows)
+            rootSection(R.string.root_detection_section_context, model.contextRows)
+
+            item {
+                SectionTitle(stringResource(R.string.root_detection_section_impact))
+                ImpactsSection(model.impacts)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            rootSection(R.string.root_detection_section_methods, model.methodRows)
+            rootSection(R.string.root_detection_section_scan, model.scanRows)
+
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = { scan() },
+                        enabled = !isScanning,
+                    ) {
+                        Text(stringResource(R.string.root_detection_refresh))
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
-
-                lazySegmentColumn(report?.methods.orEmpty(), key = { _, it -> it.label }) { _, method ->
-                    SettingsBaseWidget(
-                        title = methodLabel(method.label),
-                        description = method.summary,
-                        trailingContent = {
-                            LabelText(
-                                label = outcomeLabel(method.outcome),
-                                containerColor = outcomeColor(method.outcome),
-                            )
+                    OutlinedButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            clipboard.setText(AnnotatedString(model.reportText))
+                            scope.launch { snackBarHost.showReplacingSnackbar(copiedText) }
                         },
-                    )
-                }
-
-                if (data.suBinaries.isNotEmpty() || data.daemons.isNotEmpty()) {
-                    item {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        SegmentedBlock {
-                            data.suBinaries.forEach { path ->
-                                SettingsBaseWidget(
-                                    iconPlaceholder = false,
-                                    title = path,
-                                    onClick = null,
-                                )
-                            }
-                            data.daemons.forEach { daemon ->
-                                SettingsBaseWidget(
-                                    iconPlaceholder = false,
-                                    title = "${daemon.name}: ${daemon.path}",
-                                    onClick = null,
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    SegmentedBlock {
-                        SettingsBaseWidget(
-                            icon = Icons.TwoTone.Refresh,
-                            title = stringResource(R.string.root_detection_refresh),
-                            onClick = { scan() },
-                        )
+                    ) {
+                        Text(stringResource(R.string.root_detection_copy))
                     }
                 }
             }
@@ -263,84 +223,172 @@ fun RootDetectionScreen() {
     }
 }
 
-private enum class Tone { Clean, Danger, Support }
+private fun LazyListScope.rootSection(@StringRes titleRes: Int, rows: List<RootRow>) {
+    if (rows.isEmpty()) return
+    item {
+        SectionTitle(stringResource(titleRes))
+    }
+    lazySegmentColumn(rows, key = { _, row -> row.labelRes }) { _, row ->
+        RootRowItem(row)
+    }
+}
 
 @Composable
-private fun VerdictCard(data: SuReport) {
-    val (textRes, tone) = when (data.stage) {
-        SuStage.FAILED -> R.string.root_detection_verdict_failed to Tone.Danger
-        SuStage.LOADING -> R.string.root_detection_scanning to Tone.Support
-        SuStage.READY -> when {
-            data.hasRootIndicators -> R.string.root_detection_verdict_detected to Tone.Danger
-            data.unobservablePathCount > 0 || !data.nativeAvailable ->
-                R.string.root_detection_verdict_support to Tone.Support
-            else -> R.string.root_detection_verdict_clean to Tone.Clean
-        }
-    }
+private fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+    )
+}
+
+@Composable
+private fun HeadlineCard(model: RootDetectionModel) {
     WarningCard(
         modifier = Modifier.padding(horizontal = 16.dp),
-        message = stringResource(textRes),
+        message = "${model.verdict}\n${model.summary}",
         shape = RoundedCornerShape(16.dp),
-        color = when (tone) {
-            Tone.Danger -> MaterialTheme.colorScheme.errorContainer
-            Tone.Support -> MaterialTheme.colorScheme.secondaryContainer
-            Tone.Clean -> MaterialTheme.colorScheme.primaryContainer
-        },
+        color = statusContainer(model.status),
+    )
+    Text(
+        text = model.subtitle,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
     )
 }
 
 @Composable
-private fun SegmentedBlock(content: @Composable () -> Unit) {
+private fun FactsBlock(facts: List<RootFact>) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        com.zakodaniumask.manager.ui.component.settings.SegmentedColumn {
-            item { content() }
+        SegmentedColumn {
+            facts.forEach { fact ->
+                item {
+                    SettingsBaseWidget(
+                        iconPlaceholder = false,
+                        title = stringResource(fact.labelRes),
+                        description = fact.value,
+                        onClick = null,
+                        trailingContent = {
+                            LabelText(
+                                label = statusLabel(fact.status),
+                                containerColor = statusContainer(fact.status),
+                            )
+                        },
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun FactRow(label: String, value: String, tone: Tone) {
+private fun RootRowItem(row: RootRow) {
+    var expanded by remember { mutableStateOf(false) }
+    val hasDetail = !row.detail.isNullOrBlank()
     SettingsBaseWidget(
         iconPlaceholder = false,
-        title = label,
-        description = value,
-        onClick = null,
-        trailingContent = {
-            LabelText(
-                label = when (tone) {
-                    Tone.Danger -> stringResource(R.string.root_detection_state_detected)
-                    Tone.Support -> stringResource(R.string.root_detection_state_partial)
-                    Tone.Clean -> stringResource(R.string.root_detection_state_clean)
-                },
-                containerColor = when (tone) {
-                    Tone.Danger -> MaterialTheme.colorScheme.errorContainer
-                    Tone.Support -> MaterialTheme.colorScheme.secondaryContainer
-                    Tone.Clean -> MaterialTheme.colorScheme.primaryContainer
-                },
-            )
+        title = stringResource(row.labelRes),
+        description = row.value,
+        onClick = if (hasDetail) {
+            { expanded = !expanded }
+        } else {
+            null
+        },
+        descriptionColumnContent = {
+            Column(modifier = Modifier.padding(top = 4.dp)) {
+                LabelText(
+                    label = statusLabel(row.status),
+                    containerColor = statusContainer(row.status),
+                )
+                if (expanded && hasDetail) {
+                    Text(
+                        text = row.detail.orEmpty(),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontFamily = if (row.monospace) {
+                                FontFamily.Monospace
+                            } else {
+                                FontFamily.Default
+                            }
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                }
+            }
+        },
+        trailingContent = if (hasDetail) {
+            {
+                Icon(
+                    imageVector = if (expanded) Icons.TwoTone.ExpandLess else Icons.TwoTone.ExpandMore,
+                    contentDescription = null,
+                )
+            }
+        } else {
+            null
         },
     )
 }
 
 @Composable
-private fun methodLabel(label: String): String = when (label) {
-    "daemonScan" -> stringResource(R.string.root_detection_method_daemon)
-    "fileScan" -> stringResource(R.string.root_detection_method_file)
-    "nativeSyscall" -> stringResource(R.string.root_detection_method_syscall)
-    "nativeLibrary" -> stringResource(R.string.root_detection_method_library)
-    else -> label
+private fun ImpactsSection(impacts: List<RootImpact>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        impacts.forEach { impact ->
+            Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Icon(
+                    imageVector = statusIcon(impact.status),
+                    contentDescription = null,
+                    tint = statusTint(impact.status),
+                    modifier = Modifier.size(16.dp),
+                )
+                Text(
+                    text = impact.text,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
 }
 
 @Composable
-private fun outcomeLabel(outcome: SuMethodOutcome): String = when (outcome) {
-    SuMethodOutcome.DETECTED -> stringResource(R.string.root_detection_state_detected)
-    SuMethodOutcome.SUPPORT -> stringResource(R.string.root_detection_state_partial)
-    SuMethodOutcome.CLEAN -> stringResource(R.string.root_detection_state_clean)
+private fun statusLabel(status: RootStatus): String = stringResource(
+    when (status) {
+        RootStatus.DANGER -> R.string.root_detection_state_detected
+        RootStatus.CLEAR -> R.string.root_detection_state_clean
+        RootStatus.SUPPORT -> R.string.root_detection_state_partial
+        RootStatus.ERROR -> R.string.root_detection_state_error
+        RootStatus.INFO -> R.string.root_detection_state_info
+    }
+)
+
+@Composable
+private fun statusContainer(status: RootStatus): Color = when (status) {
+    RootStatus.DANGER, RootStatus.ERROR -> MaterialTheme.colorScheme.errorContainer
+    RootStatus.CLEAR -> MaterialTheme.colorScheme.primaryContainer
+    RootStatus.SUPPORT -> MaterialTheme.colorScheme.secondaryContainer
+    RootStatus.INFO -> MaterialTheme.colorScheme.surfaceContainerHighest
 }
 
 @Composable
-private fun outcomeColor(outcome: SuMethodOutcome): Color = when (outcome) {
-    SuMethodOutcome.DETECTED -> MaterialTheme.colorScheme.errorContainer
-    SuMethodOutcome.SUPPORT -> MaterialTheme.colorScheme.secondaryContainer
-    SuMethodOutcome.CLEAN -> MaterialTheme.colorScheme.primaryContainer
+private fun statusTint(status: RootStatus): Color = when (status) {
+    RootStatus.DANGER, RootStatus.ERROR -> MaterialTheme.colorScheme.error
+    RootStatus.CLEAR -> MaterialTheme.colorScheme.primary
+    RootStatus.SUPPORT -> MaterialTheme.colorScheme.secondary
+    RootStatus.INFO -> MaterialTheme.colorScheme.onSurfaceVariant
+}
+
+private fun statusIcon(status: RootStatus) = when (status) {
+    RootStatus.DANGER, RootStatus.ERROR -> Icons.TwoTone.Warning
+    RootStatus.CLEAR -> Icons.TwoTone.CheckCircle
+    RootStatus.SUPPORT, RootStatus.INFO -> Icons.TwoTone.Info
 }
