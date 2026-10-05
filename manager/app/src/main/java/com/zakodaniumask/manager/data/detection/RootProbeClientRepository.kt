@@ -75,12 +75,7 @@ class RootProbeClientRepository(
                 activeConnection = connection
                 continuation.invokeOnCancellation { disconnectOnMain() }
                 val bound = runCatching {
-                    ContextCompat.bindService(
-                        application,
-                        intent,
-                        connection,
-                        Context.BIND_AUTO_CREATE,
-                    )
+                    application.bindService(intent, connection, Context.BIND_AUTO_CREATE)
                 }.getOrDefault(false)
                 if (!bound && continuation.isActive) {
                     activeConnection = null
