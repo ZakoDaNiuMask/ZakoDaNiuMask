@@ -70,6 +70,10 @@ mod android {
     pub const DYNAMIC_MANAGER: &str = concatcp!(WORKING_DIR, ".dynamic_manager");
     pub const SUSFS_CONFIG: &str = concatcp!(WORKING_DIR, ".susfs.json");
 
+    // User-configurable boot script, edited by the manager and executed by ksud during a boot stage.
+    pub const BOOT_SCRIPT_PATH: &str = concatcp!(WORKING_DIR, "boot_script.sh");
+    pub const BOOT_SCRIPT_CONFIG: &str = concatcp!(WORKING_DIR, "boot_script.json");
+
     #[derive(Serialize)]
     pub struct MountInfo {
         pub path: String,

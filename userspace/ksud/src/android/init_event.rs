@@ -5,7 +5,7 @@ use log::{error, info, warn};
 
 use crate::{
     android::{
-        dynamic_manager, ksucalls,
+        boot_script, dynamic_manager, ksucalls,
         module::{self, ScriptWait, handle_updated_modules, metamodule, prune_modules},
         restorecon,
         utils::{self, is_safe_mode},
@@ -129,6 +129,9 @@ pub fn on_post_fs_data() -> Result<()> {
         warn!("load umount config failed: {e}");
     }
 
+    // User-configurable boot script for the post-fs-data stage
+    boot_script::run("post-fs-data", wait);
+
     run_stage("post-mount", wait);
 
     std::env::set_current_dir("/").with_context(|| "failed to chdir to /")?;
@@ -162,6 +165,9 @@ pub fn run_stage(stage: &str, wait: ScriptWait) {
     if let Err(e) = module::exec_stage_script(stage, wait) {
         warn!("Failed to exec {stage} scripts: {e}");
     }
+
+    // user-configurable boot script for this stage
+    boot_script::run(stage, wait);
 }
 
 pub fn on_services() {

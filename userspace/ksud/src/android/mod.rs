@@ -1,3 +1,4 @@
+mod boot_script;
 pub mod cli;
 mod debug;
 mod dynamic_manager;
