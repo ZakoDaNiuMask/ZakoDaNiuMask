@@ -67,6 +67,30 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
+private data class PortedComponent(
+    val name: String,
+    val licenseName: String,
+    val website: String,
+)
+
+private val PORTED_COMPONENTS = listOf(
+    PortedComponent(
+        name = "Duck Detector",
+        licenseName = "Apache-2.0",
+        website = "https://github.com/eltavine/Duck-Detector-Refactoring",
+    ),
+    PortedComponent(
+        name = "YukiSU",
+        licenseName = "GPL-3.0",
+        website = "https://github.com/Rouyashiki/YukiSU",
+    ),
+    PortedComponent(
+        name = "BakaSU (ReSukiSU)",
+        licenseName = "GPL-3.0",
+        website = "https://github.com/Baka-SU/BakaSU",
+    ),
+)
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -94,6 +118,7 @@ fun OpenSourceLicenseScreen() {
     }
 
     var selectedLibrary by remember { mutableStateOf<Library?>(null) }
+    var selectedPorted by remember { mutableStateOf<PortedComponent?>(null) }
 
     Scaffold(
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
@@ -139,6 +164,30 @@ fun OpenSourceLicenseScreen() {
                 .blurSource(),
             contentPadding = paddingValues
         ) {
+            item {
+                Text(
+                    text = stringResource(R.string.open_source_license_ported),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+            }
+            lazySegmentColumn(PORTED_COMPONENTS, key = { _, it -> it.name }) { _, component ->
+                SettingsBaseWidget(
+                    iconPlaceholder = false,
+                    title = component.name,
+                    description = "${component.licenseName} · ${component.website}",
+                    onClick = { selectedPorted = component }
+                )
+            }
+            item {
+                Text(
+                    text = stringResource(R.string.open_source_license_libraries),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+            }
             lazySegmentColumn(libraries.libraries) { _, lib ->
                 SettingsBaseWidget(
                     iconPlaceholder = false,
@@ -160,6 +209,45 @@ fun OpenSourceLicenseScreen() {
                     }
                 }
             }
+        }
+        if (selectedPorted != null) {
+            val component = selectedPorted!!
+            val uriHandler = LocalUriHandler.current
+            AlertDialog(
+                onDismissRequest = { selectedPorted = null },
+                confirmButton = {
+                    Button(onClick = { selectedPorted = null }) {
+                        Text(stringResource(R.string.close))
+                    }
+                },
+                dismissButton = {
+                    OutlinedButton(onClick = {
+                        uriHandler.openUri(component.website)
+                    }) {
+                        Text(stringResource(R.string.visit_home_page))
+                    }
+                },
+                title = {
+                    Text(
+                        text = component.name,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                text = {
+                    Column {
+                        Text(
+                            text = component.licenseName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(
+                            text = component.website,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                },
+            )
         }
         if (selectedLibrary != null) {
             val library = selectedLibrary!!
