@@ -134,6 +134,11 @@
             android:useAppZygote="true" />
 
         <service
+            android:name=".data.detection.RootProbeService"
+            android:exported="false"
+            android:isolatedProcess="true" />
+
+        <service
             android:name=".data.download.DownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

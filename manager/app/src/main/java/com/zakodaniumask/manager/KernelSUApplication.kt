@@ -13,6 +13,11 @@ import org.koin.core.context.startKoin
 class KernelSUApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        // Isolated processes (MagicaService, RootProbeService) must not initialize the
+        // Koin graph or run application initialization.
+        if (android.os.Process.isIsolated()) {
+            return
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val processName = getProcessName()
             if (processName.endsWith("MagicaService")) {

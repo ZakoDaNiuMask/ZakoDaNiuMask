@@ -221,7 +221,7 @@ val coreModule = module {
 val repositoryModule = module {
     single { KsuCliRepository(androidApplication()) }
     single { com.zakodaniumask.manager.data.partition.PartitionManagerRepository(get()) }
-    single { com.zakodaniumask.manager.data.detection.SuRepository() }
+    single { com.zakodaniumask.manager.data.detection.RootProbeClientRepository(androidApplication()) }
     singleOf(::CountRepository)
     singleOf(::InstalledPackageCache)
     singleOf(::AppIconDataSource)

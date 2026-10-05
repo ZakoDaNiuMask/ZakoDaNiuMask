@@ -43,9 +43,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.detection.RootProbeClientRepository
 import com.zakodaniumask.manager.data.detection.SuMethodOutcome
 import com.zakodaniumask.manager.data.detection.SuReport
-import com.zakodaniumask.manager.data.detection.SuRepository
 import com.zakodaniumask.manager.data.detection.SuStage
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.WarningCard
@@ -68,7 +68,7 @@ import org.koin.compose.koinInject
 fun RootDetectionScreen() {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
-    val repository: SuRepository = koinInject()
+    val repository: RootProbeClientRepository = koinInject()
     val navigator = LocalNavigator.current
     val scope = rememberCoroutineScope()
     val snackBarHost = LocalSnackbarHost.current

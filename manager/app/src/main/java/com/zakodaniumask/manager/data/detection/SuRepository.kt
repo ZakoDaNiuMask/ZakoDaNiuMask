@@ -288,6 +288,8 @@ class SuRepository internal constructor(
             "platform_app",
             "system_app",
             "priv_app",
+            // The probes run in an isolated, unprivileged process; its own context is normal.
+            "isolated_app",
         )
     }
 }

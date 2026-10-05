@@ -210,8 +210,8 @@
     <string name="partition_avb_disabled">AVB/dm-verity disabled</string>
     <string name="partition_avb_disable_failed">Failed to disable AVB/dm-verity</string>
     <string name="root_detection">Root detection</string>
-    <string name="root_detection_summary">Run preliminary SU/root probes as a normal app</string>
-    <string name="root_detection_warning">These probes run without root, so a clean result is weak evidence. Most root solutions hide their artifacts from ordinary apps.</string>
+    <string name="root_detection_summary">Run preliminary SU/root probes from an isolated, unprivileged process</string>
+    <string name="root_detection_warning">Probes run in an isolated, unprivileged process (like a third-party app), so results show what an ordinary app can see. A clean result is weak evidence; most root solutions hide from ordinary apps.</string>
     <string name="root_detection_refresh">Rescan</string>
     <string name="root_detection_scanning">Scanning…</string>
     <string name="root_detection_verdict_detected">Root indicators detected</string>
