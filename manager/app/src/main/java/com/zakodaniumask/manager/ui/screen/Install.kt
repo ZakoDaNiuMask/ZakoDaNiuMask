@@ -27,6 +27,7 @@ import androidx.compose.material.icons.twotone.ExpandMore
 import androidx.compose.material.icons.twotone.FileOpen
 import androidx.compose.material.icons.twotone.FileUpload
 import androidx.compose.material.icons.twotone.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,11 +36,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
@@ -63,11 +66,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.domain.model.LkmSelection
 import com.zakodaniumask.manager.ui.component.DialogHandle
 import com.zakodaniumask.manager.ui.component.HorizontalPagerWithInteraction
 import com.zakodaniumask.manager.ui.component.rememberConfirmDialog
 import com.zakodaniumask.manager.ui.component.rememberCustomDialog
+import com.zakodaniumask.manager.ui.component.rememberLoadingDialog
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
@@ -81,7 +86,9 @@ import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.viewmodel.InstallUiEvent
 import com.zakodaniumask.manager.ui.viewmodel.InstallViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -221,6 +228,7 @@ private fun LKMInstallPage(
 ) {
     val context = LocalContext.current
     val navigator = LocalNavigator.current
+    val scope = rememberCoroutineScope()
     val selectFileTip = stringResource(
         id = R.string.select_file_tip,
         defaultPartition
@@ -228,6 +236,14 @@ private fun LKMInstallPage(
     val installOnlySupportKoFile = stringResource(R.string.install_only_support_ko_file)
     val dialogTitle = stringResource(id = android.R.string.dialog_alert_title)
     val dialogContent = stringResource(id = R.string.install_inactive_slot_warning)
+    val downloadFromUrlSummary = stringResource(R.string.install_from_url_summary)
+    val remoteBootImageSource: RemoteBootImageSource = koinInject()
+    val loadingDialog = rememberLoadingDialog()
+
+    var showDownloadDialog by remember { mutableStateOf(false) }
+    var downloadUrl by remember { mutableStateOf("") }
+    var remotePartitions by remember { mutableStateOf<List<String>>(emptyList()) }
+    var remotePartitionSelectionIndex by remember { mutableIntStateOf(0) }
 
     var lkmInstallMethod by remember { mutableStateOf<InstallMethod?>(null) }
     var lkmSelection by remember { mutableStateOf<LkmSelection>(LkmSelection.KmiNone) }
@@ -244,9 +260,10 @@ private fun LKMInstallPage(
         label = "AdvRotation"
     )
 
-    val lkmMethods = remember(rootAvailable, isAbDevice, isGKI, selectFileTip) {
+    val lkmMethods = remember(rootAvailable, isAbDevice, isGKI, selectFileTip, downloadFromUrlSummary) {
         buildList {
             add(InstallMethod.SelectFile(summary = selectFileTip))
+            add(InstallMethod.DownloadFile(summary = downloadFromUrlSummary))
             if (isGKI && rootAvailable) {
                 add(InstallMethod.DirectInstall)
                 if (isAbDevice) {
@@ -318,6 +335,11 @@ private fun LKMInstallPage(
                 confirmDialog.showConfirm(dialogTitle, dialogContent)
             }
 
+            is InstallMethod.DownloadFile -> {
+                downloadUrl = option.url.orEmpty()
+                showDownloadDialog = true
+            }
+
             is InstallMethod.HorizonKernel -> Unit
         }
     }
@@ -346,7 +368,47 @@ private fun LKMInstallPage(
                     )
                 }
 
+                is InstallMethod.DownloadFile -> Unit
+
                 is InstallMethod.HorizonKernel -> Unit
+            }
+        }
+        Unit
+    }
+
+    val startDownloadAndFlash: (InstallMethod.DownloadFile) -> Unit = { method ->
+        val url = method.url
+        val partition = method.partition
+        if (url.isNullOrBlank() || partition.isNullOrBlank()) {
+            Unit
+        } else {
+            val kmi = (lkmSelection as? LkmSelection.KmiString)?.value ?: method.remoteKmi
+            scope.launch {
+                try {
+                    val bootUri = loadingDialog.withLoading {
+                        remoteBootImageSource.downloadPartition(url, partition)
+                    }
+                    navigator.push(
+                        Route.Flash.boot(
+                            bootUri = bootUri.toString(),
+                            lkmUri = (lkmSelection as? LkmSelection.LkmUri)?.uri,
+                            kmi = kmi,
+                            ota = false,
+                            partition = partition,
+                            allowShell = allowShell,
+                            enableAdb = enableAdb,
+                            forceBackup = forceBackup,
+                        )
+                    )
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Throwable) {
+                    Toast.makeText(
+                        context,
+                        error.message ?: error.javaClass.simpleName,
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
             }
         }
         Unit
@@ -355,15 +417,31 @@ private fun LKMInstallPage(
     val selectKmiDialog = rememberSelectKmiDialog(supportedKmis) { kmi ->
         kmi?.let {
             lkmSelection = LkmSelection.KmiString(it)
-            onLkmInstall()
+            when (val method = lkmInstallMethod) {
+                is InstallMethod.DownloadFile -> startDownloadAndFlash(method)
+                else -> onLkmInstall()
+            }
         }
     }
 
     val onClickNext = {
-        if (isGKI && lkmSelection == LkmSelection.KmiNone && currentKmi.isBlank()) {
-            selectKmiDialog.show()
-        } else {
-            onLkmInstall()
+        val method = lkmInstallMethod
+        when {
+            method is InstallMethod.DownloadFile -> {
+                if (isGKI && lkmSelection == LkmSelection.KmiNone &&
+                    method.remoteKmi.isNullOrBlank() && currentKmi.isBlank()
+                ) {
+                    selectKmiDialog.show()
+                } else {
+                    startDownloadAndFlash(method)
+                }
+            }
+
+            isGKI && lkmSelection == LkmSelection.KmiNone && currentKmi.isBlank() -> {
+                selectKmiDialog.show()
+            }
+
+            else -> onLkmInstall()
         }
     }
 
@@ -444,6 +522,27 @@ private fun LKMInstallPage(
                                 onSelectedIndexChange = {
                                     hasCustomSelected = true
                                     partitionSelectionIndex = it
+                                },
+                            )
+                        }
+
+                        item(
+                            visible = lkmInstallMethod is InstallMethod.DownloadFile &&
+                                    remotePartitions.isNotEmpty()
+                        ) {
+                            SettingsChooseWidget(
+                                icon = Icons.TwoTone.AutoFixHigh,
+                                items = remotePartitions,
+                                selectedIndex = remotePartitionSelectionIndex,
+                                title = stringResource(R.string.install_select_partition),
+                                onSelectedIndexChange = { index ->
+                                    remotePartitionSelectionIndex = index
+                                    val current = lkmInstallMethod as? InstallMethod.DownloadFile
+                                    if (current != null) {
+                                        lkmInstallMethod = current.copy(
+                                            partition = remotePartitions.getOrNull(index)
+                                        )
+                                    }
                                 },
                             )
                         }
@@ -553,6 +652,84 @@ private fun LKMInstallPage(
         item {
             Spacer(modifier = Modifier.height(bottomPadding))
         }
+    }
+
+    if (showDownloadDialog) {
+        AlertDialog(
+            onDismissRequest = { showDownloadDialog = false },
+            title = { Text(stringResource(R.string.install_from_url)) },
+            text = {
+                OutlinedTextField(
+                    value = downloadUrl,
+                    onValueChange = { downloadUrl = it },
+                    label = { Text(stringResource(R.string.download_dialog_msg)) },
+                    singleLine = true,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val url = downloadUrl.trim()
+                    val parsed = runCatching { url.toUri() }.getOrNull()
+                    if (parsed?.scheme?.equals("https", ignoreCase = true) != true ||
+                        parsed?.host.isNullOrBlank()
+                    ) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.download_dialog_msg),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    } else {
+                        showDownloadDialog = false
+                        scope.launch {
+                            try {
+                                val probe = loadingDialog.withLoading {
+                                    remoteBootImageSource.probe(url)
+                                }
+                                if (probe.partitions.isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.download_no_boot_partition),
+                                        Toast.LENGTH_LONG,
+                                    ).show()
+                                } else {
+                                    remotePartitions = probe.partitions
+                                    remotePartitionSelectionIndex = 0
+                                    lkmInstallMethod = InstallMethod.DownloadFile(
+                                        url = url,
+                                        partition = probe.partitions.first(),
+                                        remoteKmi = probe.kmi,
+                                        summary = downloadFromUrlSummary,
+                                    )
+                                    if (!probe.kmi.isNullOrBlank() &&
+                                        lkmSelection == LkmSelection.KmiNone
+                                    ) {
+                                        lkmSelection = LkmSelection.KmiString(probe.kmi)
+                                    }
+                                }
+                            } catch (cancelled: CancellationException) {
+                                throw cancelled
+                            } catch (error: Throwable) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(
+                                        R.string.download_probe_failed,
+                                        error.message ?: error.javaClass.simpleName,
+                                    ),
+                                    Toast.LENGTH_LONG,
+                                ).show()
+                            }
+                        }
+                    }
+                }) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDownloadDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
     }
 }
 
@@ -883,6 +1060,14 @@ sealed class InstallMethod {
         val uri: Uri? = null,
         val slot: String? = null,
         @param:StringRes override val label: Int = R.string.horizon_kernel,
+        override val summary: String? = null
+    ) : InstallMethod()
+
+    data class DownloadFile(
+        val url: String? = null,
+        val partition: String? = null,
+        val remoteKmi: String? = null,
+        @param:StringRes override val label: Int = R.string.install_from_url,
         override val summary: String? = null
     ) : InstallMethod()
 

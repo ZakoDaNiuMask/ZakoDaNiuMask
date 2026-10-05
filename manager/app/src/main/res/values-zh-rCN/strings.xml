@@ -168,6 +168,11 @@
     <string name="install_inactive_slot">安装到未使用的槽位（OTA 后）</string>
     <string name="install_inactive_slot_warning">将在重启后 **强制** 切换到另一个槽位！\n注意只能在 OTA 更新完成后的重启之前使用。\n仍要继续？</string>
     <string name="install_next">下一步</string>
+    <string name="install_from_url">从 URL 安装</string>
+    <string name="install_from_url_summary">从 HTTPS 链接下载 boot 镜像并修补</string>
+    <string name="download_dialog_msg">HTTPS 链接</string>
+    <string name="download_no_boot_partition">在提供的镜像中未找到可修补的分区</string>
+    <string name="download_probe_failed">读取镜像失败：%s</string>
     <string name="install_select_partition">选择分区</string>
     <string name="install_upload_lkm_file">使用本地 LKM 文件</string>
     <string name="install_only_support_ko_file">仅支持选择 .ko 文件</string>

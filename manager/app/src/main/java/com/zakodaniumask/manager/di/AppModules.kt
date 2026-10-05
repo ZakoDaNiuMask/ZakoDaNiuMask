@@ -9,6 +9,7 @@ import com.zakodaniumask.manager.data.count.CountRepository
 import com.zakodaniumask.manager.data.download.DownloadRepository
 import com.zakodaniumask.manager.data.file.ModuleFileRepository
 import com.zakodaniumask.manager.data.flash.FlashRepository
+import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.UmountRepository
 import com.zakodaniumask.manager.data.logging.BugreportRepository
@@ -254,6 +255,7 @@ val repositoryModule = module {
     singleOf(::ApplicationControlRepository)
     singleOf(::DownloadRepository)
     single { FlashRepository(get(), get(applicationScopeQualifier), get(), get()) }
+    single { RemoteBootImageSource(androidApplication()) }
     singleOf(::KernelRepository)
     singleOf(::HomeRuntimeRepository)
     singleOf(::HomeStateRepository)
