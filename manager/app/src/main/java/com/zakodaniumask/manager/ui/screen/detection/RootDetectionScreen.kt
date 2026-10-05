@@ -213,19 +213,17 @@ fun RootDetectionScreen() {
                     Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                item {
-                    lazySegmentColumn(report?.methods.orEmpty(), key = { _, it -> it.label }) { _, method ->
-                        SettingsBaseWidget(
-                            title = methodLabel(method.label),
-                            description = method.summary,
-                            trailingContent = {
-                                LabelText(
-                                    label = outcomeLabel(method.outcome),
-                                    containerColor = outcomeColor(method.outcome),
-                                )
-                            },
-                        )
-                    }
+                lazySegmentColumn(report?.methods.orEmpty(), key = { _, it -> it.label }) { _, method ->
+                    SettingsBaseWidget(
+                        title = methodLabel(method.label),
+                        description = method.summary,
+                        trailingContent = {
+                            LabelText(
+                                label = outcomeLabel(method.outcome),
+                                containerColor = outcomeColor(method.outcome),
+                            )
+                        },
+                    )
                 }
 
                 if (data.suBinaries.isNotEmpty() || data.daemons.isNotEmpty()) {
