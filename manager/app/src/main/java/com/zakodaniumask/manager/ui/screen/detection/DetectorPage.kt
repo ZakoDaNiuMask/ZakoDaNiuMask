@@ -57,6 +57,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.bootloader.BootloaderReport
+import com.zakodaniumask.manager.data.detection.DetectorStatus
+import com.zakodaniumask.manager.data.tee.TeeReport
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.WarningCard
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
@@ -70,7 +73,7 @@ import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
-import com.zakodaniumask.manager.ui.viewmodel.RootDetectionViewModel
+import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -80,7 +83,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DetectorPage(bottomPadding: Dp) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
-    val viewModel: RootDetectionViewModel = koinViewModel()
+    val viewModel: DetectorViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val snackBarHost = LocalSnackbarHost.current
@@ -123,8 +126,7 @@ fun DetectorPage(bottomPadding: Dp) {
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
     ) { paddingValues ->
-        val report = state.report
-        if (report == null) {
+        if (!state.isReady && state.isScanning) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -136,7 +138,7 @@ fun DetectorPage(bottomPadding: Dp) {
             return@Scaffold
         }
 
-        val model = rememberRootDetectionModel(report)
+        val suModel = state.su?.let { rememberRootDetectionModel(it) }
 
         LazyColumn(
             modifier = Modifier
@@ -158,27 +160,42 @@ fun DetectorPage(bottomPadding: Dp) {
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            item {
-                HeadlineCard(model)
-                Spacer(modifier = Modifier.height(12.dp))
+            suModel?.let { model ->
+                item {
+                    SectionTitle(stringResource(R.string.detector_su))
+                    HeadlineCard(model)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                item {
+                    FactsBlock(model.facts)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                rootSection(R.string.root_detection_section_artifacts, model.artifactRows)
+                rootSection(R.string.root_detection_section_context, model.contextRows)
+                item {
+                    SectionTitle(stringResource(R.string.root_detection_section_impact))
+                    ImpactsSection(model.impacts)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                rootSection(R.string.root_detection_section_methods, model.methodRows)
+                rootSection(R.string.root_detection_section_scan, model.scanRows)
             }
 
-            item {
-                FactsBlock(model.facts)
-                Spacer(modifier = Modifier.height(12.dp))
+            state.bootloader?.let { bootloader ->
+                item {
+                    SectionTitle(stringResource(R.string.detector_bootloader))
+                    BootloaderSection(bootloader)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
 
-            rootSection(R.string.root_detection_section_artifacts, model.artifactRows)
-            rootSection(R.string.root_detection_section_context, model.contextRows)
-
-            item {
-                SectionTitle(stringResource(R.string.root_detection_section_impact))
-                ImpactsSection(model.impacts)
-                Spacer(modifier = Modifier.height(12.dp))
+            state.tee?.let { tee ->
+                item {
+                    SectionTitle(stringResource(R.string.detector_tee))
+                    TeeSection(tee)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
-
-            rootSection(R.string.root_detection_section_methods, model.methodRows)
-            rootSection(R.string.root_detection_section_scan, model.scanRows)
 
             item {
                 Spacer(modifier = Modifier.height(4.dp))
@@ -198,7 +215,7 @@ fun DetectorPage(bottomPadding: Dp) {
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            clipboard.setText(AnnotatedString(model.reportText))
+                            clipboard.setText(AnnotatedString(state.toReportText()))
                             scope.launch { snackBarHost.showReplacingSnackbar(copiedText) }
                         },
                     ) {
@@ -208,6 +225,135 @@ fun DetectorPage(bottomPadding: Dp) {
             }
         }
     }
+}
+
+@Composable
+private fun BootloaderSection(report: BootloaderReport) {
+    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        item {
+            SettingsBaseWidget(
+                icon = statusIcon(report.status.toRootStatus()),
+                iconSize = 18.dp,
+                title = stringResource(
+                    when {
+                        report.locked == true -> R.string.bootloader_verdict_locked
+                        report.locked == false -> R.string.bootloader_verdict_unlocked
+                        else -> R.string.bootloader_verdict_unknown
+                    }
+                ),
+                description = report.consistencyDetail.orEmpty(),
+                containerColor = statusContainer(report.status.toRootStatus()),
+                onClick = null,
+            )
+        }
+        item { ValueRow(stringResource(R.string.bootloader_row_verified_boot), report.verifiedBootState ?: unknown()) }
+        item { ValueRow(stringResource(R.string.bootloader_row_device_locked), yesNo(report.locked)) }
+        item { ValueRow(stringResource(R.string.bootloader_row_trust_root), report.trustRoot.name) }
+        item { ValueRow(stringResource(R.string.bootloader_row_chain), yesNo(report.chainValid)) }
+        report.osVersion?.let { item { ValueRow(stringResource(R.string.bootloader_row_os_version), it) } }
+        report.osPatchLevel?.let { item { ValueRow(stringResource(R.string.bootloader_row_os_patch), it) } }
+        report.properties.firstOrNull { it.value != null }?.let {
+            item {
+                ValueRow(
+                    label = stringResource(R.string.bootloader_row_properties),
+                    value = report.properties.count { p -> p.value != null }.toString(),
+                    detail = report.properties
+                        .filter { p -> p.value != null }
+                        .joinToString("\n") { p -> "${p.name} = ${p.value}" },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TeeSection(report: TeeReport) {
+    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        item {
+            SettingsBaseWidget(
+                icon = statusIcon(report.status.toRootStatus()),
+                iconSize = 18.dp,
+                title = stringResource(
+                    when {
+                        report.status == DetectorStatus.ERROR -> R.string.tee_verdict_error
+                        report.tier.name == "SOFTWARE" -> R.string.tee_verdict_software
+                        report.trustRoot.name != "GOOGLE" && report.trustRoot.name != "GOOGLE_RKP" ->
+                            R.string.tee_verdict_untrusted
+                        else -> R.string.tee_verdict_ok
+                    }
+                ),
+                description = report.error.orEmpty(),
+                containerColor = statusContainer(report.status.toRootStatus()),
+                onClick = null,
+            )
+        }
+        item { ValueRow(stringResource(R.string.tee_row_tier), report.tier.name) }
+        report.attestationTier?.let { item { ValueRow(stringResource(R.string.tee_row_attestation_tier), it.name) } }
+        report.keymasterTier?.let { item { ValueRow(stringResource(R.string.tee_row_keymaster_tier), it.name) } }
+        item { ValueRow(stringResource(R.string.tee_row_attestation_version), report.attestationVersion?.toString() ?: unknown()) }
+        item { ValueRow(stringResource(R.string.tee_row_keymaster_version), report.keymasterVersion?.toString() ?: unknown()) }
+        item { ValueRow(stringResource(R.string.tee_row_verified_boot), report.verifiedBootState ?: unknown()) }
+        item { ValueRow(stringResource(R.string.tee_row_device_locked), yesNo(report.deviceLocked)) }
+        item { ValueRow(stringResource(R.string.tee_row_challenge), yesNo(report.challengeVerified)) }
+        item { ValueRow(stringResource(R.string.tee_row_trust_root), report.trustRoot.name) }
+        item { ValueRow(stringResource(R.string.tee_row_chain), yesNo(report.chainValid)) }
+        if (report.certificates.isNotEmpty()) {
+            item {
+                ValueRow(
+                    label = stringResource(R.string.tee_row_certificates),
+                    value = report.certificates.size.toString(),
+                    detail = report.certificates.joinToString("\n") { "${it.slotLabel}: ${it.subject}" },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ValueRow(
+    label: String,
+    value: String,
+    detail: String? = null,
+) {
+    val resolved = detail?.takeIf { it.isNotBlank() }
+    SettingsBaseWidget(
+        iconPlaceholder = false,
+        title = label,
+        description = value,
+        onClick = null,
+        descriptionColumnContent = if (resolved != null) {
+            {
+                Text(
+                    text = resolved,
+                    style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+        } else {
+            null
+        },
+    )
+}
+
+@Composable
+private fun unknown(): String = stringResource(R.string.value_unknown)
+
+@Composable
+private fun yesNo(value: Boolean?): String = when (value) {
+    true -> stringResource(R.string.value_yes)
+    false -> stringResource(R.string.value_no)
+    null -> stringResource(R.string.value_unknown)
+}
+
+@Composable
+private fun DetectorStatus.toRootStatus(): RootStatus = when (this) {
+    DetectorStatus.DANGER -> RootStatus.DANGER
+    DetectorStatus.ERROR -> RootStatus.ERROR
+    DetectorStatus.SUPPORT -> RootStatus.SUPPORT
+    DetectorStatus.INFO -> RootStatus.INFO
+    DetectorStatus.CLEAR -> RootStatus.CLEAR
+    DetectorStatus.UNKNOWN -> RootStatus.INFO
 }
 
 private fun LazyListScope.rootSection(@StringRes titleRes: Int, rows: List<RootRow>) {
@@ -293,11 +439,7 @@ private fun RootRowItem(row: RootRow) {
                     Text(
                         text = row.detail.orEmpty(),
                         style = MaterialTheme.typography.bodySmall.copy(
-                            fontFamily = if (row.monospace) {
-                                FontFamily.Monospace
-                            } else {
-                                FontFamily.Default
-                            }
+                            fontFamily = if (row.monospace) FontFamily.Monospace else FontFamily.Default
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 6.dp),

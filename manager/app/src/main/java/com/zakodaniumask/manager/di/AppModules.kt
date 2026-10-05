@@ -157,7 +157,7 @@ import com.zakodaniumask.manager.ui.viewmodel.MainIntentViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleDetailViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleRepoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
-import com.zakodaniumask.manager.ui.viewmodel.RootDetectionViewModel
+import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SuSFSViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SulogViewModel
@@ -223,6 +223,8 @@ val repositoryModule = module {
     single { KsuCliRepository(androidApplication()) }
     single { com.zakodaniumask.manager.data.partition.PartitionManagerRepository(get()) }
     single { com.zakodaniumask.manager.data.detection.RootProbeClientRepository(androidApplication()) }
+    single { com.zakodaniumask.manager.data.bootloader.BootloaderDetector(androidApplication()) }
+    single { com.zakodaniumask.manager.data.tee.TeeDetector(androidApplication()) }
     singleOf(::CountRepository)
     singleOf(::InstalledPackageCache)
     singleOf(::AppIconDataSource)
@@ -412,7 +414,7 @@ val viewModelModule = module {
         )
     }
     viewModelOf(::HomeViewModel)
-    viewModelOf(::RootDetectionViewModel)
+    viewModelOf(::DetectorViewModel)
     viewModelOf(::InstallViewModel)
     viewModelOf(::MainIntentViewModel)
     viewModelOf(::KernelFlashViewModel)

@@ -199,6 +199,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.commons.compress)
     implementation(libs.xz)
+    implementation(libs.bouncycastle)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)

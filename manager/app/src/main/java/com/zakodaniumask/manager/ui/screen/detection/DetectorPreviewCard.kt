@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Home preview for the detector; result shown as a green check or a red cross.
+// Home preview for the detector: green check when every detector is clear, red cross when any
+// detector reports a risk, info while the scan is still running.
 
 package com.zakodaniumask.manager.ui.screen.detection
 
@@ -12,32 +13,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zakodaniumask.manager.R
-import com.zakodaniumask.manager.data.detection.SuReport
-import com.zakodaniumask.manager.data.detection.SuStage
+import com.zakodaniumask.manager.data.detection.DetectorStatus
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
 
 enum class DetectorPreviewStatus { WAITING, CLEAR, DANGER, SUPPORT, ERROR }
 
 @Composable
 fun DetectorPreviewCard(
-    report: SuReport?,
+    overall: DetectorStatus?,
     onClick: () -> Unit,
 ) {
-    val status = when {
-        report == null -> DetectorPreviewStatus.WAITING
-        report.stage == SuStage.FAILED -> DetectorPreviewStatus.ERROR
-        report.hasRootIndicators -> DetectorPreviewStatus.DANGER
-        else -> DetectorPreviewStatus.CLEAR
+    val status = when (overall) {
+        null -> DetectorPreviewStatus.WAITING
+        DetectorStatus.CLEAR -> DetectorPreviewStatus.CLEAR
+        DetectorStatus.DANGER -> DetectorPreviewStatus.DANGER
+        DetectorStatus.ERROR -> DetectorPreviewStatus.ERROR
+        else -> DetectorPreviewStatus.SUPPORT
     }
 
     val description = when (status) {
         DetectorPreviewStatus.WAITING -> stringResource(R.string.detector_waiting)
-        DetectorPreviewStatus.ERROR ->
-            report?.errorMessage?.takeIf { it.isNotBlank() }
-                ?: stringResource(R.string.root_detection_verdict_failed)
-        DetectorPreviewStatus.DANGER -> stringResource(R.string.root_detection_verdict_detected)
-        DetectorPreviewStatus.SUPPORT -> stringResource(R.string.root_detection_verdict_support)
         DetectorPreviewStatus.CLEAR -> stringResource(R.string.root_detection_verdict_clean)
+        DetectorPreviewStatus.DANGER -> stringResource(R.string.root_detection_verdict_detected)
+        DetectorPreviewStatus.ERROR -> stringResource(R.string.root_detection_verdict_failed)
+        DetectorPreviewStatus.SUPPORT -> stringResource(R.string.root_detection_verdict_support)
     }
 
     val icon = when (status) {

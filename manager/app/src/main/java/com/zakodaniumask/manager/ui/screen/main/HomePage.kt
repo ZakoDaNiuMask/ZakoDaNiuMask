@@ -114,7 +114,7 @@ import com.zakodaniumask.manager.ui.viewmodel.HomeUiAction
 import com.zakodaniumask.manager.ui.viewmodel.HomeUiEvent
 import com.zakodaniumask.manager.ui.viewmodel.HomeUiState
 import com.zakodaniumask.manager.ui.viewmodel.HomeViewModel
-import com.zakodaniumask.manager.ui.viewmodel.RootDetectionViewModel
+import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -159,7 +159,7 @@ fun HomePage(
     val navigator = LocalNavigator.current
     val loadingDialog = rememberLoadingDialog()
     val scope = rememberCoroutineScope()
-    val detectionViewModel: RootDetectionViewModel = koinViewModel()
+    val detectionViewModel: DetectorViewModel = koinViewModel()
     val detectionState by detectionViewModel.state.collectAsStateWithLifecycle()
     val handlePageChange = LocalHandlePageChange.current
 
@@ -343,7 +343,7 @@ fun HomePage(
                         }
                     )
                     DetectorPreviewCard(
-                        report = detectionState.report,
+                        overall = if (detectionState.isReady) detectionState.overall else null,
                         onClick = {
                             val detectorIndex = BottomBarDestination
                                 .getPages(uiState.systemStatus.isFullFeatured)
