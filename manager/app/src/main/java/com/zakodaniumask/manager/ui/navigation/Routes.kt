@@ -143,6 +143,10 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object PartitionManager : Route
+
+    @Parcelize
+    @Serializable
     data object DynamicManager : Route
 
     @Parcelize

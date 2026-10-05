@@ -152,6 +152,12 @@ enum Commands {
         command: BootInfo,
     },
 
+    /// Flash and inspect partition images
+    Flash {
+        #[command(subcommand)]
+        command: FlashCommand,
+    },
+
     /// For developers
     Debug {
         #[command(subcommand)]
@@ -220,6 +226,240 @@ enum BootInfo {
         #[arg(short = 'u', long, default_value = "false")]
         ota: bool,
     },
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum FlashCommand {
+    /// Show A/B slot information
+    Slots,
+
+    /// List partitions
+    List {
+        #[arg(long)]
+        slot: Option<String>,
+        #[arg(long)]
+        all: bool,
+    },
+
+    /// Inspect a partition
+    Info {
+        partition: String,
+        #[arg(long)]
+        slot: Option<String>,
+    },
+
+    /// Back up a partition
+    Backup {
+        partition: String,
+        output: PathBuf,
+        #[arg(long)]
+        slot: Option<String>,
+    },
+
+    /// Flash an image to a partition
+    Image {
+        image: PathBuf,
+        partition: String,
+        #[arg(long)]
+        slot: Option<String>,
+        #[arg(long)]
+        no_verify: bool,
+    },
+
+    /// Map logical partitions for a slot
+    Map { slot: String },
+
+    /// Inspect an AnyKernel3 archive
+    Ak3Info { zip: PathBuf },
+
+    /// Flash an AnyKernel3 archive
+    Ak3 {
+        zip: PathBuf,
+        #[arg(long, value_enum)]
+        slot: Option<Slot>,
+        #[arg(long)]
+        log: Option<PathBuf>,
+        #[arg(long)]
+        use_mkbootfs: bool,
+    },
+
+    /// Show AVB/dm-verity status
+    Avb { action: Option<String> },
+
+    /// Read the kernel version
+    Kernel {
+        #[arg(long)]
+        slot: Option<String>,
+    },
+
+    /// Read boot slot information
+    BootInfo,
+}
+
+fn resolve_slot(slot: Option<String>) -> String {
+    slot.map(|value| crate::flash::partition::normalize_slot_suffix(&value))
+        .unwrap_or_else(crate::flash::partition::get_current_slot_suffix)
+}
+
+fn run_flash(command: FlashCommand) -> Result<()> {
+    use crate::flash::{ak3, partition};
+
+    match command {
+        FlashCommand::Slots => {
+            if !partition::is_ab_device() {
+                println!("This device is not A/B partitioned");
+                return Ok(());
+            }
+            let current = partition::get_current_slot_suffix();
+            let other = if current == "_a" { "_b" } else { "_a" };
+            println!("Slot Information:");
+            println!("  Current slot: {current}");
+            println!("  Other slot:   {other}");
+            if let Some(value) = partition::read_prop("ro.boot.slot_suffix") {
+                println!("  Property ro.boot.slot_suffix: {value}");
+            }
+        }
+        FlashCommand::List { slot, all } => {
+            let slot = resolve_slot(slot);
+            let partitions = partition::get_available_partitions(all, &slot);
+            if all {
+                print!("All partitions");
+            } else {
+                print!("Common partitions");
+            }
+            if partition::is_ab_device() && !slot.is_empty() {
+                print!(" (slot: {slot})");
+            }
+            println!(":");
+            for name in &partitions {
+                let info = partition::get_partition_info(name, &slot);
+                let kind = if info.is_logical {
+                    "logical"
+                } else {
+                    "physical"
+                };
+                let marker = if partition::is_dangerous_partition(name) {
+                    " [DANGEROUS]"
+                } else {
+                    ""
+                };
+                println!("  {name:<20} [{kind}, {} bytes]{marker}", info.size);
+            }
+        }
+        FlashCommand::Info {
+            partition: name,
+            slot,
+        } => {
+            let slot = resolve_slot(slot);
+            let info = partition::get_partition_info(&name, &slot);
+            if !info.exists {
+                anyhow::bail!("Partition {name} not found");
+            }
+            println!("Partition: {}", info.name);
+            println!("Block device: {}", info.block_device);
+            println!(
+                "Type: {}",
+                if info.is_logical {
+                    "logical"
+                } else {
+                    "physical"
+                }
+            );
+            println!(
+                "Size: {} bytes ({:.2} MB)",
+                info.size,
+                info.size as f64 / 1024.0 / 1024.0
+            );
+            if partition::is_ab_device() {
+                let display = if info.slot_suffix.is_empty() {
+                    "/"
+                } else {
+                    info.slot_suffix.as_str()
+                };
+                println!("Slot: {display}");
+            }
+        }
+        FlashCommand::Backup {
+            partition: name,
+            output,
+            slot,
+        } => {
+            let slot = resolve_slot(slot);
+            partition::backup_partition(&name, &output, &slot)
+                .map_err(|error| anyhow::anyhow!("Backup failed: {error:#}"))?;
+            println!("Backup successful!");
+        }
+        FlashCommand::Image {
+            image,
+            partition: name,
+            slot,
+            no_verify,
+        } => {
+            let slot = resolve_slot(slot);
+            partition::flash_partition(&image, &name, &slot, !no_verify)
+                .map_err(|error| anyhow::anyhow!("Flash failed: {error:#}"))?;
+            println!("Flash successful!");
+        }
+        FlashCommand::Map { slot } => {
+            let slot = partition::normalize_slot_suffix(&slot);
+            partition::map_logical_partitions(&slot)
+                .map_err(|error| anyhow::anyhow!("Mapping failed: {error:#}"))?;
+            println!("Mapping successful!");
+        }
+        FlashCommand::Ak3Info { zip } => {
+            let info = ak3::inspect_ak3_package(&zip);
+            if !info.valid {
+                anyhow::bail!("Invalid AnyKernel3 package: {}", info.error);
+            }
+            println!("valid=1");
+            println!("kernel={}", info.kernel_name);
+            println!("devices={}", info.devices.join("|"));
+            println!("slot_policy={}", info.package_slot_policy);
+        }
+        FlashCommand::Ak3 {
+            zip,
+            slot,
+            log: _,
+            use_mkbootfs: _,
+        } => {
+            #[cfg(target_os = "android")]
+            {
+                ak3::flash_ak3(&zip, slot)?;
+            }
+            #[cfg(not(target_os = "android"))]
+            {
+                let _ = (zip, slot);
+                anyhow::bail!("flash ak3 is only supported on Android");
+            }
+        }
+        FlashCommand::Avb { action } => {
+            if action.as_deref() == Some("disable") {
+                partition::patch_vbmeta_disable_verification().map_err(|error| {
+                    anyhow::anyhow!("Failed to disable AVB/dm-verity: {error:#}")
+                })?;
+                println!("AVB/dm-verity disabled successfully!");
+            } else {
+                let status = partition::get_avb_status();
+                if status.is_empty() {
+                    anyhow::bail!("Failed to get AVB status");
+                }
+                println!("AVB/dm-verity status: {status}");
+            }
+        }
+        FlashCommand::Kernel { slot } => {
+            let slot = resolve_slot(slot);
+            let version = partition::get_kernel_version(&slot);
+            if version.is_empty() {
+                anyhow::bail!("Failed to get kernel version");
+            }
+            println!("Kernel version: {version}");
+        }
+        FlashCommand::BootInfo => {
+            println!("{}", partition::get_boot_slot_info());
+        }
+    }
+
+    Ok(())
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -882,6 +1122,7 @@ pub fn run() -> Result<()> {
                 return Ok(());
             }
         },
+        Commands::Flash { command } => run_flash(command),
         Commands::BootRestore(boot_restore) => crate::boot_patch::restore(boot_restore),
         Commands::Resetprop(resetprop_args) => crate::android::resetprop::run(&resetprop_args),
         Commands::BootPatchV2(patch) => crate::lkm_image::patch_boot(&patch),

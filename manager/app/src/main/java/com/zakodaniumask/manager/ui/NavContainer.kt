@@ -82,6 +82,7 @@ import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.main.MainScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.ModuleRepoScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.OnlineModuleDetailScreen
+import com.zakodaniumask.manager.ui.screen.partition.PartitionManagerScreen
 import com.zakodaniumask.manager.ui.screen.susfs.SuSFSConfigScreen
 import com.zakodaniumask.manager.ui.screen.themeSettings.ThemeSettingsScreen
 import com.zakodaniumask.manager.ui.theme.BackgroundRenderState
@@ -613,6 +614,17 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     DynamicManagerScreen()
+                }
+            }
+            entry<Route.PartitionManager>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    PartitionManagerScreen()
                 }
             }
             entry<Route.KernelFlash>(swipeDismiss = NavSwipeDirection.None) { key ->

@@ -45,6 +45,7 @@ import androidx.compose.material.icons.twotone.Science
 import androidx.compose.material.icons.twotone.Security
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Share
+import androidx.compose.material.icons.twotone.Storage
 import androidx.compose.material.icons.twotone.Update
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -480,6 +481,16 @@ fun SettingsPage(bottomPadding: Dp) {
                                     }
                                 )
                             }
+                        }
+                        item {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Storage,
+                                title = stringResource(R.string.partition_manager),
+                                description = stringResource(R.string.partition_manager_summary),
+                                onClick = {
+                                    navigator.push(Route.PartitionManager)
+                                }
+                            )
                         }
                         item(visible = homeState.systemStatus.lkmMode == true && !homeState.systemStatus.isLateLoadMode) {
                             UninstallItem {
