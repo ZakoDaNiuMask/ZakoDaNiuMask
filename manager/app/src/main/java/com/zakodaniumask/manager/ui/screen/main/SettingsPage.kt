@@ -492,16 +492,7 @@ fun SettingsPage(bottomPadding: Dp) {
                                 }
                             )
                         }
-                        item {
-                            SettingsJumpPageWidget(
-                                icon = Icons.TwoTone.Policy,
-                                title = stringResource(R.string.root_detection),
-                                description = stringResource(R.string.root_detection_summary),
-                                onClick = {
-                                    navigator.push(Route.RootDetection)
-                                }
-                            )
-                        }
+
                         item(visible = homeState.systemStatus.lkmMode == true && !homeState.systemStatus.isLateLoadMode) {
                             UninstallItem {
                                 loadingDialog.withLoading(it)

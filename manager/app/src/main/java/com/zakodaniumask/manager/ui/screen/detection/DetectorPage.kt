@@ -53,17 +53,15 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
-import com.zakodaniumask.manager.data.detection.RootProbeClientRepository
-import com.zakodaniumask.manager.data.detection.SuReport
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.WarningCard
-import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
 import com.zakodaniumask.manager.ui.component.settings.lazySegmentColumn
-import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.screen.LabelText
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
@@ -72,16 +70,18 @@ import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
+import com.zakodaniumask.manager.ui.viewmodel.RootDetectionViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun RootDetectionScreen() {
+fun DetectorPage(bottomPadding: Dp) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
-    val repository: RootProbeClientRepository = koinInject()
-    val navigator = LocalNavigator.current
+    val viewModel: RootDetectionViewModel = koinViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val snackBarHost = LocalSnackbarHost.current
     val clipboard = LocalClipboardManager.current
@@ -90,20 +90,8 @@ fun RootDetectionScreen() {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-    var report by remember { mutableStateOf<SuReport?>(null) }
-    var isScanning by remember { mutableStateOf(true) }
-
-    fun scan() {
-        scope.launch {
-            isScanning = true
-            report = repository.scan()
-            isScanning = false
-        }
-    }
-
     LaunchedEffect(Unit) {
         scrollBehavior.state.heightOffset = scrollBehavior.state.heightOffsetLimit
-        scan()
     }
 
     Scaffold(
@@ -116,10 +104,9 @@ fun RootDetectionScreen() {
         topBar = {
             LargeFlexibleTopAppBar(
                 modifier = Modifier.blurEffect(),
-                title = { Text(stringResource(R.string.root_detection)) },
+                title = { Text(stringResource(R.string.detector)) },
                 windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
                 scrollBehavior = scrollBehavior,
-                navigationIcon = { AppBackButton(onClick = { navigator.pop() }) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor =
                         if (themeConfig.isEnableBlur)
@@ -136,8 +123,8 @@ fun RootDetectionScreen() {
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
     ) { paddingValues ->
-        val data = report
-        if (data == null) {
+        val report = state.report
+        if (report == null) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -149,7 +136,7 @@ fun RootDetectionScreen() {
             return@Scaffold
         }
 
-        val model = rememberRootDetectionModel(data)
+        val model = rememberRootDetectionModel(report)
 
         LazyColumn(
             modifier = Modifier
@@ -158,7 +145,7 @@ fun RootDetectionScreen() {
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(
                 top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + 12.dp,
+                bottom = paddingValues.calculateBottomPadding() + bottomPadding + 12.dp,
             ),
         ) {
             item {
@@ -203,8 +190,8 @@ fun RootDetectionScreen() {
                 ) {
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { scan() },
-                        enabled = !isScanning,
+                        onClick = { viewModel.scan() },
+                        enabled = !state.isScanning,
                     ) {
                         Text(stringResource(R.string.root_detection_refresh))
                     }

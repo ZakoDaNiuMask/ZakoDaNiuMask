@@ -98,11 +98,14 @@ import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Route
+import com.zakodaniumask.manager.ui.screen.BottomBarDestination
 import com.zakodaniumask.manager.ui.screen.LabelText
+import com.zakodaniumask.manager.ui.screen.detection.DetectorPreviewCard
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.zakodaniumask.manager.ui.theme.blurEffect
 import com.zakodaniumask.manager.ui.theme.blurSource
+import com.zakodaniumask.manager.ui.util.LocalHandlePageChange
 import com.zakodaniumask.manager.ui.util.LocalPermissionRequestInterface
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
@@ -111,6 +114,7 @@ import com.zakodaniumask.manager.ui.viewmodel.HomeUiAction
 import com.zakodaniumask.manager.ui.viewmodel.HomeUiEvent
 import com.zakodaniumask.manager.ui.viewmodel.HomeUiState
 import com.zakodaniumask.manager.ui.viewmodel.HomeViewModel
+import com.zakodaniumask.manager.ui.viewmodel.RootDetectionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -155,6 +159,9 @@ fun HomePage(
     val navigator = LocalNavigator.current
     val loadingDialog = rememberLoadingDialog()
     val scope = rememberCoroutineScope()
+    val detectionViewModel: RootDetectionViewModel = koinViewModel()
+    val detectionState by detectionViewModel.state.collectAsStateWithLifecycle()
+    val handlePageChange = LocalHandlePageChange.current
 
     Scaffold(
         topBar = {
@@ -334,6 +341,15 @@ fun HomePage(
                                 }
                             }
                         }
+                    )
+                    DetectorPreviewCard(
+                        report = detectionState.report,
+                        onClick = {
+                            val detectorIndex = BottomBarDestination
+                                .getPages(uiState.systemStatus.isFullFeatured)
+                                .indexOf(BottomBarDestination.Detector)
+                            if (detectorIndex >= 0) handlePageChange(detectorIndex)
+                        },
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))

@@ -210,6 +210,8 @@
     <string name="partition_avb_disabled">已禁用 AVB/dm-verity</string>
     <string name="partition_avb_disable_failed">禁用 AVB/dm-verity 失败</string>
     <string name="root_detection">Root 检测</string>
+    <string name="detector">检测器</string>
+    <string name="detector_waiting">等待检测结果…</string>
     <string name="root_detection_summary">以独立无权限进程（等同第三方 App）运行初步的 SU/Root 检测</string>
     <string name="root_detection_warning">检测在独立、无权限的进程中运行（等同第三方 App），因此结果反映普通 App 能看到什么。“干净”只是弱证据；多数 root 方案会对普通应用隐藏其痕迹。</string>
     <string name="root_detection_refresh">重新检测</string>

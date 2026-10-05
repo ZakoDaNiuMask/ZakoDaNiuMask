@@ -5,11 +5,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AdminPanelSettings
 import androidx.compose.material.icons.twotone.Extension
 import androidx.compose.material.icons.twotone.Home
+import androidx.compose.material.icons.twotone.Security
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.ui.screen.detection.DetectorPage
 import com.zakodaniumask.manager.ui.screen.main.HomePage
 import com.zakodaniumask.manager.ui.screen.main.ModulePage
 import com.zakodaniumask.manager.ui.screen.main.SettingsPage
@@ -27,6 +29,13 @@ enum class BottomBarDestination(
         R.string.home,
         Icons.TwoTone.Home,
         Icons.TwoTone.Home,
+        false
+    ),
+    Detector(
+        { bottomPadding -> DetectorPage(bottomPadding) },
+        R.string.detector,
+        Icons.TwoTone.Security,
+        Icons.TwoTone.Security,
         false
     ),
     SuperUser(

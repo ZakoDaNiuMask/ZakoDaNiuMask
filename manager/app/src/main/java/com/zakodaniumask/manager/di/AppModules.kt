@@ -157,6 +157,7 @@ import com.zakodaniumask.manager.ui.viewmodel.MainIntentViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleDetailViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleRepoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
+import com.zakodaniumask.manager.ui.viewmodel.RootDetectionViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SuSFSViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SulogViewModel
@@ -411,6 +412,7 @@ val viewModelModule = module {
         )
     }
     viewModelOf(::HomeViewModel)
+    viewModelOf(::RootDetectionViewModel)
     viewModelOf(::InstallViewModel)
     viewModelOf(::MainIntentViewModel)
     viewModelOf(::KernelFlashViewModel)
