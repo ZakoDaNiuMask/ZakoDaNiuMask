@@ -46,6 +46,7 @@ import com.zakodaniumask.manager.data.update.ManagerUpdateRepository
 import com.zakodaniumask.manager.data.webui.WebUiRepository
 import com.zakodaniumask.manager.domain.text.TextTransliterator
 import com.zakodaniumask.manager.domain.usecase.AddUmountPathUseCase
+import com.zakodaniumask.manager.domain.usecase.ApplyDetectorActionUseCase
 import com.zakodaniumask.manager.domain.usecase.ApplyLanguageUseCase
 import com.zakodaniumask.manager.domain.usecase.BackupAllowlistUseCase
 import com.zakodaniumask.manager.domain.usecase.CalculateInstalledModuleSizeUseCase
@@ -72,6 +73,7 @@ import com.zakodaniumask.manager.domain.usecase.GetAppSepolicyUseCase
 import com.zakodaniumask.manager.domain.usecase.GetBooleanPreferenceUseCase
 import com.zakodaniumask.manager.domain.usecase.GetCatalogModuleUseCase
 import com.zakodaniumask.manager.domain.usecase.GetDefaultUmountModulesUseCase
+import com.zakodaniumask.manager.domain.usecase.GetDetectorActionStatesUseCase
 import com.zakodaniumask.manager.domain.usecase.GetHomeBasicInfoUseCase
 import com.zakodaniumask.manager.domain.usecase.GetInstallEnvironmentUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKernelFeatureSettingsUseCase
@@ -225,6 +227,9 @@ val repositoryModule = module {
     single { com.zakodaniumask.manager.data.detection.RootProbeClientRepository(androidApplication()) }
     single { com.zakodaniumask.manager.data.bootloader.BootloaderDetector(androidApplication()) }
     single { com.zakodaniumask.manager.data.tee.TeeDetector(androidApplication()) }
+    single { com.zakodaniumask.manager.data.properties.SystemPropertiesDetector() }
+    single { com.zakodaniumask.manager.data.kernel.KernelCheckDetector() }
+    single { com.zakodaniumask.manager.data.selinux.SelinuxDetector() }
     singleOf(::CountRepository)
     singleOf(::InstalledPackageCache)
     singleOf(::AppIconDataSource)
@@ -336,6 +341,8 @@ val useCaseModule = module {
     factoryOf(::GetDefaultUmountModulesUseCase)
     factoryOf(::GetSuSFSStatusUseCase)
     factoryOf(::SuSFSConfigUseCase)
+    factoryOf(::GetDetectorActionStatesUseCase)
+    factoryOf(::ApplyDetectorActionUseCase)
     factoryOf(::ApplyLanguageUseCase)
     factoryOf(::IsSystemLanguageSettingsUseCase)
     factoryOf(::LaunchSystemLanguageSettingsUseCase)

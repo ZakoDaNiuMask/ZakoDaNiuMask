@@ -22,10 +22,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.BugReport
 import androidx.compose.material.icons.twotone.CheckCircle
+import androidx.compose.material.icons.twotone.Code
+import androidx.compose.material.icons.twotone.Computer
 import androidx.compose.material.icons.twotone.ExpandLess
 import androidx.compose.material.icons.twotone.ExpandMore
 import androidx.compose.material.icons.twotone.Info
+import androidx.compose.material.icons.twotone.Security
+import androidx.compose.material.icons.twotone.VisibilityOff
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -48,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
@@ -59,12 +65,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.bootloader.BootloaderReport
 import com.zakodaniumask.manager.data.detection.DetectorStatus
+import com.zakodaniumask.manager.data.kernel.KernelCheckReport
+import com.zakodaniumask.manager.data.properties.SystemPropertiesReport
+import com.zakodaniumask.manager.data.selinux.SelinuxMode
+import com.zakodaniumask.manager.data.selinux.SelinuxReport
 import com.zakodaniumask.manager.data.tee.TeeReport
+import com.zakodaniumask.manager.domain.model.DetectorAction
+import com.zakodaniumask.manager.domain.model.DetectorActionKind
+import com.zakodaniumask.manager.domain.model.DetectorSection
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.WarningCard
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
+import com.zakodaniumask.manager.ui.component.settings.SettingsJumpPageWidget
+import com.zakodaniumask.manager.ui.component.settings.SettingsSwitchWidget
 import com.zakodaniumask.manager.ui.component.settings.lazySegmentColumn
+import com.zakodaniumask.manager.ui.navigation.LocalNavigator
+import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.screen.LabelText
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
@@ -89,7 +106,15 @@ fun DetectorPage(bottomPadding: Dp) {
     val scope = rememberCoroutineScope()
     val snackBarHost = LocalSnackbarHost.current
     val clipboard = LocalClipboardManager.current
+    val navigator = LocalNavigator.current
     val copiedText = stringResource(R.string.root_detection_copied)
+
+    val onQuickToggle: (DetectorActionKind, Boolean) -> Unit = { kind, enabled ->
+        viewModel.onDetectorAction(kind, enabled)
+    }
+    val onQuickJump: (DetectorActionKind) -> Unit = {
+        navigator.push(Route.SuSFSConfig)
+    }
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -180,6 +205,11 @@ fun DetectorPage(bottomPadding: Dp) {
                 }
                 rootSection(R.string.root_detection_section_methods, model.methodRows)
                 rootSection(R.string.root_detection_section_scan, model.scanRows)
+                quickSettings(
+                    actions = state.actions[DetectorSection.SU].orEmpty(),
+                    onToggle = onQuickToggle,
+                    onJump = onQuickJump,
+                )
             }
 
             state.bootloader?.let { bootloader ->
@@ -196,6 +226,40 @@ fun DetectorPage(bottomPadding: Dp) {
                     TeeSection(tee)
                     Spacer(modifier = Modifier.height(12.dp))
                 }
+            }
+
+            state.systemProperties?.let { properties ->
+                item {
+                    SectionTitle(stringResource(R.string.detector_system_properties))
+                    SystemPropertiesSection(properties)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+
+            state.kernelCheck?.let { kernel ->
+                item {
+                    SectionTitle(stringResource(R.string.detector_kernel_check))
+                    KernelCheckSection(kernel)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                quickSettings(
+                    actions = state.actions[DetectorSection.KERNEL_CHECK].orEmpty(),
+                    onToggle = onQuickToggle,
+                    onJump = onQuickJump,
+                )
+            }
+
+            state.selinux?.let { selinux ->
+                item {
+                    SectionTitle(stringResource(R.string.detector_selinux))
+                    SelinuxSection(selinux)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                quickSettings(
+                    actions = state.actions[DetectorSection.SELINUX].orEmpty(),
+                    onToggle = onQuickToggle,
+                    onJump = onQuickJump,
+                )
             }
 
             item {
@@ -319,6 +383,206 @@ private fun TeeSection(report: TeeReport) {
             }
         }
     }
+}
+
+@Composable
+private fun SystemPropertiesSection(report: SystemPropertiesReport) {
+    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        item {
+            SettingsBaseWidget(
+                icon = statusIcon(report.status.toRootStatus()),
+                iconSize = 18.dp,
+                title = stringResource(systemPropertiesVerdict(report)),
+                description = report.suspiciousFingerprint?.let { pattern ->
+                    stringResource(R.string.system_properties_row_fingerprint) + ": " + pattern
+                },
+                containerColor = statusContainer(report.status.toRootStatus()),
+                onClick = null,
+            )
+        }
+        item {
+            ValueRow(
+                label = stringResource(R.string.system_properties_row_observed),
+                value = "${report.observedRuleCount}/${report.checkedRuleCount}",
+            )
+        }
+        report.signals.forEach { signal ->
+            item {
+                ValueRow(
+                    label = signal.property,
+                    value = signal.value ?: unknown(),
+                    detail = signal.description,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun systemPropertiesVerdict(report: SystemPropertiesReport): Int = when {
+    report.status == DetectorStatus.DANGER -> R.string.system_properties_verdict_danger
+    report.status == DetectorStatus.INFO || report.status == DetectorStatus.UNKNOWN ->
+        R.string.system_properties_verdict_unreadable
+    else -> R.string.system_properties_verdict_ok
+}
+
+@Composable
+private fun KernelCheckSection(report: KernelCheckReport) {
+    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        item {
+            SettingsBaseWidget(
+                icon = statusIcon(report.status.toRootStatus()),
+                iconSize = 18.dp,
+                title = stringResource(
+                    when (report.status) {
+                        DetectorStatus.DANGER -> R.string.kernel_verdict_danger
+                        DetectorStatus.CLEAR -> R.string.kernel_verdict_ok
+                        else -> R.string.kernel_verdict_partial
+                    }
+                ),
+                description = report.error,
+                containerColor = statusContainer(report.status.toRootStatus()),
+                onClick = null,
+            )
+        }
+        if (report.unameOutput.isNotBlank()) {
+            item { ValueRow(stringResource(R.string.kernel_row_uname), report.unameOutput) }
+        }
+        if (report.procVersion.isNotBlank()) {
+            item { ValueRow(stringResource(R.string.kernel_row_proc_version), report.procVersion) }
+        }
+        if (report.procCmdline.isNotBlank()) {
+            item { ValueRow(stringResource(R.string.kernel_row_cmdline), report.procCmdline.take(160)) }
+        }
+        report.kptrRestrict?.let { kptr ->
+            item { ValueRow(stringResource(R.string.kernel_row_kptr), kptr) }
+        }
+        report.findings.forEach { finding ->
+            item {
+                ValueRow(
+                    label = finding.label,
+                    value = finding.value,
+                    detail = finding.detail,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SelinuxSection(report: SelinuxReport) {
+    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        item {
+            SettingsBaseWidget(
+                icon = statusIcon(report.status.toRootStatus()),
+                iconSize = 18.dp,
+                title = stringResource(selinuxVerdict(report)),
+                description = report.error,
+                containerColor = statusContainer(report.status.toRootStatus()),
+                onClick = null,
+            )
+        }
+        item { ValueRow(stringResource(R.string.selinux_row_mode), report.statusLabel) }
+        val context = report.processContext
+        if (!context.isNullOrBlank()) {
+            item { ValueRow(stringResource(R.string.selinux_row_context), context) }
+        }
+        item { ValueRow(stringResource(R.string.selinux_row_paradox), yesNo(report.paradoxDetected)) }
+        report.checks.forEach { check ->
+            item { ValueRow(check.method, check.status, detail = check.detail) }
+        }
+    }
+}
+
+@Composable
+private fun selinuxVerdict(report: SelinuxReport): Int = when {
+    report.paradoxDetected -> R.string.selinux_verdict_paradox
+    report.mode == SelinuxMode.PERMISSIVE -> R.string.selinux_verdict_permissive
+    report.mode == SelinuxMode.DISABLED -> R.string.selinux_verdict_disabled
+    report.mode == SelinuxMode.ENFORCING -> R.string.selinux_verdict_enforcing
+    else -> R.string.selinux_verdict_unknown
+}
+
+private fun LazyListScope.quickSettings(
+    actions: List<DetectorAction>,
+    onToggle: (DetectorActionKind, Boolean) -> Unit,
+    onJump: (DetectorActionKind) -> Unit,
+) {
+    if (actions.isEmpty()) return
+    item {
+        SectionTitle(stringResource(R.string.detector_quick_settings))
+        SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+            actions.forEach { action ->
+                item {
+                    QuickSettingRow(action = action, onToggle = onToggle, onJump = onJump)
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+    }
+}
+
+@Composable
+private fun QuickSettingRow(
+    action: DetectorAction,
+    onToggle: (DetectorActionKind, Boolean) -> Unit,
+    onJump: (DetectorActionKind) -> Unit,
+) {
+    val title = stringResource(actionTitle(action.kind))
+    val description = stringResource(actionDescription(action.kind))
+    val icon = actionIcon(action.kind)
+    val enabled = action.enabled
+    if (enabled == null) {
+        SettingsJumpPageWidget(
+            icon = icon,
+            title = title,
+            description = description,
+            enabled = action.supported,
+            onClick = { onJump(action.kind) },
+        )
+    } else {
+        SettingsSwitchWidget(
+            icon = icon,
+            title = title,
+            description = description,
+            enabled = action.supported,
+            checked = enabled,
+            onCheckedChange = { onToggle(action.kind, it) },
+        )
+    }
+}
+
+private fun actionTitle(kind: DetectorActionKind): Int = when (kind) {
+    DetectorActionKind.SELINUX_HIDE -> R.string.detector_action_selinux_hide
+    DetectorActionKind.KERNEL_UMOUNT -> R.string.detector_action_kernel_umount
+    DetectorActionKind.DEFAULT_UMOUNT_MODULES -> R.string.detector_action_default_umount
+    DetectorActionKind.SU_ENABLED -> R.string.detector_action_su_enabled
+    DetectorActionKind.SUSFS_ENABLED -> R.string.detector_action_susfs_enabled
+    DetectorActionKind.SUSFS_AVC_LOG_SPOOFING -> R.string.detector_action_susfs_avc_log_spoofing
+    DetectorActionKind.SUSFS_HIDE_SUS_MNTS -> R.string.detector_action_susfs_hide_sus_mnts
+    DetectorActionKind.SUSFS_UNAME_SPOOF -> R.string.detector_action_susfs_uname_spoof
+}
+
+private fun actionDescription(kind: DetectorActionKind): Int = when (kind) {
+    DetectorActionKind.SELINUX_HIDE -> R.string.detector_action_selinux_hide_desc
+    DetectorActionKind.KERNEL_UMOUNT -> R.string.detector_action_kernel_umount_desc
+    DetectorActionKind.DEFAULT_UMOUNT_MODULES -> R.string.detector_action_default_umount_desc
+    DetectorActionKind.SU_ENABLED -> R.string.detector_action_su_enabled_desc
+    DetectorActionKind.SUSFS_ENABLED -> R.string.detector_action_susfs_enabled_desc
+    DetectorActionKind.SUSFS_AVC_LOG_SPOOFING -> R.string.detector_action_susfs_avc_log_spoofing_desc
+    DetectorActionKind.SUSFS_HIDE_SUS_MNTS -> R.string.detector_action_susfs_hide_sus_mnts_desc
+    DetectorActionKind.SUSFS_UNAME_SPOOF -> R.string.detector_action_susfs_uname_spoof_desc
+}
+
+private fun actionIcon(kind: DetectorActionKind): ImageVector = when (kind) {
+    DetectorActionKind.SELINUX_HIDE -> Icons.TwoTone.Security
+    DetectorActionKind.KERNEL_UMOUNT -> Icons.TwoTone.Code
+    DetectorActionKind.DEFAULT_UMOUNT_MODULES -> Icons.TwoTone.Code
+    DetectorActionKind.SU_ENABLED -> Icons.TwoTone.Security
+    DetectorActionKind.SUSFS_ENABLED -> Icons.TwoTone.VisibilityOff
+    DetectorActionKind.SUSFS_AVC_LOG_SPOOFING -> Icons.TwoTone.BugReport
+    DetectorActionKind.SUSFS_HIDE_SUS_MNTS -> Icons.TwoTone.VisibilityOff
+    DetectorActionKind.SUSFS_UNAME_SPOOF -> Icons.TwoTone.Computer
 }
 
 @Composable
