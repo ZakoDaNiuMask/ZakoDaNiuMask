@@ -3,6 +3,7 @@ package com.zakodaniumask.manager.ghostlock.data
 import android.content.ContentValues
 import android.content.Context
 import android.media.MediaScannerConnection
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import java.io.BufferedWriter
@@ -44,6 +45,7 @@ internal class DebugAttackLog private constructor(
      */
     @Synchronized
     fun writeSidecar(name: String, bytes: ByteArray): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream")
@@ -94,6 +96,7 @@ internal class DebugAttackLog private constructor(
         private val sequence = AtomicLong()
 
         fun open(context: Context, entry: String, folder: String): DebugAttackLog? {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return null
             val stamp = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
             val suffix = sequence.getAndIncrement()
             val folderPath = "$folder/$stamp"

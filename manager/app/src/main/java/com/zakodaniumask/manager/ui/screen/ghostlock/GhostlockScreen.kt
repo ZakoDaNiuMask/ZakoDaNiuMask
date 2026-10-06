@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.BugReport
@@ -232,15 +233,127 @@ fun GhostlockScreen() {
                     bottom = padding.calculateBottomPadding() + 12.dp,
                 ),
             ) {
-                item { StatusCard(state) }
-                item { Spacer(Modifier.height(12.dp)) }
-                item { ControlCard(state, actions, onPickCpu = { showCpuDialog = true }) }
-                item { Spacer(Modifier.height(12.dp)) }
-                item { ActionsCard(actions) }
-                item { Spacer(Modifier.height(12.dp)) }
-                item { ProfileCard(state, actions) }
-                item { Spacer(Modifier.height(12.dp)) }
-                item { LogCard(state, actions) }
+                when {
+                    state.builtinScreenVisible -> {
+                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseBuiltinProfiles() } }
+                        item { SectionTitle(stringResource(GR.string.load_config_title)) }
+                        items(state.builtinProfiles) { release ->
+                            SelectRow(release, release == state.activeBuiltinProfile) {
+                                actions.onSelectBuiltinProfile(release)
+                                actions.onCloseBuiltinProfiles()
+                            }
+                        }
+                        if (state.builtinTemplates.isNotEmpty()) {
+                            item { SectionTitle(stringResource(GR.string.templates_section)) }
+                            items(state.builtinTemplates) { release ->
+                                SelectRow(release, false) { actions.onSelectBuiltinProfile(release) }
+                            }
+                        }
+                        item {
+                            SelectRow(stringResource(GR.string.load_builtin_auto), state.activeBuiltinProfile == null) {
+                                actions.onSelectBuiltinProfile(null)
+                                actions.onCloseBuiltinProfiles()
+                            }
+                        }
+                    }
+
+                    state.userProfileDetail != null -> {
+                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseUserProfileDetail() } }
+                        item { SectionTitle(state.userProfileDetail ?: "") }
+                        item { ActionRow(GR.string.user_profile_load) { actions.onLoadUserProfile(state.userProfileDetail!!) } }
+                        item { ActionRow(GR.string.user_profile_unload) { actions.onUnloadUserProfile() } }
+                        item { ActionRow(GR.string.user_profile_edit) { actions.onEditUserProfile(state.userProfileDetail!!) } }
+                        item { ActionRow(GR.string.user_profile_export) { actions.onUserProfileExport(state.userProfileDetail!!) } }
+                        item { ActionRow(GR.string.user_profile_rename) { actions.onUserProfileRename(state.userProfileDetail!!) } }
+                        item { ActionRow(GR.string.user_profile_convert) { actions.onConvertUserProfile(state.userProfileDetail!!) } }
+                        item { ActionRow(GR.string.user_profile_delete) { actions.onUserProfileDelete(state.userProfileDetail!!) } }
+                    }
+
+                    state.parametersVisible -> {
+                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseParameters() } }
+                        item { SectionTitle(stringResource(GR.string.parameters)) }
+                        items(state.profileOverrideRoots) { node ->
+                            if (!node.isGroup) {
+                                OverrideRow(
+                                    label = node.name,
+                                    value = state.profileOverrideEditing[node.path] ?: node.value?.toString().orEmpty(),
+                                    onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
+                                )
+                            }
+                        }
+                    }
+
+                    state.profileOverrideVisible || state.advancedOverrideVisible -> {
+                        item {
+                            BackRow(stringResource(GR.string.action_back)) {
+                                if (state.advancedOverrideVisible) actions.onCloseAdvancedOverrides()
+                                else actions.onCloseProfileOverrides()
+                            }
+                        }
+                        item { SectionTitle(stringResource(GR.string.debug_profile_override)) }
+                        items(state.profileOverrideRoots) { node ->
+                            if (!node.isGroup) {
+                                OverrideRow(
+                                    label = node.name,
+                                    value = state.profileOverrideEditing[node.path] ?: node.value?.toString().orEmpty(),
+                                    onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
+                                )
+                            }
+                        }
+                    }
+
+                    state.advancedScreenVisible -> {
+                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseAdvanced() } }
+                        item { SectionTitle(stringResource(GR.string.advanced_settings)) }
+                        items(state.executionFields) { field ->
+                            OverrideRow(
+                                label = field.path,
+                                value = state.executionEditing[field.path] ?: field.value.toString(),
+                                onValueChange = { actions.onExecutionFieldChanged(field.path, it) },
+                            )
+                        }
+                        item { ActionRow(GR.string.profile_save) { actions.onSaveProfileEdits() } }
+                        item { ActionRow(GR.string.profile_save_as) { actions.onSaveProfileAs() } }
+                        item { ActionRow(GR.string.profile_revert) { actions.onRevertProfileEdits() } }
+                        item { ActionRow(GR.string.override_export) { actions.onExportProfileEdits() } }
+                        item { ActionRow(GR.string.debug_profile_override) { actions.onOpenProfileOverrides() } }
+                        item {
+                            SettingsSwitchWidget(
+                                title = stringResource(GR.string.debug_export_log),
+                                description = stringResource(GR.string.debug_export_log_summary),
+                                checked = state.debugExportEnabled,
+                                onCheckedChange = { actions.onDebugExportChanged(it) },
+                            )
+                        }
+                        item {
+                            SettingsJumpPageWidget(
+                                title = stringResource(GR.string.debug_export_location),
+                                description = state.debugExportLocation,
+                                onClick = { actions.onDebugExportLocationPick() },
+                            )
+                        }
+                        item {
+                            SettingsSwitchWidget(
+                                title = stringResource(GR.string.debug_kernel_log),
+                                description = stringResource(GR.string.debug_kernel_log_summary),
+                                checked = state.debugKernelLogEnabled,
+                                onCheckedChange = { actions.onDebugKernelLogChanged(it) },
+                            )
+                        }
+                    }
+
+                    else -> {
+                        item { StatusCard(state) }
+                        item { Spacer(Modifier.height(12.dp)) }
+                        item { ControlCard(state, actions, onPickCpu = { showCpuDialog = true }) }
+                        item { Spacer(Modifier.height(12.dp)) }
+                        item { ActionsCard(actions) }
+                        item { Spacer(Modifier.height(12.dp)) }
+                        item { ProfileCard(state, actions) }
+                        item { Spacer(Modifier.height(12.dp)) }
+                        item { LogCard(state, actions) }
+                    }
+                }
             }
         }
     }
@@ -540,7 +653,7 @@ private fun ProfileCard(state: GhostlockUiState, actions: GhostlockActions) {
         item {
             SettingsJumpPageWidget(
                 icon = Icons.TwoTone.BugReport,
-                title = stringResource(GR.string.action_import_offsets_conf),
+                title = stringResource(GR.string.builtin_profile_label),
                 description = state.activeBuiltinProfile,
                 onClick = { actions.onOpenBuiltinProfiles() },
             )
@@ -712,4 +825,52 @@ private fun ListDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(GR.string.cancel)) }
         },
     )
+}
+
+@Composable
+private fun BackRow(label: String, onClick: () -> Unit) {
+    SettingsJumpPageWidget(
+        title = label,
+        onClick = { onClick() },
+    )
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+    )
+}
+
+@Composable
+private fun SelectRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    SettingsBaseWidget(
+        title = label,
+        selected = selected,
+        onClick = { onClick() },
+    )
+}
+
+@Composable
+private fun ActionRow(resId: Int, onClick: () -> Unit) {
+    SettingsBaseWidget(
+        title = stringResource(resId),
+        onClick = { onClick() },
+    )
+}
+
+@Composable
+private fun OverrideRow(label: String, value: String, onValueChange: (String) -> Unit) {
+    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+        Text(text = label, style = MaterialTheme.typography.bodySmall)
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
+    }
 }
