@@ -193,8 +193,9 @@ class HorizonKernelWorker(
             )
         )
 
+        val imageDir = image.parentFile ?: extractDir
         val flag = if (kpmUndoPatch) "-u" else "-p"
-        val output = File(image.parentFile, "oImage")
+        val output = File(imageDir, "oImage")
         val command = buildString {
             append(quote(kptools.absolutePath))
             append(" ").append(flag).append(" -s 123")
@@ -202,7 +203,7 @@ class HorizonKernelWorker(
             append(" -k ").append(quote(kpimg.absolutePath))
             append(" -o ").append(quote(output.name))
         }
-        val exitCode = runInDir(image.parentFile, command)
+        val exitCode = runInDir(imageDir, command)
         if (exitCode != 0 || !output.isFile) {
             throw IOException(
                 context.getString(
@@ -210,8 +211,9 @@ class HorizonKernelWorker(
                 )
             )
         }
-        if (!output.renameTo(File(image.parentFile, image.name))) {
-            output.copyTo(File(image.parentFile, image.name), overwrite = true)
+        val patchedImage = File(imageDir, image.name)
+        if (!output.renameTo(patchedImage)) {
+            output.copyTo(patchedImage, overwrite = true)
             output.delete()
         }
 

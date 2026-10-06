@@ -107,6 +107,7 @@ fun KpmPage() {
     val unloadSuccess = stringResource(R.string.kpm_unload_success)
     val unloadFailed = stringResource(R.string.kpm_unload_failed)
     val controlResultMsg = stringResource(R.string.kpm_control_result)
+    val unloadConfirmTemplate = stringResource(R.string.kpm_unload_confirm)
 
     val pickModule = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -264,7 +265,7 @@ fun KpmPage() {
                                         onUnload = {
                                             scope.launch {
                                                 val result = confirmDialog.awaitConfirm(
-                                                    title = context.getString(R.string.kpm_unload_confirm, module.name),
+                                                    title = unloadConfirmTemplate.format(module.name),
                                                     content = "",
                                                 )
                                                 if (result == ConfirmResult.Confirmed) {
