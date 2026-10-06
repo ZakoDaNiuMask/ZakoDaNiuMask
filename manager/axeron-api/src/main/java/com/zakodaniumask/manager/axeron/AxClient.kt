@@ -39,13 +39,13 @@ object AxClient {
     }
 
     fun writeFile(path: String, data: ByteArray): Boolean =
-        runCatching { mutableService.value?.writeFile(path, data) }.getOrDefault(false)
+        runCatching { mutableService.value?.writeFile(path, data) ?: false }.getOrDefault(false)
 
     fun readText(path: String): String? =
         runCatching { mutableService.value?.readFile(path)?.toString(Charsets.UTF_8) }.getOrNull()
 
     fun fileExists(path: String): Boolean =
-        runCatching { mutableService.value?.fileExists(path) }.getOrDefault(false)
+        runCatching { mutableService.value?.fileExists(path) ?: false }.getOrDefault(false)
 
     /**
      * Runs a command, preferring the root shell when available and falling back to the rootless
