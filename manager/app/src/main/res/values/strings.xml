@@ -675,6 +675,10 @@
     <string name="axeron_backend_none">Not active</string>
     <string name="ghostlock_title">GhostLock</string>
     <string name="ghostlock_settings_summary">Temporary root via the CVE-2026-43499 kernel exploit (no bootloader unlock)</string>
+    <string name="ghostlock_route">Route</string>
+    <string name="ghostlock_route_auto">Auto (infer)</string>
+    <string name="ghostlock_fallback">Fallback</string>
+    <string name="ghostlock_fallback_none">None</string>
     <string name="settings_ignore_uapi">Ignore UAPI compatibility</string>
     <string name="settings_ignore_uapi_summary">Treat the manager as usable even when the kernel UAPI version does not match. Advanced: some features may misbehave. Also lets plugins run at boot.</string>
     <string name="no_any_umount_path">No existing umount paths</string>

@@ -35,11 +35,13 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,6 +59,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.ghostlock.domain.model.ProfileConfig
 import com.zakodaniumask.manager.ghostlock.domain.model.RootlessStatus
 import com.zakodaniumask.manager.ghostlock.ui.DialogType
 import com.zakodaniumask.manager.ghostlock.ui.DocumentRequest
@@ -199,6 +202,8 @@ fun GhostlockScreen() {
     }
 
     var showCpuDialog by remember { mutableStateOf(false) }
+    var showRouteDialog by remember { mutableStateOf(false) }
+    var showFallbackDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
@@ -307,6 +312,23 @@ fun GhostlockScreen() {
                     state.advancedScreenVisible -> {
                         item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseAdvanced() } }
                         item { SectionTitle(stringResource(GR.string.advanced_settings)) }
+                        item {
+                            SettingsJumpPageWidget(
+                                title = stringResource(R.string.ghostlock_route),
+                                description = state.profileRoute
+                                    ?: stringResource(R.string.ghostlock_route_auto),
+                                onClick = { showRouteDialog = true },
+                            )
+                        }
+                        item {
+                            SettingsJumpPageWidget(
+                                title = stringResource(R.string.ghostlock_fallback),
+                                description = state.profileFallback
+                                    ?.takeIf { it != "none" }
+                                    ?: stringResource(R.string.ghostlock_fallback_none),
+                                onClick = { showFallbackDialog = true },
+                            )
+                        }
                         items(state.executionFields) { field ->
                             OverrideRow(
                                 label = field.path,
@@ -371,6 +393,82 @@ fun GhostlockScreen() {
                 actions.onCpuPairSelected(index)
             },
         )
+    }
+
+    if (showRouteDialog) {
+        val auto = stringResource(R.string.ghostlock_route_auto)
+        val options = listOf(auto) + ProfileConfig.Routes
+        val selected = state.profileRoute?.let { ProfileConfig.Routes.indexOf(it) + 1 } ?: 0
+        ListDialog(
+            title = stringResource(R.string.ghostlock_route),
+            items = options,
+            selectedIndex = selected,
+            onDismiss = { showRouteDialog = false },
+            onSelect = { index ->
+                showRouteDialog = false
+                actions.onRouteChanged(index)
+            },
+        )
+    }
+
+    if (showFallbackDialog) {
+        val none = stringResource(R.string.ghostlock_fallback_none)
+        val options = listOf(none) + ProfileConfig.Routes
+        val selected = state.profileFallback
+            ?.takeIf { it != "none" }
+            ?.let { ProfileConfig.Routes.indexOf(it) + 1 } ?: 0
+        ListDialog(
+            title = stringResource(R.string.ghostlock_fallback),
+            items = options,
+            selectedIndex = selected,
+            onDismiss = { showFallbackDialog = false },
+            onSelect = { index ->
+                showFallbackDialog = false
+                actions.onFallbackChanged(index)
+            },
+        )
+    }
+
+    if (state.executionSheetVisible) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = {
+                if (state.executionSheetDismissible) actions.onCloseExecutionSheet()
+            },
+            sheetState = sheetState,
+        ) {
+            Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 24.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = stringResource(GR.string.log_title),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Row {
+                        TextButton(onClick = { actions.onCopyLogs() }) {
+                            Text(stringResource(GR.string.action_copy))
+                        }
+                        TextButton(
+                            enabled = state.executionSheetDismissible,
+                            onClick = { actions.onCloseExecutionSheet() },
+                        ) {
+                            Text(stringResource(GR.string.action_close))
+                        }
+                    }
+                }
+                Text(
+                    text = state.logLines.joinToString("\n") { it.text },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(360.dp),
+                    style = MaterialTheme.typography.bodySmall
+                        .copy(fontFamily = FontFamily.Monospace),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 
     if (state.dialogVisible) DynamicDialog(state, actions)
