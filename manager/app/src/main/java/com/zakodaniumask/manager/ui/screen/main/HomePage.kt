@@ -339,6 +339,7 @@ fun HomePage(
                             }
                         }
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
                     DetectorPreviewCard(
                         overall = if (detectionState.isReady) detectionState.overall else null,
                         onClick = {

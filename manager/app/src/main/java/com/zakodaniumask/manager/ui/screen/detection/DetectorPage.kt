@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -654,12 +653,24 @@ private fun SectionTitle(title: String) {
 
 @Composable
 private fun HeadlineCard(model: RootDetectionModel) {
-    WarningCard(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        message = "${model.verdict}\n${model.summary}",
-        shape = RoundedCornerShape(16.dp),
-        color = statusContainer(model.status),
-    )
+    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        item {
+            SettingsBaseWidget(
+                icon = statusIcon(model.status),
+                iconSize = 18.dp,
+                title = model.verdict,
+                description = model.summary,
+                containerColor = statusContainer(model.status),
+                onClick = null,
+                trailingContent = {
+                    LabelText(
+                        label = statusLabel(model.status),
+                        containerColor = statusContainer(model.status),
+                    )
+                },
+            )
+        }
+    }
     Text(
         text = model.subtitle,
         style = MaterialTheme.typography.labelSmall,
@@ -738,27 +749,15 @@ private fun RootRowItem(row: RootRow) {
 
 @Composable
 private fun ImpactsSection(impacts: List<RootImpact>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
         impacts.forEach { impact ->
-            Row(
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Icon(
-                    imageVector = statusIcon(impact.status),
-                    contentDescription = null,
-                    tint = statusTint(impact.status),
-                    modifier = Modifier.size(16.dp),
-                )
-                Text(
-                    text = impact.text,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+            item {
+                SettingsBaseWidget(
+                    icon = statusIcon(impact.status),
+                    iconSize = 18.dp,
+                    title = impact.text,
+                    containerColor = statusContainer(impact.status),
+                    onClick = null,
                 )
             }
         }
@@ -782,14 +781,6 @@ private fun statusContainer(status: RootStatus): Color = when (status) {
     RootStatus.CLEAR -> MaterialTheme.colorScheme.primaryContainer
     RootStatus.SUPPORT -> MaterialTheme.colorScheme.secondaryContainer
     RootStatus.INFO -> MaterialTheme.colorScheme.surfaceContainerHighest
-}
-
-@Composable
-private fun statusTint(status: RootStatus): Color = when (status) {
-    RootStatus.DANGER, RootStatus.ERROR -> MaterialTheme.colorScheme.error
-    RootStatus.CLEAR -> MaterialTheme.colorScheme.primary
-    RootStatus.SUPPORT -> MaterialTheme.colorScheme.secondary
-    RootStatus.INFO -> MaterialTheme.colorScheme.onSurfaceVariant
 }
 
 private fun statusIcon(status: RootStatus) = when (status) {
