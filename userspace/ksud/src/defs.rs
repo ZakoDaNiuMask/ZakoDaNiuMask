@@ -78,6 +78,9 @@ mod android {
     pub const BOOT_SCRIPT_PATH: &str = concatcp!(WORKING_DIR, "boot_script.sh");
     pub const BOOT_SCRIPT_CONFIG: &str = concatcp!(WORKING_DIR, "boot_script.json");
 
+    // When present, ksud skips the kernel/ksud UAPI version match (manager "ignore UAPI" option).
+    pub const IGNORE_UAPI: &str = concatcp!(WORKING_DIR, ".ignore_uapi");
+
     #[derive(Serialize)]
     pub struct MountInfo {
         pub path: String,

@@ -202,6 +202,10 @@ pub fn runtime_mode() -> &'static str {
 }
 
 pub fn ensure_uapi_version_matched() -> anyhow::Result<()> {
+    if std::path::Path::new(crate::defs::IGNORE_UAPI).exists() {
+        log::warn!("UAPI version match check is ignored by the manager setting");
+        return Ok(());
+    }
     let kernel_uapi = get_info().uapi_version;
     let userspace_uapi = uapi_version();
     if kernel_uapi != userspace_uapi {
