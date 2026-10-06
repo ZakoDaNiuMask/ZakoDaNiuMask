@@ -99,13 +99,9 @@ fun GhostlockScreen() {
 
     GhostlockScaffold(title = stringResource(R.string.ghostlock_title)) {
         item { StatusCard(state) }
-        item { Spacer(Modifier.height(12.dp)) }
         item { ControlCard(state, actions, onPickCpu = { showCpuDialog = true }) }
-        item { Spacer(Modifier.height(12.dp)) }
         item { ActionsCard(actions, navigator) }
-        item { Spacer(Modifier.height(12.dp)) }
         item { ProfileCard(state, navigator) }
-        item { Spacer(Modifier.height(12.dp)) }
         item { LogCard(state, actions) }
     }
 
@@ -842,7 +838,7 @@ internal fun ActionRow(resId: Int, onClick: () -> Unit) {
 
 @Composable
 internal fun OverrideRow(label: String, value: String, onValueChange: (String) -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+    Column(modifier = Modifier.padding(vertical = 6.dp)) {
         Text(text = label, style = MaterialTheme.typography.bodySmall)
         OutlinedTextField(
             value = value,

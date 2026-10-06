@@ -679,23 +679,21 @@ private fun HeadlineCard(model: RootDetectionModel) {
 
 @Composable
 private fun FactsBlock(facts: List<RootFact>) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        SegmentedColumn {
-            facts.forEach { fact ->
-                item {
-                    SettingsBaseWidget(
-                        iconPlaceholder = false,
-                        title = stringResource(fact.labelRes),
-                        description = fact.value,
-                        onClick = null,
-                        trailingContent = {
-                            LabelText(
-                                label = statusLabel(fact.status),
-                                containerColor = statusContainer(fact.status),
-                            )
-                        },
-                    )
-                }
+    SegmentedColumn {
+        facts.forEach { fact ->
+            item {
+                SettingsBaseWidget(
+                    iconPlaceholder = false,
+                    title = stringResource(fact.labelRes),
+                    description = fact.value,
+                    onClick = null,
+                    trailingContent = {
+                        LabelText(
+                            label = statusLabel(fact.status),
+                            containerColor = statusContainer(fact.status),
+                        )
+                    },
+                )
             }
         }
     }

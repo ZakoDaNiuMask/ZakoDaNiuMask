@@ -42,57 +42,73 @@ fun GhostlockAdvancedScreen() {
     var showFallbackDialog by remember { mutableStateOf(false) }
 
     GhostlockScaffold(title = stringResource(GR.string.advanced_settings)) {
-        item { SectionTitle(stringResource(GR.string.advanced_settings)) }
         item {
-            SettingsJumpPageWidget(
-                title = stringResource(R.string.ghostlock_route),
-                description = state.profileRoute ?: stringResource(R.string.ghostlock_route_auto),
-                onClick = { showRouteDialog = true },
-            )
+            SegmentedColumn(title = stringResource(GR.string.advanced_settings)) {
+                item {
+                    SettingsJumpPageWidget(
+                        title = stringResource(R.string.ghostlock_route),
+                        description = state.profileRoute
+                            ?: stringResource(R.string.ghostlock_route_auto),
+                        onClick = { showRouteDialog = true },
+                    )
+                }
+                item {
+                    SettingsJumpPageWidget(
+                        title = stringResource(R.string.ghostlock_fallback),
+                        description = state.profileFallback
+                            ?.takeIf { it != "none" }
+                            ?: stringResource(R.string.ghostlock_fallback_none),
+                        onClick = { showFallbackDialog = true },
+                    )
+                }
+            }
         }
         item {
-            SettingsJumpPageWidget(
-                title = stringResource(R.string.ghostlock_fallback),
-                description = state.profileFallback
-                    ?.takeIf { it != "none" }
-                    ?: stringResource(R.string.ghostlock_fallback_none),
-                onClick = { showFallbackDialog = true },
-            )
-        }
-        items(state.executionFields) { field ->
-            OverrideRow(
-                label = field.path,
-                value = state.executionEditing[field.path] ?: field.value.toString(),
-                onValueChange = { actions.onExecutionFieldChanged(field.path, it) },
-            )
-        }
-        item { ActionRow(GR.string.profile_save) { actions.onSaveProfileEdits() } }
-        item { ActionRow(GR.string.profile_save_as) { actions.onSaveProfileAs() } }
-        item { ActionRow(GR.string.profile_revert) { actions.onRevertProfileEdits() } }
-        item { ActionRow(GR.string.override_export) { actions.onExportProfileEdits() } }
-        item { ActionRow(GR.string.debug_profile_override) { navigator.push(Route.GhostlockParameters) } }
-        item {
-            SettingsSwitchWidget(
-                title = stringResource(GR.string.debug_export_log),
-                description = stringResource(GR.string.debug_export_log_summary),
-                checked = state.debugExportEnabled,
-                onCheckedChange = { actions.onDebugExportChanged(it) },
-            )
+            SegmentedColumn {
+                items(state.executionFields) { field ->
+                    OverrideRow(
+                        label = field.path,
+                        value = state.executionEditing[field.path] ?: field.value.toString(),
+                        onValueChange = { actions.onExecutionFieldChanged(field.path, it) },
+                    )
+                }
+            }
         }
         item {
-            SettingsJumpPageWidget(
-                title = stringResource(GR.string.debug_export_location),
-                description = state.debugExportLocation,
-                onClick = { actions.onDebugExportLocationPick() },
-            )
+            SegmentedColumn(title = stringResource(GR.string.profile_save)) {
+                item { ActionRow(GR.string.profile_save) { actions.onSaveProfileEdits() } }
+                item { ActionRow(GR.string.profile_save_as) { actions.onSaveProfileAs() } }
+                item { ActionRow(GR.string.profile_revert) { actions.onRevertProfileEdits() } }
+                item { ActionRow(GR.string.override_export) { actions.onExportProfileEdits() } }
+                item { ActionRow(GR.string.debug_profile_override) { navigator.push(Route.GhostlockParameters) } }
+            }
         }
         item {
-            SettingsSwitchWidget(
-                title = stringResource(GR.string.debug_kernel_log),
-                description = stringResource(GR.string.debug_kernel_log_summary),
-                checked = state.debugKernelLogEnabled,
-                onCheckedChange = { actions.onDebugKernelLogChanged(it) },
-            )
+            SegmentedColumn(title = stringResource(GR.string.debug_export_log)) {
+                item {
+                    SettingsSwitchWidget(
+                        title = stringResource(GR.string.debug_export_log),
+                        description = stringResource(GR.string.debug_export_log_summary),
+                        checked = state.debugExportEnabled,
+                        onCheckedChange = { actions.onDebugExportChanged(it) },
+                    )
+                }
+                item {
+                    SettingsJumpPageWidget(
+                        title = stringResource(GR.string.debug_export_location),
+                        description = state.debugExportLocation,
+                        onClick = { actions.onDebugExportLocationPick() },
+                    )
+                }
+                item {
+                    SettingsSwitchWidget(
+                        title = stringResource(GR.string.debug_kernel_log),
+                        description = stringResource(GR.string.debug_kernel_log_summary),
+                        checked = state.debugKernelLogEnabled,
+                        onCheckedChange = { actions.onDebugKernelLogChanged(it) },
+                    )
+                }
+            }
         }
     }
 
@@ -140,15 +156,18 @@ fun GhostlockParametersScreen() {
     LaunchedEffect(Unit) { viewModel.onOpenParameters() }
 
     GhostlockScaffold(title = stringResource(GR.string.parameters)) {
-        item { SectionTitle(stringResource(GR.string.parameters)) }
-        items(state.profileOverrideRoots) { node ->
-            if (!node.isGroup) {
-                OverrideRow(
-                    label = node.name,
-                    value = state.profileOverrideEditing[node.path]
-                        ?: node.value?.toString().orEmpty(),
-                    onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
-                )
+        item {
+            SegmentedColumn(title = stringResource(GR.string.parameters)) {
+                items(state.profileOverrideRoots) { node ->
+                    if (!node.isGroup) {
+                        OverrideRow(
+                            label = node.name,
+                            value = state.profileOverrideEditing[node.path]
+                                ?: node.value?.toString().orEmpty(),
+                            onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
+                        )
+                    }
+                }
             }
         }
     }
@@ -164,23 +183,40 @@ fun GhostlockBuiltinScreen() {
     LaunchedEffect(Unit) { viewModel.onOpenBuiltinProfiles() }
 
     GhostlockScaffold(title = stringResource(GR.string.load_config_title)) {
-        item { SectionTitle(stringResource(GR.string.load_config_title)) }
-        items(state.builtinProfiles) { release ->
-            SelectRow(release, release == state.activeBuiltinProfile) {
-                actions.onSelectBuiltinProfile(release)
-                navigator.pop()
+        item {
+            SegmentedColumn(title = stringResource(GR.string.load_config_title)) {
+                items(state.builtinProfiles) { release ->
+                    item {
+                        SelectRow(release, release == state.activeBuiltinProfile) {
+                            actions.onSelectBuiltinProfile(release)
+                            navigator.pop()
+                        }
+                    }
+                }
             }
         }
         if (state.builtinTemplates.isNotEmpty()) {
-            item { SectionTitle(stringResource(GR.string.templates_section)) }
-            items(state.builtinTemplates) { release ->
-                SelectRow(release, false) { actions.onSelectBuiltinProfile(release) }
+            item {
+                SegmentedColumn(title = stringResource(GR.string.templates_section)) {
+                    items(state.builtinTemplates) { release ->
+                        item {
+                            SelectRow(release, false) { actions.onSelectBuiltinProfile(release) }
+                        }
+                    }
+                }
             }
         }
         item {
-            SelectRow(stringResource(GR.string.load_builtin_auto), state.activeBuiltinProfile == null) {
-                actions.onSelectBuiltinProfile(null)
-                navigator.pop()
+            SegmentedColumn {
+                item {
+                    SelectRow(
+                        stringResource(GR.string.load_builtin_auto),
+                        state.activeBuiltinProfile == null,
+                    ) {
+                        actions.onSelectBuiltinProfile(null)
+                        navigator.pop()
+                    }
+                }
             }
         }
     }
@@ -194,14 +230,17 @@ fun GhostlockUserProfileScreen(name: String) {
     LaunchedEffect(name) { viewModel.onOpenUserProfileDetail(name) }
 
     GhostlockScaffold(title = name) {
-        item { SectionTitle(name) }
-        item { ActionRow(GR.string.user_profile_load) { actions.onLoadUserProfile(name) } }
-        item { ActionRow(GR.string.user_profile_unload) { actions.onUnloadUserProfile() } }
-        item { ActionRow(GR.string.user_profile_edit) { actions.onEditUserProfile(name) } }
-        item { ActionRow(GR.string.user_profile_export) { actions.onUserProfileExport(name) } }
-        item { ActionRow(GR.string.user_profile_rename) { actions.onUserProfileRename(name) } }
-        item { ActionRow(GR.string.user_profile_convert) { actions.onConvertUserProfile(name) } }
-        item { ActionRow(GR.string.user_profile_delete) { actions.onUserProfileDelete(name) } }
+        item {
+            SegmentedColumn(title = name) {
+                item { ActionRow(GR.string.user_profile_load) { actions.onLoadUserProfile(name) } }
+                item { ActionRow(GR.string.user_profile_unload) { actions.onUnloadUserProfile() } }
+                item { ActionRow(GR.string.user_profile_edit) { actions.onEditUserProfile(name) } }
+                item { ActionRow(GR.string.user_profile_export) { actions.onUserProfileExport(name) } }
+                item { ActionRow(GR.string.user_profile_rename) { actions.onUserProfileRename(name) } }
+                item { ActionRow(GR.string.user_profile_convert) { actions.onConvertUserProfile(name) } }
+                item { ActionRow(GR.string.user_profile_delete) { actions.onUserProfileDelete(name) } }
+            }
+        }
     }
 }
 
@@ -210,6 +249,17 @@ fun GhostlockAboutScreen() {
     val uriHandler = LocalUriHandler.current
 
     GhostlockScaffold(title = stringResource(GR.string.about)) {
+        item {
+            SegmentedColumn(title = stringResource(GR.string.about)) {
+                item {
+                    SettingsJumpPageWidget(
+                        title = stringResource(R.string.ghostlock_about_original),
+                        description = GHOSTLOCK_PROJECT_URL,
+                        onClick = { uriHandler.openUri(GHOSTLOCK_PROJECT_URL) },
+                    )
+                }
+            }
+        }
         item {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 Text(
@@ -227,13 +277,6 @@ fun GhostlockAboutScreen() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
-        item {
-            SettingsJumpPageWidget(
-                title = stringResource(R.string.ghostlock_about_original),
-                description = GHOSTLOCK_PROJECT_URL,
-                onClick = { uriHandler.openUri(GHOSTLOCK_PROJECT_URL) },
-            )
         }
     }
 }
