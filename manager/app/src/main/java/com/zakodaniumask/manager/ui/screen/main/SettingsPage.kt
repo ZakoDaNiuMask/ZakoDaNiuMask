@@ -552,6 +552,17 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
+                        item(visible = homeState.systemStatus.isRootAvailable) {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Extension,
+                                title = stringResource(R.string.user_ko_title),
+                                description = stringResource(R.string.user_ko_settings_summary),
+                                onClick = {
+                                    navigator.push(Route.UserKo)
+                                }
+                            )
+                        }
+
                         item(visible = homeState.systemStatus.lkmMode == true && !homeState.systemStatus.isLateLoadMode) {
                             UninstallItem {
                                 loadingDialog.withLoading(it)

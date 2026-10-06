@@ -14,6 +14,7 @@ import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.UmountRepository
 import com.zakodaniumask.manager.data.kpm.KpmRepository
+import com.zakodaniumask.manager.data.userko.UserKoRepository
 import com.zakodaniumask.manager.data.plugin.OnlinePluginRepository
 import com.zakodaniumask.manager.data.plugin.PluginRepository
 import com.zakodaniumask.manager.data.logging.BugreportRepository
@@ -79,6 +80,13 @@ import com.zakodaniumask.manager.domain.usecase.SetPluginEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.UninstallPluginUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKpmModuleInfoUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKpmModulesUseCase
+import com.zakodaniumask.manager.domain.usecase.DeleteUserKoUseCase
+import com.zakodaniumask.manager.domain.usecase.GetUserKoStateUseCase
+import com.zakodaniumask.manager.domain.usecase.ImportUserKoUseCase
+import com.zakodaniumask.manager.domain.usecase.LoadUserKoUseCase
+import com.zakodaniumask.manager.domain.usecase.SetUserKoAutoLoadUseCase
+import com.zakodaniumask.manager.domain.usecase.SetUserKoStageUseCase
+import com.zakodaniumask.manager.domain.usecase.UnloadUserKoUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKpmStatusUseCase
 import com.zakodaniumask.manager.domain.usecase.LoadKpmModuleUseCase
 import com.zakodaniumask.manager.domain.usecase.UnloadKpmModuleUseCase
@@ -190,6 +198,7 @@ import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
 import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
+import com.zakodaniumask.manager.ui.viewmodel.UserKoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.OnlinePluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.PluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
@@ -264,6 +273,7 @@ val repositoryModule = module {
     single { com.zakodaniumask.manager.data.selinux.SelinuxDetector() }
     singleOf(::BootScriptRepository)
     singleOf(::KpmRepository)
+    singleOf(::UserKoRepository)
     singleOf(::PluginRepository)
     singleOf(::OnlinePluginRepository)
     singleOf(::CountRepository)
@@ -391,6 +401,13 @@ val useCaseModule = module {
     factoryOf(::LoadKpmModuleUseCase)
     factoryOf(::UnloadKpmModuleUseCase)
     factoryOf(::ControlKpmModuleUseCase)
+    factoryOf(::GetUserKoStateUseCase)
+    factoryOf(::ImportUserKoUseCase)
+    factoryOf(::LoadUserKoUseCase)
+    factoryOf(::UnloadUserKoUseCase)
+    factoryOf(::DeleteUserKoUseCase)
+    factoryOf(::SetUserKoAutoLoadUseCase)
+    factoryOf(::SetUserKoStageUseCase)
     factoryOf(::GetPluginsUseCase)
     factoryOf(::InstallPluginUseCase)
     factoryOf(::UninstallPluginUseCase)
@@ -484,6 +501,7 @@ val viewModelModule = module {
     viewModelOf(::DetectorViewModel)
     viewModelOf(::BootScriptViewModel)
     viewModelOf(::KpmViewModel)
+    viewModelOf(::UserKoViewModel)
     viewModelOf(::PluginViewModel)
 
     viewModelOf(::OnlinePluginViewModel)

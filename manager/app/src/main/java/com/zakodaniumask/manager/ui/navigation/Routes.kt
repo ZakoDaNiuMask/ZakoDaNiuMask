@@ -159,6 +159,10 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object UserKo : Route
+
+    @Parcelize
+    @Serializable
     data object Axeron : Route
 
     @Parcelize
