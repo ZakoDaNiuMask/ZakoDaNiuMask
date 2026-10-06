@@ -44,9 +44,12 @@ android {
 
 
 dependencies {
+    implementation(project(":axeron-api"))
     implementation(libs.androidx.annotation.jvm)
     implementation(libs.androidx.lifecycle.livedata.core.ktx)
     implementation(libs.bcpkix.jdk18on)
     implementation(libs.boringssl)
     implementation(libs.lsposed.cxx)
+    implementation(libs.rikka.hidden.compat)
+    compileOnly(libs.rikka.hidden.stub)
 }

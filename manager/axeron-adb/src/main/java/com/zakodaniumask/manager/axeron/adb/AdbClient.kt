@@ -53,7 +53,7 @@ class AdbClient(private val key: AdbKey, private val port: Int, private val host
 
         var message = read()
         if (message.command == A_STLS) {
-            if (!android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
                 error("Connect to adb with TLS is not supported before Android 9")
             }
             write(A_STLS, A_STLS_VERSION, 0)
