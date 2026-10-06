@@ -591,6 +591,7 @@ private fun ModuleList(
 ) {
     val shortcut = koinInject<Shortcut>()
     val settings = koinInject<SettingsPlatformRepository>()
+    val schemeCopiedMsg = stringResource(R.string.module_shortcut_scheme_copied)
     var showMetaModuleWarning by rememberSaveable { mutableStateOf(true) }
     val fetchRemoteText = koinInject<FetchRemoteTextUseCase>()
     val enqueueDownload = koinInject<EnqueueDownloadUseCase>()
@@ -1132,7 +1133,7 @@ private fun ModuleList(
                                 clipboard.setPrimaryClip(ClipData.newPlainText("KernelSU deep link", url))
                                 Toast.makeText(
                                     context,
-                                    stringResource(R.string.module_shortcut_scheme_copied),
+                                    schemeCopiedMsg,
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             },
@@ -1553,7 +1554,7 @@ fun ModuleItemPreview() {
         { true },
         {},
         {},
-        {},
+        { _, _ -> },
         false,
     )
 }
