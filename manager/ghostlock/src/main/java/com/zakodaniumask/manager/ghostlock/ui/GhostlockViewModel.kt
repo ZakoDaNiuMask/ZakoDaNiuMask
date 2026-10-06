@@ -80,7 +80,7 @@ class GhostlockViewModel(
     fun initialize() {
         if (initialized) return
         initialized = true
-        repository.setShizukuStatusListener { refreshAccessStatus() }
+        repository.setRootlessStatusListener { refreshAccessStatus() }
         viewModelScope.launch {
             refreshSnapshot()
             applyRecommendedShizuku()
@@ -824,7 +824,7 @@ class GhostlockViewModel(
     }
 
     fun toggleShizuku(enabled: Boolean) {
-        repository.setShizukuEnabled(enabled)
+        repository.setRootlessEnabled(enabled)
         mutableState.update { it.copy(rootlessEnabled = enabled) }
         if (!enabled && kernelSnapshot?.recommendRootless == true) {
             send(GhostlockEffect.Toast(R.string.shizuku_recommended_hint))
@@ -856,7 +856,7 @@ class GhostlockViewModel(
         if (!snapshot.rootlessEnabled) return
         when (snapshot.rootlessStatus) {
             RootlessStatus.NOT_RUNNING -> send(GhostlockEffect.OpenRootless)
-            RootlessStatus.ACTIVATION_REQUIRED -> repository.requestShizukuPermission()
+            RootlessStatus.ACTIVATION_REQUIRED -> repository.requestRootlessActivation()
             RootlessStatus.NOT_REQUIRED,
             RootlessStatus.READY,
                 -> Unit
@@ -1456,7 +1456,7 @@ class GhostlockViewModel(
         LogTone.Warning -> 0xFFFFC94D.toInt()
         LogTone.Progress -> 0xFF60A5FA.toInt()
         LogTone.Kotlin -> 0xFF5EEAD4.toInt()
-        LogTone.Shizuku -> 0xFFC084FC.toInt()
+        LogTone.Rootless -> 0xFFC084FC.toInt()
         LogTone.Default -> -1
     }
 
