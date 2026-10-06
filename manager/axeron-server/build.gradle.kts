@@ -11,6 +11,7 @@ android {
 
     defaultConfig {
         minSdk = rootProject.extra["androidMinSdkVersion"] as Int
+        consumerProguardFiles("consumer-rules.pro")
 
         externalNativeBuild {
             cmake {
