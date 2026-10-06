@@ -13,6 +13,7 @@ import com.zakodaniumask.manager.data.flash.FlashRepository
 import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.UmountRepository
+import com.zakodaniumask.manager.data.kpm.KpmRepository
 import com.zakodaniumask.manager.data.logging.BugreportRepository
 import com.zakodaniumask.manager.data.logging.SulogRepository
 import com.zakodaniumask.manager.data.module.ModuleActionRepository
@@ -57,6 +58,12 @@ import com.zakodaniumask.manager.domain.usecase.CleanSulogUseCase
 import com.zakodaniumask.manager.domain.usecase.ClearDynamicManagerUseCase
 import com.zakodaniumask.manager.domain.usecase.ConfigureSuLogUseCase
 import com.zakodaniumask.manager.domain.usecase.ControlAppUseCase
+import com.zakodaniumask.manager.domain.usecase.ControlKpmModuleUseCase
+import com.zakodaniumask.manager.domain.usecase.GetKpmModuleInfoUseCase
+import com.zakodaniumask.manager.domain.usecase.GetKpmModulesUseCase
+import com.zakodaniumask.manager.domain.usecase.GetKpmStatusUseCase
+import com.zakodaniumask.manager.domain.usecase.LoadKpmModuleUseCase
+import com.zakodaniumask.manager.domain.usecase.UnloadKpmModuleUseCase
 import com.zakodaniumask.manager.domain.usecase.DeleteProfileTemplateUseCase
 import com.zakodaniumask.manager.domain.usecase.EnableSulogUseCase
 import com.zakodaniumask.manager.domain.usecase.EnqueueDownloadUseCase
@@ -164,6 +171,7 @@ import com.zakodaniumask.manager.ui.viewmodel.ModuleRepoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
 import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
+import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SuSFSViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SulogViewModel
@@ -235,6 +243,7 @@ val repositoryModule = module {
     single { com.zakodaniumask.manager.data.kernel.KernelCheckDetector() }
     single { com.zakodaniumask.manager.data.selinux.SelinuxDetector() }
     singleOf(::BootScriptRepository)
+    singleOf(::KpmRepository)
     singleOf(::CountRepository)
     singleOf(::InstalledPackageCache)
     singleOf(::AppIconDataSource)
@@ -350,6 +359,12 @@ val useCaseModule = module {
     factoryOf(::ApplyDetectorActionUseCase)
     factoryOf(::GetBootScriptUseCase)
     factoryOf(::SetBootScriptUseCase)
+    factoryOf(::GetKpmStatusUseCase)
+    factoryOf(::GetKpmModulesUseCase)
+    factoryOf(::GetKpmModuleInfoUseCase)
+    factoryOf(::LoadKpmModuleUseCase)
+    factoryOf(::UnloadKpmModuleUseCase)
+    factoryOf(::ControlKpmModuleUseCase)
     factoryOf(::ApplyLanguageUseCase)
     factoryOf(::IsSystemLanguageSettingsUseCase)
     factoryOf(::LaunchSystemLanguageSettingsUseCase)
@@ -430,6 +445,7 @@ val viewModelModule = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::DetectorViewModel)
     viewModelOf(::BootScriptViewModel)
+    viewModelOf(::KpmViewModel)
     viewModelOf(::InstallViewModel)
     viewModelOf(::MainIntentViewModel)
     viewModelOf(::KernelFlashViewModel)

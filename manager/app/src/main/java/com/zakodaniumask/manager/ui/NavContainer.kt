@@ -80,6 +80,7 @@ import com.zakodaniumask.manager.ui.screen.about.AboutScreen
 import com.zakodaniumask.manager.ui.screen.about.OpenSourceLicenseScreen
 import com.zakodaniumask.manager.ui.screen.bootscript.BootScriptScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
+import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
 import com.zakodaniumask.manager.ui.screen.main.MainScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.ModuleRepoScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.OnlineModuleDetailScreen
@@ -628,6 +629,17 @@ fun NavContainer(
                     BootScriptScreen()
                 }
             }
+            entry<Route.Kpm>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    KpmPage()
+                }
+            }
             entry<Route.PartitionManager>(swipeDismiss = swipeBackDirection) {
                 ManagerNavEntry(
                     interceptPredictiveBack = interceptPredictiveBack,
@@ -648,7 +660,13 @@ fun NavContainer(
                     backgroundRenderState = backgroundRenderState,
                     useBlur = useBlur,
                 ) {
-                    KernelFlashScreen(key.kernelUri, key.selectedSlot, key.skipKsud)
+                    KernelFlashScreen(
+                        key.kernelUri,
+                        key.selectedSlot,
+                        key.skipKsud,
+                        key.kpmPatchEnabled,
+                        key.kpmUndoPatch,
+                    )
                 }
             }
         }
