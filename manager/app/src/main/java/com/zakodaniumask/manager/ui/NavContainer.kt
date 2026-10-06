@@ -81,7 +81,12 @@ import com.zakodaniumask.manager.ui.screen.about.OpenSourceLicenseScreen
 import com.zakodaniumask.manager.ui.screen.bootscript.BootScriptScreen
 import com.zakodaniumask.manager.ui.screen.axeron.AxeronPage
 import com.zakodaniumask.manager.ui.screen.axeron.AxeronShellPage
+import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockAboutScreen
+import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockAdvancedScreen
+import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockBuiltinScreen
+import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockParametersScreen
 import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockScreen
+import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockUserProfileScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
 import com.zakodaniumask.manager.ui.screen.plugin.OnlinePluginScreen
@@ -676,6 +681,61 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     GhostlockScreen()
+                }
+            }
+            entry<Route.GhostlockAdvanced>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    GhostlockAdvancedScreen()
+                }
+            }
+            entry<Route.GhostlockParameters>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    GhostlockParametersScreen()
+                }
+            }
+            entry<Route.GhostlockBuiltin>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    GhostlockBuiltinScreen()
+                }
+            }
+            entry<Route.GhostlockAbout>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    GhostlockAboutScreen()
+                }
+            }
+            entry<Route.GhostlockUserProfile>(swipeDismiss = swipeBackDirection) { key ->
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    GhostlockUserProfileScreen(key.name)
                 }
             }
             entry<Route.OnlinePlugin>(swipeDismiss = swipeBackDirection) {

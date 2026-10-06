@@ -670,6 +670,7 @@
     <string name="ghostlock_title">鬼头锁一键root</string>
     <string name="ghostlock_settings_summary">通过 CVE-2026-43499 内核漏洞获取临时 root（无需解锁 Bootloader）</string>
     <string name="ghostlock_about_thanks">感谢空姐的付出💕 原项目地址：https://github.com/YuKongA/ghostlock-app</string>
+    <string name="ghostlock_about_original">原项目地址</string>
     <string name="ghostlock_route">路由</string>
     <string name="ghostlock_route_auto">自动（推断）</string>
     <string name="ghostlock_fallback">回退路由</string>

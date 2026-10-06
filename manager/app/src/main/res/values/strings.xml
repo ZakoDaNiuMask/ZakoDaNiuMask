@@ -676,6 +676,7 @@
     <string name="ghostlock_title">GhostLock One-Tap Root</string>
     <string name="ghostlock_settings_summary">Temporary root via the CVE-2026-43499 kernel exploit (no bootloader unlock)</string>
     <string name="ghostlock_about_thanks">Thanks to Kongjie for her work 💕 Original project: https://github.com/YuKongA/ghostlock-app</string>
+    <string name="ghostlock_about_original">Original project</string>
     <string name="ghostlock_route">Route</string>
     <string name="ghostlock_route_auto">Auto (infer)</string>
     <string name="ghostlock_fallback">Fallback</string>

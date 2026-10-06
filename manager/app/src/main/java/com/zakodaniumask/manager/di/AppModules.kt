@@ -324,6 +324,8 @@ val repositoryModule = module {
     singleOf(::SuSFSConfigHelper)
     singleOf(::SuSFSRepository)
     singleOf(::AndroidGhostlockRepository) bind GhostlockRepository::class
+    // Shared across the GhostLock routes (see GhostlockScreen/SubScreens).
+    singleOf(::GhostlockViewModel)
     singleOf(::MonetCompatColorSource)
     singleOf(::ThemeRepository)
     single {
@@ -483,7 +485,7 @@ val viewModelModule = module {
     viewModelOf(::BootScriptViewModel)
     viewModelOf(::KpmViewModel)
     viewModelOf(::PluginViewModel)
-    viewModelOf(::GhostlockViewModel)
+
     viewModelOf(::OnlinePluginViewModel)
     viewModelOf(::InstallViewModel)
     viewModelOf(::MainIntentViewModel)

@@ -23,16 +23,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.BugReport
 import androidx.compose.material.icons.twotone.PlayArrow
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -74,6 +72,7 @@ import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsJumpPageWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsSwitchWidget
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
+import com.zakodaniumask.manager.ui.navigation.Navigator
 import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
@@ -83,7 +82,6 @@ import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import com.zakodaniumask.manager.ghostlock.R as GR
 
@@ -91,16 +89,152 @@ import com.zakodaniumask.manager.ghostlock.R as GR
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun GhostlockScreen() {
-    val viewModel: GhostlockViewModel = koinViewModel()
+    val viewModel: GhostlockViewModel = koinInject()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val actions = remember(viewModel) { ghostlockActions(viewModel) }
+    val navigator = LocalNavigator.current
+
+    var showCpuDialog by remember { mutableStateOf(false) }
+    var showRouteDialog by remember { mutableStateOf(false) }
+    var showFallbackDialog by remember { mutableStateOf(false) }
+
+    GhostlockScaffold(title = stringResource(R.string.ghostlock_title)) {
+        item { StatusCard(state) }
+        item { Spacer(Modifier.height(12.dp)) }
+        item { ControlCard(state, actions, onPickCpu = { showCpuDialog = true }) }
+        item { Spacer(Modifier.height(12.dp)) }
+        item { ActionsCard(actions, navigator) }
+        item { Spacer(Modifier.height(12.dp)) }
+        item { ProfileCard(state, navigator) }
+        item { Spacer(Modifier.height(12.dp)) }
+        item { LogCard(state, actions) }
+    }
+
+    if (showCpuDialog) {
+        ListDialog(
+            title = stringResource(GR.string.cpu_pair_label),
+            items = state.cpuPairLabels,
+            selectedIndex = state.cpuPairIndex,
+            onDismiss = { showCpuDialog = false },
+            onSelect = { index ->
+                showCpuDialog = false
+                actions.onCpuPairSelected(index)
+            },
+        )
+    }
+
+    if (showRouteDialog) {
+        val auto = stringResource(R.string.ghostlock_route_auto)
+        val options = listOf(auto) + ProfileConfig.Routes
+        val selected = state.profileRoute?.let { ProfileConfig.Routes.indexOf(it) + 1 } ?: 0
+        ListDialog(
+            title = stringResource(R.string.ghostlock_route),
+            items = options,
+            selectedIndex = selected,
+            onDismiss = { showRouteDialog = false },
+            onSelect = { index ->
+                showRouteDialog = false
+                actions.onRouteChanged(index)
+            },
+        )
+    }
+
+    if (showFallbackDialog) {
+        val none = stringResource(R.string.ghostlock_fallback_none)
+        val options = listOf(none) + ProfileConfig.Routes
+        val selected = state.profileFallback
+            ?.takeIf { it != "none" }
+            ?.let { ProfileConfig.Routes.indexOf(it) + 1 } ?: 0
+        ListDialog(
+            title = stringResource(R.string.ghostlock_fallback),
+            items = options,
+            selectedIndex = selected,
+            onDismiss = { showFallbackDialog = false },
+            onSelect = { index ->
+                showFallbackDialog = false
+                actions.onFallbackChanged(index)
+            },
+        )
+    }
+}
+
+/**
+ * Shared scaffold for every GhostLock destination: top bar, scroll container, effect handling and
+ * the global overlays (dialogs + execution sheet).
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+internal fun GhostlockScaffold(
+    title: String,
+    content: LazyListScope.() -> Unit,
+) {
+    val viewModel: GhostlockViewModel = koinInject()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val actions = remember(viewModel) { ghostlockActions(viewModel) }
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
+    val navigator = LocalNavigator.current
+    val snackBarHost = LocalSnackbarHost.current
+
+    GhostlockEffects(viewModel)
+    LaunchedEffect(Unit) { viewModel.initialize() }
+
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    LaunchedEffect(Unit) {
+        scrollBehavior.state.heightOffset = scrollBehavior.state.heightOffsetLimit
+    }
+
+    Scaffold(
+        contentWindowInsets = adaptiveScaffoldWindowInsets(),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
+        topBar = {
+            LargeFlexibleTopAppBar(
+                modifier = Modifier.blurEffect(),
+                title = { Text(title) },
+                navigationIcon = { AppBackButton(onClick = { navigator.pop() }) },
+                windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = if (themeConfig.isEnableBlur) Color.Transparent
+                    else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
+                    scrolledContainerColor = if (themeConfig.isEnableBlur) Color.Transparent
+                    else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
+                ),
+            )
+        },
+    ) { padding ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .blurSource()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                contentPadding = PaddingValues(
+                    top = padding.calculateTopPadding() + 8.dp,
+                    bottom = padding.calculateBottomPadding() + 12.dp,
+                ),
+                content = content,
+            )
+        }
+    }
+
+    GhostlockOverlays(state, actions)
+}
+
+@SuppressLint("LocalContextGetResourceValueCall")
+@Composable
+private fun GhostlockEffects(viewModel: GhostlockViewModel) {
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val activity = LocalActivity.current
     val snackBarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
-
-    val state by viewModel.state.collectAsStateWithLifecycle()
 
     var pendingRequest by remember { mutableStateOf<DocumentRequest?>(null) }
 
@@ -127,7 +261,6 @@ fun GhostlockScreen() {
         ActivityResultContracts.CreateDocument("application/octet-stream"),
     ) { uri: Uri? -> viewModel.onExportProfileDocumentPicked(uri?.toString()) }
 
-    LaunchedEffect(Unit) { viewModel.initialize() }
     LaunchedEffect(Unit) {
         viewModel.effects.collect { effect ->
             when (effect) {
@@ -192,243 +325,11 @@ fun GhostlockScreen() {
             }
         }
     }
+}
 
-    val actions = remember(viewModel) { ghostlockActions(viewModel) }
-
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    LaunchedEffect(Unit) {
-        scrollBehavior.state.heightOffset = scrollBehavior.state.heightOffsetLimit
-    }
-
-    var showCpuDialog by remember { mutableStateOf(false) }
-    var showRouteDialog by remember { mutableStateOf(false) }
-    var showFallbackDialog by remember { mutableStateOf(false) }
-
-    Scaffold(
-        contentWindowInsets = adaptiveScaffoldWindowInsets(),
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
-        topBar = {
-            LargeFlexibleTopAppBar(
-                modifier = Modifier.blurEffect(),
-                title = { Text(stringResource(R.string.ghostlock_title)) },
-                navigationIcon = { AppBackButton(onClick = { navigator.pop() }) },
-                windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = if (themeConfig.isEnableBlur) Color.Transparent
-                    else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
-                    scrolledContainerColor = if (themeConfig.isEnableBlur) Color.Transparent
-                    else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
-                ),
-            )
-        },
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blurSource()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = PaddingValues(
-                    top = padding.calculateTopPadding() + 8.dp,
-                    bottom = padding.calculateBottomPadding() + 12.dp,
-                ),
-            ) {
-                when {
-                    state.builtinScreenVisible -> {
-                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseBuiltinProfiles() } }
-                        item { SectionTitle(stringResource(GR.string.load_config_title)) }
-                        items(state.builtinProfiles) { release ->
-                            SelectRow(release, release == state.activeBuiltinProfile) {
-                                actions.onSelectBuiltinProfile(release)
-                                actions.onCloseBuiltinProfiles()
-                            }
-                        }
-                        if (state.builtinTemplates.isNotEmpty()) {
-                            item { SectionTitle(stringResource(GR.string.templates_section)) }
-                            items(state.builtinTemplates) { release ->
-                                SelectRow(release, false) { actions.onSelectBuiltinProfile(release) }
-                            }
-                        }
-                        item {
-                            SelectRow(stringResource(GR.string.load_builtin_auto), state.activeBuiltinProfile == null) {
-                                actions.onSelectBuiltinProfile(null)
-                                actions.onCloseBuiltinProfiles()
-                            }
-                        }
-                    }
-
-                    state.userProfileDetail != null -> {
-                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseUserProfileDetail() } }
-                        item { SectionTitle(state.userProfileDetail ?: "") }
-                        item { ActionRow(GR.string.user_profile_load) { actions.onLoadUserProfile(state.userProfileDetail!!) } }
-                        item { ActionRow(GR.string.user_profile_unload) { actions.onUnloadUserProfile() } }
-                        item { ActionRow(GR.string.user_profile_edit) { actions.onEditUserProfile(state.userProfileDetail!!) } }
-                        item { ActionRow(GR.string.user_profile_export) { actions.onUserProfileExport(state.userProfileDetail!!) } }
-                        item { ActionRow(GR.string.user_profile_rename) { actions.onUserProfileRename(state.userProfileDetail!!) } }
-                        item { ActionRow(GR.string.user_profile_convert) { actions.onConvertUserProfile(state.userProfileDetail!!) } }
-                        item { ActionRow(GR.string.user_profile_delete) { actions.onUserProfileDelete(state.userProfileDetail!!) } }
-                    }
-
-                    state.parametersVisible -> {
-                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseParameters() } }
-                        item { SectionTitle(stringResource(GR.string.parameters)) }
-                        items(state.profileOverrideRoots) { node ->
-                            if (!node.isGroup) {
-                                OverrideRow(
-                                    label = node.name,
-                                    value = state.profileOverrideEditing[node.path] ?: node.value?.toString().orEmpty(),
-                                    onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
-                                )
-                            }
-                        }
-                    }
-
-                    state.profileOverrideVisible || state.advancedOverrideVisible -> {
-                        item {
-                            BackRow(stringResource(GR.string.action_back)) {
-                                if (state.advancedOverrideVisible) actions.onCloseAdvancedOverrides()
-                                else actions.onCloseProfileOverrides()
-                            }
-                        }
-                        item { SectionTitle(stringResource(GR.string.debug_profile_override)) }
-                        items(state.profileOverrideRoots) { node ->
-                            if (!node.isGroup) {
-                                OverrideRow(
-                                    label = node.name,
-                                    value = state.profileOverrideEditing[node.path] ?: node.value?.toString().orEmpty(),
-                                    onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
-                                )
-                            }
-                        }
-                    }
-
-                    state.advancedScreenVisible -> {
-                        item { BackRow(stringResource(GR.string.action_back)) { actions.onCloseAdvanced() } }
-                        item { SectionTitle(stringResource(GR.string.advanced_settings)) }
-                        item {
-                            SettingsJumpPageWidget(
-                                title = stringResource(R.string.ghostlock_route),
-                                description = state.profileRoute
-                                    ?: stringResource(R.string.ghostlock_route_auto),
-                                onClick = { showRouteDialog = true },
-                            )
-                        }
-                        item {
-                            SettingsJumpPageWidget(
-                                title = stringResource(R.string.ghostlock_fallback),
-                                description = state.profileFallback
-                                    ?.takeIf { it != "none" }
-                                    ?: stringResource(R.string.ghostlock_fallback_none),
-                                onClick = { showFallbackDialog = true },
-                            )
-                        }
-                        items(state.executionFields) { field ->
-                            OverrideRow(
-                                label = field.path,
-                                value = state.executionEditing[field.path] ?: field.value.toString(),
-                                onValueChange = { actions.onExecutionFieldChanged(field.path, it) },
-                            )
-                        }
-                        item { ActionRow(GR.string.profile_save) { actions.onSaveProfileEdits() } }
-                        item { ActionRow(GR.string.profile_save_as) { actions.onSaveProfileAs() } }
-                        item { ActionRow(GR.string.profile_revert) { actions.onRevertProfileEdits() } }
-                        item { ActionRow(GR.string.override_export) { actions.onExportProfileEdits() } }
-                        item { ActionRow(GR.string.debug_profile_override) { actions.onOpenProfileOverrides() } }
-                        item {
-                            SettingsSwitchWidget(
-                                title = stringResource(GR.string.debug_export_log),
-                                description = stringResource(GR.string.debug_export_log_summary),
-                                checked = state.debugExportEnabled,
-                                onCheckedChange = { actions.onDebugExportChanged(it) },
-                            )
-                        }
-                        item {
-                            SettingsJumpPageWidget(
-                                title = stringResource(GR.string.debug_export_location),
-                                description = state.debugExportLocation,
-                                onClick = { actions.onDebugExportLocationPick() },
-                            )
-                        }
-                        item {
-                            SettingsSwitchWidget(
-                                title = stringResource(GR.string.debug_kernel_log),
-                                description = stringResource(GR.string.debug_kernel_log_summary),
-                                checked = state.debugKernelLogEnabled,
-                                onCheckedChange = { actions.onDebugKernelLogChanged(it) },
-                            )
-                        }
-                    }
-
-                    else -> {
-                        item { StatusCard(state) }
-                        item { Spacer(Modifier.height(12.dp)) }
-                        item { ControlCard(state, actions, onPickCpu = { showCpuDialog = true }) }
-                        item { Spacer(Modifier.height(12.dp)) }
-                        item { ActionsCard(actions) }
-                        item { Spacer(Modifier.height(12.dp)) }
-                        item { ProfileCard(state, actions) }
-                        item { Spacer(Modifier.height(12.dp)) }
-                        item { LogCard(state, actions) }
-                    }
-                }
-            }
-        }
-    }
-
-    if (showCpuDialog) {
-        ListDialog(
-            title = stringResource(GR.string.cpu_pair_label),
-            items = state.cpuPairLabels,
-            selectedIndex = state.cpuPairIndex,
-            onDismiss = { showCpuDialog = false },
-            onSelect = { index ->
-                showCpuDialog = false
-                actions.onCpuPairSelected(index)
-            },
-        )
-    }
-
-    if (showRouteDialog) {
-        val auto = stringResource(R.string.ghostlock_route_auto)
-        val options = listOf(auto) + ProfileConfig.Routes
-        val selected = state.profileRoute?.let { ProfileConfig.Routes.indexOf(it) + 1 } ?: 0
-        ListDialog(
-            title = stringResource(R.string.ghostlock_route),
-            items = options,
-            selectedIndex = selected,
-            onDismiss = { showRouteDialog = false },
-            onSelect = { index ->
-                showRouteDialog = false
-                actions.onRouteChanged(index)
-            },
-        )
-    }
-
-    if (showFallbackDialog) {
-        val none = stringResource(R.string.ghostlock_fallback_none)
-        val options = listOf(none) + ProfileConfig.Routes
-        val selected = state.profileFallback
-            ?.takeIf { it != "none" }
-            ?.let { ProfileConfig.Routes.indexOf(it) + 1 } ?: 0
-        ListDialog(
-            title = stringResource(R.string.ghostlock_fallback),
-            items = options,
-            selectedIndex = selected,
-            onDismiss = { showFallbackDialog = false },
-            onSelect = { index ->
-                showFallbackDialog = false
-                actions.onFallbackChanged(index)
-            },
-        )
-    }
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GhostlockOverlays(state: GhostlockUiState, actions: GhostlockActions) {
     if (state.executionSheetVisible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
@@ -508,100 +409,81 @@ fun GhostlockScreen() {
             },
         )
     }
-
-    if (state.aboutVisible) {
-        AlertDialog(
-            onDismissRequest = { actions.onCloseAbout() },
-            title = { Text(stringResource(GR.string.about)) },
-            text = { Text(stringResource(GR.string.opensource_info)) },
-            confirmButton = {
-                TextButton(onClick = { actions.onCloseAbout() }) {
-                    Text(stringResource(GR.string.about_source_code))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { actions.onCloseAbout() }) {
-                    Text(stringResource(GR.string.cancel))
-                }
-            },
-        )
-    }
 }
 
-private fun ghostlockActions(viewModel: GhostlockViewModel): GhostlockActions =
+internal fun ghostlockActions(viewModel: GhostlockViewModel): GhostlockActions =
     object : GhostlockActions {
         override fun onRun() = viewModel.onRun()
-            override fun onProfileInvalid() = viewModel.onProfileInvalid()
-            override fun onStatusClick() = viewModel.onStatusClick()
-            override fun onCloseExecutionSheet() = viewModel.onCloseExecutionSheet()
-            override fun onCopyLogs() = viewModel.copyLogs()
-            override fun onImportOffsetsHocon() = viewModel.importOffsetsHocon()
-            override fun onImportOffsetsJson() = viewModel.importOffsetsJson()
-            override fun onDocumentsResult(request: DocumentRequest, uris: List<String>) =
-                viewModel.onDocumentsResult(request, uris)
+        override fun onProfileInvalid() = viewModel.onProfileInvalid()
+        override fun onStatusClick() = viewModel.onStatusClick()
+        override fun onCloseExecutionSheet() = viewModel.onCloseExecutionSheet()
+        override fun onCopyLogs() = viewModel.copyLogs()
+        override fun onImportOffsetsHocon() = viewModel.importOffsetsHocon()
+        override fun onImportOffsetsJson() = viewModel.importOffsetsJson()
+        override fun onDocumentsResult(request: DocumentRequest, uris: List<String>) =
+            viewModel.onDocumentsResult(request, uris)
 
-            override fun onParseOta() = viewModel.promptParseUrl()
-            override fun onParseImage() = viewModel.parseOffsets()
-            override fun onCpuPairSelected(index: Int) = viewModel.selectCpuPair(index)
-            override fun onSafeModeChanged(enabled: Boolean) = viewModel.toggleSafeMode(enabled)
-            override fun onForceAttackTestChanged(enabled: Boolean) =
-                viewModel.toggleForceAttackTest(enabled)
+        override fun onParseOta() = viewModel.promptParseUrl()
+        override fun onParseImage() = viewModel.parseOffsets()
+        override fun onCpuPairSelected(index: Int) = viewModel.selectCpuPair(index)
+        override fun onSafeModeChanged(enabled: Boolean) = viewModel.toggleSafeMode(enabled)
+        override fun onForceAttackTestChanged(enabled: Boolean) =
+            viewModel.toggleForceAttackTest(enabled)
 
-            override fun onRootlessChanged(enabled: Boolean) = viewModel.toggleShizuku(enabled)
-            override fun onDialogItemSelected(index: Int) = viewModel.onDialogItemSelected(index)
-            override fun onDialogInputChange(value: String) = viewModel.onDialogInputChange(value)
-            override fun onDialogConfirm(value: String) = viewModel.onDialogConfirm(value)
-            override fun onDialogDismiss() = viewModel.onDialogDismiss()
-            override fun onDialogDismissFinished() = viewModel.onDialogDismissFinished()
-            override fun onOverwriteConfirm() = viewModel.onOverwriteConfirm()
-            override fun onOverwriteDismiss() = viewModel.onOverwriteDismiss()
-            override fun onExecutionFieldChanged(path: String, value: String) =
-                viewModel.updateExecutionField(path, value)
+        override fun onRootlessChanged(enabled: Boolean) = viewModel.toggleShizuku(enabled)
+        override fun onDialogItemSelected(index: Int) = viewModel.onDialogItemSelected(index)
+        override fun onDialogInputChange(value: String) = viewModel.onDialogInputChange(value)
+        override fun onDialogConfirm(value: String) = viewModel.onDialogConfirm(value)
+        override fun onDialogDismiss() = viewModel.onDialogDismiss()
+        override fun onDialogDismissFinished() = viewModel.onDialogDismissFinished()
+        override fun onOverwriteConfirm() = viewModel.onOverwriteConfirm()
+        override fun onOverwriteDismiss() = viewModel.onOverwriteDismiss()
+        override fun onExecutionFieldChanged(path: String, value: String) =
+            viewModel.updateExecutionField(path, value)
 
-            override fun onRouteChanged(index: Int) = viewModel.onRouteChanged(index)
-            override fun onFallbackChanged(index: Int) = viewModel.onFallbackChanged(index)
-            override fun onExportProfile() = viewModel.onExportProfile()
-            override fun onSaveProfileEdits() = viewModel.onSaveProfileEdits()
-            override fun onSaveProfileAs() = viewModel.onSaveProfileAs()
-            override fun onExportProfileEdits() = viewModel.onExportProfileEdits()
-            override fun onRevertProfileEdits() = viewModel.onRevertProfileEdits()
-            override fun onOpenAdvanced() = viewModel.onOpenAdvanced()
-            override fun onCloseAdvanced() = viewModel.onCloseAdvanced()
-            override fun onShowAbout() = viewModel.onShowAbout()
-            override fun onCloseAbout() = viewModel.onCloseAbout()
-            override fun onDebugExportChanged(enabled: Boolean) = viewModel.onDebugExportChanged(enabled)
-            override fun onDebugExportLocationPick() = viewModel.onDebugExportLocationPick()
-            override fun onDebugKernelLogChanged(enabled: Boolean) =
-                viewModel.onDebugKernelLogChanged(enabled)
+        override fun onRouteChanged(index: Int) = viewModel.onRouteChanged(index)
+        override fun onFallbackChanged(index: Int) = viewModel.onFallbackChanged(index)
+        override fun onExportProfile() = viewModel.onExportProfile()
+        override fun onSaveProfileEdits() = viewModel.onSaveProfileEdits()
+        override fun onSaveProfileAs() = viewModel.onSaveProfileAs()
+        override fun onExportProfileEdits() = viewModel.onExportProfileEdits()
+        override fun onRevertProfileEdits() = viewModel.onRevertProfileEdits()
+        override fun onOpenAdvanced() = viewModel.onOpenAdvanced()
+        override fun onCloseAdvanced() = viewModel.onCloseAdvanced()
+        override fun onShowAbout() = viewModel.onShowAbout()
+        override fun onCloseAbout() = viewModel.onCloseAbout()
+        override fun onDebugExportChanged(enabled: Boolean) = viewModel.onDebugExportChanged(enabled)
+        override fun onDebugExportLocationPick() = viewModel.onDebugExportLocationPick()
+        override fun onDebugKernelLogChanged(enabled: Boolean) =
+            viewModel.onDebugKernelLogChanged(enabled)
 
-            override fun onOpenParameters() = viewModel.onOpenParameters()
-            override fun onCloseParameters() = viewModel.onCloseParameters()
-            override fun onOpenLoadConfig() = viewModel.onOpenLoadConfig()
-            override fun onCloseLoadConfig() = viewModel.onCloseLoadConfig()
-            override fun onOpenUserProfileDetail(name: String) =
-                viewModel.onOpenUserProfileDetail(name)
+        override fun onOpenParameters() = viewModel.onOpenParameters()
+        override fun onCloseParameters() = viewModel.onCloseParameters()
+        override fun onOpenLoadConfig() = viewModel.onOpenLoadConfig()
+        override fun onCloseLoadConfig() = viewModel.onCloseLoadConfig()
+        override fun onOpenUserProfileDetail(name: String) = viewModel.onOpenUserProfileDetail(name)
 
-            override fun onCloseUserProfileDetail() = viewModel.onCloseUserProfileDetail()
-            override fun onLoadUserProfile(name: String) = viewModel.onLoadUserProfile(name)
-            override fun onUnloadUserProfile() = viewModel.onUnloadUserProfile()
-            override fun onEditUserProfile(name: String) = viewModel.onEditUserProfile(name)
-            override fun onUserProfileRename(name: String) = viewModel.onUserProfileRename(name)
-            override fun onUserProfileExport(name: String) = viewModel.onUserProfileExport(name)
-            override fun onConvertUserProfile(name: String) = viewModel.onConvertUserProfile(name)
-            override fun onUserProfileDelete(name: String) = viewModel.onUserProfileDelete(name)
-            override fun onUserProfileDeleteConfirm() = viewModel.onUserProfileDeleteConfirm()
-            override fun onUserProfileDeleteDismiss() = viewModel.onUserProfileDeleteDismiss()
-            override fun onOpenBuiltinProfiles() = viewModel.onOpenBuiltinProfiles()
-            override fun onCloseBuiltinProfiles() = viewModel.onCloseBuiltinProfiles()
-            override fun onSelectBuiltinProfile(release: String?) =
-                viewModel.onSelectBuiltinProfile(release)
+        override fun onCloseUserProfileDetail() = viewModel.onCloseUserProfileDetail()
+        override fun onLoadUserProfile(name: String) = viewModel.onLoadUserProfile(name)
+        override fun onUnloadUserProfile() = viewModel.onUnloadUserProfile()
+        override fun onEditUserProfile(name: String) = viewModel.onEditUserProfile(name)
+        override fun onUserProfileRename(name: String) = viewModel.onUserProfileRename(name)
+        override fun onUserProfileExport(name: String) = viewModel.onUserProfileExport(name)
+        override fun onConvertUserProfile(name: String) = viewModel.onConvertUserProfile(name)
+        override fun onUserProfileDelete(name: String) = viewModel.onUserProfileDelete(name)
+        override fun onUserProfileDeleteConfirm() = viewModel.onUserProfileDeleteConfirm()
+        override fun onUserProfileDeleteDismiss() = viewModel.onUserProfileDeleteDismiss()
+        override fun onOpenBuiltinProfiles() = viewModel.onOpenBuiltinProfiles()
+        override fun onCloseBuiltinProfiles() = viewModel.onCloseBuiltinProfiles()
+        override fun onSelectBuiltinProfile(release: String?) =
+            viewModel.onSelectBuiltinProfile(release)
 
-            override fun onOpenProfileOverrides() = viewModel.onOpenProfileOverrides()
-            override fun onCloseProfileOverrides() = viewModel.onCloseProfileOverrides()
-            override fun onOpenAdvancedOverrides() = viewModel.onOpenAdvancedOverrides()
-            override fun onCloseAdvancedOverrides() = viewModel.onCloseAdvancedOverrides()
-            override fun onProfileOverrideChanged(path: String, value: String) =
-                viewModel.onProfileOverrideChanged(path, value)
+        override fun onOpenProfileOverrides() = viewModel.onOpenProfileOverrides()
+        override fun onCloseProfileOverrides() = viewModel.onCloseProfileOverrides()
+        override fun onOpenAdvancedOverrides() = viewModel.onOpenAdvancedOverrides()
+        override fun onCloseAdvancedOverrides() = viewModel.onCloseAdvancedOverrides()
+        override fun onProfileOverrideChanged(path: String, value: String) =
+            viewModel.onProfileOverrideChanged(path, value)
     }
 
 @Composable
@@ -682,14 +564,14 @@ private fun ControlCard(
 }
 
 @Composable
-private fun ActionsCard(actions: GhostlockActions) {
+private fun ActionsCard(actions: GhostlockActions, navigator: Navigator) {
     SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
         item {
             SettingsJumpPageWidget(
                 icon = Icons.TwoTone.BugReport,
                 title = stringResource(GR.string.advanced_settings),
                 description = stringResource(GR.string.advanced_settings_summary),
-                onClick = { actions.onOpenAdvanced() },
+                onClick = { navigator.push(Route.GhostlockAdvanced) },
             )
         }
         item {
@@ -697,7 +579,7 @@ private fun ActionsCard(actions: GhostlockActions) {
                 icon = Icons.TwoTone.BugReport,
                 title = stringResource(GR.string.parameters),
                 description = stringResource(GR.string.parameters_summary),
-                onClick = { actions.onOpenParameters() },
+                onClick = { navigator.push(Route.GhostlockParameters) },
             )
         }
         item {
@@ -705,7 +587,7 @@ private fun ActionsCard(actions: GhostlockActions) {
                 icon = Icons.TwoTone.BugReport,
                 title = stringResource(GR.string.debug_export_log),
                 description = stringResource(GR.string.debug_export_log_summary),
-                onClick = { actions.onOpenParameters() },
+                onClick = { navigator.push(Route.GhostlockAdvanced) },
             )
         }
         item {
@@ -741,21 +623,21 @@ private fun ActionsCard(actions: GhostlockActions) {
                 icon = Icons.TwoTone.BugReport,
                 title = stringResource(GR.string.about),
                 description = stringResource(GR.string.about_summary),
-                onClick = { actions.onShowAbout() },
+                onClick = { navigator.push(Route.GhostlockAbout) },
             )
         }
     }
 }
 
 @Composable
-private fun ProfileCard(state: GhostlockUiState, actions: GhostlockActions) {
+private fun ProfileCard(state: GhostlockUiState, navigator: Navigator) {
     SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
         item {
             SettingsJumpPageWidget(
                 icon = Icons.TwoTone.BugReport,
                 title = stringResource(GR.string.builtin_profile_label),
                 description = state.activeBuiltinProfile,
-                onClick = { actions.onOpenBuiltinProfiles() },
+                onClick = { navigator.push(Route.GhostlockBuiltin) },
             )
         }
         state.userProfiles.forEach { profile ->
@@ -764,7 +646,7 @@ private fun ProfileCard(state: GhostlockUiState, actions: GhostlockActions) {
                     icon = Icons.TwoTone.BugReport,
                     title = profile.name,
                     description = profile.releases.joinToString(", "),
-                    onClick = { actions.onOpenUserProfileDetail(profile.name) },
+                    onClick = { navigator.push(Route.GhostlockUserProfile(profile.name)) },
                 )
             }
         }
@@ -798,7 +680,7 @@ private fun LogCard(state: GhostlockUiState, actions: GhostlockActions) {
 }
 
 @Composable
-private fun DynamicDialog(state: GhostlockUiState, actions: GhostlockActions) {
+internal fun DynamicDialog(state: GhostlockUiState, actions: GhostlockActions) {
     val title = if (state.dialogTitleRes != 0) stringResource(state.dialogTitleRes) else ""
     val message = when {
         state.dialogMessage.isNotEmpty() -> state.dialogMessage
@@ -894,7 +776,7 @@ private fun DynamicDialog(state: GhostlockUiState, actions: GhostlockActions) {
 }
 
 @Composable
-private fun ListDialog(
+internal fun ListDialog(
     title: String,
     items: List<String>,
     selectedIndex: Int,
@@ -928,15 +810,7 @@ private fun ListDialog(
 }
 
 @Composable
-private fun BackRow(label: String, onClick: () -> Unit) {
-    SettingsJumpPageWidget(
-        title = label,
-        onClick = { onClick() },
-    )
-}
-
-@Composable
-private fun SectionTitle(text: String) {
+internal fun SectionTitle(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleSmall,
@@ -946,7 +820,7 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-private fun SelectRow(label: String, selected: Boolean, onClick: () -> Unit) {
+internal fun SelectRow(label: String, selected: Boolean, onClick: () -> Unit) {
     SettingsBaseWidget(
         title = label,
         selected = selected,
@@ -955,7 +829,7 @@ private fun SelectRow(label: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun ActionRow(resId: Int, onClick: () -> Unit) {
+internal fun ActionRow(resId: Int, onClick: () -> Unit) {
     SettingsBaseWidget(
         title = stringResource(resId),
         onClick = { onClick() },
@@ -963,7 +837,7 @@ private fun ActionRow(resId: Int, onClick: () -> Unit) {
 }
 
 @Composable
-private fun OverrideRow(label: String, value: String, onValueChange: (String) -> Unit) {
+internal fun OverrideRow(label: String, value: String, onValueChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
         Text(text = label, style = MaterialTheme.typography.bodySmall)
         OutlinedTextField(

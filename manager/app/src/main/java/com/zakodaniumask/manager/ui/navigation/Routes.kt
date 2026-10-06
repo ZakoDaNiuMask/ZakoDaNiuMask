@@ -171,6 +171,28 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object GhostlockAdvanced : Route
+
+    @Parcelize
+    @Serializable
+    data object GhostlockParameters : Route
+
+    @Parcelize
+    @Serializable
+    data object GhostlockBuiltin : Route
+
+    @Parcelize
+    @Serializable
+    data object GhostlockAbout : Route
+
+    @Parcelize
+    @Serializable
+    data class GhostlockUserProfile(
+        val name: String,
+    ) : Route
+
+    @Parcelize
+    @Serializable
     data object OnlinePlugin : Route
 
     @Parcelize
