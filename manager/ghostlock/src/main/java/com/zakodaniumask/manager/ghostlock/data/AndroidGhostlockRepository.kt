@@ -842,6 +842,9 @@ class AndroidGhostlockRepository(context: Context) : GhostlockRepository {
     }
 
     override suspend fun publishOffsets(candidate: OffsetCandidate): String {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            throw IOException("exporting offsets to Downloads requires Android 10+")
+        }
         val safeRelease = candidate.release.replace(Regex("[^A-Za-z0-9._-]"), "_")
         val values = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, "offsets-$safeRelease.conf")
