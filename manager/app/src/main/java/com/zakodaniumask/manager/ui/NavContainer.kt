@@ -91,6 +91,7 @@ import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
 import com.zakodaniumask.manager.ui.screen.userko.UserKoPage
 import com.zakodaniumask.manager.ui.screen.plugin.OnlinePluginScreen
+import com.zakodaniumask.manager.ui.screen.plugin.PluginPage
 import com.zakodaniumask.manager.ui.screen.plugin.PluginLogScreen
 import com.zakodaniumask.manager.ui.screen.main.MainScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.ModuleRepoScreen
@@ -748,6 +749,17 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     GhostlockUserProfileScreen(key.name)
+                }
+            }
+            entry<Route.Plugin>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    PluginPage()
                 }
             }
             entry<Route.OnlinePlugin>(swipeDismiss = swipeBackDirection) {

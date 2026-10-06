@@ -563,6 +563,17 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
+                        item {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Code,
+                                title = stringResource(R.string.plugin_title),
+                                description = stringResource(R.string.plugin_subtitle),
+                                onClick = {
+                                    navigator.push(Route.Plugin)
+                                }
+                            )
+                        }
+
                         item(visible = homeState.systemStatus.lkmMode == true && !homeState.systemStatus.isLateLoadMode) {
                             UninstallItem {
                                 loadingDialog.withLoading(it)

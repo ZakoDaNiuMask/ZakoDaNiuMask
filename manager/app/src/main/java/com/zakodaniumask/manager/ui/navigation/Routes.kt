@@ -197,6 +197,10 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object Plugin : Route
+
+    @Parcelize
+    @Serializable
     data object OnlinePlugin : Route
 
     @Parcelize

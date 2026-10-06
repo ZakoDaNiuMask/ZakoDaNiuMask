@@ -29,10 +29,8 @@ import androidx.compose.material.icons.twotone.PlayArrow
 import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material.icons.twotone.Tune
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
@@ -58,7 +56,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
@@ -69,8 +66,10 @@ import com.zakodaniumask.manager.ui.component.ConfirmResult
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.WarningCard
 import com.zakodaniumask.manager.ui.component.rememberConfirmDialog
+import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
+import com.zakodaniumask.manager.ui.component.settings.SettingsJumpPageWidget
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.theme.CardConfig
@@ -93,7 +92,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PluginPage(bottomPadding: Dp) {
+fun PluginPage() {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val viewModel: PluginViewModel = koinViewModel()
@@ -165,14 +164,7 @@ fun PluginPage(bottomPadding: Dp) {
             LargeFlexibleTopAppBar(
                 modifier = Modifier.blurEffect(),
                 title = { Text(stringResource(R.string.plugin_title)) },
-                actions = {
-                    IconButton(onClick = { navigator.push(Route.OnlinePlugin) }) {
-                        Icon(Icons.TwoTone.Cloud, contentDescription = stringResource(R.string.online_plugin_title))
-                    }
-                    IconButton(onClick = { viewModel.refresh() }) {
-                        Icon(Icons.TwoTone.Refresh, contentDescription = stringResource(R.string.plugin_refresh))
-                    }
-                },
+                navigationIcon = { AppBackButton(onClick = { navigator.pop() }) },
                 windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -188,13 +180,6 @@ fun PluginPage(bottomPadding: Dp) {
                             MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
                 ),
             )
-        },
-        floatingActionButton = {
-            if (rootAvailable) {
-                FloatingActionButton(onClick = { pickPlugin.launch("application/zip") }) {
-                    Icon(Icons.TwoTone.Add, contentDescription = stringResource(R.string.plugin_install))
-                }
-            }
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
     ) { paddingValues ->
@@ -217,16 +202,35 @@ fun PluginPage(bottomPadding: Dp) {
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(
                 top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + bottomPadding + 12.dp,
+                bottom = paddingValues.calculateBottomPadding() + 12.dp,
             ),
         ) {
             item {
-                WarningCard(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    message = stringResource(R.string.plugin_subtitle),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                )
+                SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    item {
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.Cloud,
+                            title = stringResource(R.string.online_plugin_title),
+                            description = stringResource(R.string.plugin_subtitle),
+                            onClick = { navigator.push(Route.OnlinePlugin) },
+                        )
+                    }
+                    item {
+                        SettingsBaseWidget(
+                            icon = Icons.TwoTone.Add,
+                            title = stringResource(R.string.plugin_install),
+                            enabled = rootAvailable,
+                            onClick = { pickPlugin.launch("application/zip") },
+                        )
+                    }
+                    item {
+                        SettingsBaseWidget(
+                            icon = Icons.TwoTone.Refresh,
+                            title = stringResource(R.string.plugin_refresh),
+                            onClick = { viewModel.refresh() },
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
