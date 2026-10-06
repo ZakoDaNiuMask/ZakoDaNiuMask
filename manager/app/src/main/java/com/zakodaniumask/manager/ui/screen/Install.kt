@@ -113,7 +113,7 @@ private fun KpmPatchOptionItem(
         selected = selected,
         title = title,
         description = description,
-        onClick = onSelect,
+        onClick = { onSelect() },
         leadingContent = {
             RadioButton(selected = selected, onClick = null)
         },

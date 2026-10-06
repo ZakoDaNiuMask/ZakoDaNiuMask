@@ -81,6 +81,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
 fun KpmPage() {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
