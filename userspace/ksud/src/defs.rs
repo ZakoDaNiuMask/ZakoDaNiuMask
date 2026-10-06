@@ -81,6 +81,11 @@ mod android {
     // When present, ksud skips the kernel/ksud UAPI version match (manager "ignore UAPI" option).
     pub const IGNORE_UAPI: &str = concatcp!(WORKING_DIR, ".ignore_uapi");
 
+    // User kernel-module (KO) loader, managed by the manager. Each module lives at
+    // /data/adb/user_ko/<uuid>.ko and metadata is kept in config.json.
+    pub const USER_KO_DIR: &str = concatcp!(ADB_DIR, "user_ko/");
+    pub const USER_KO_CONFIG: &str = concatcp!(ADB_DIR, "user_ko/config.json");
+
     #[derive(Serialize)]
     pub struct MountInfo {
         pub path: String,

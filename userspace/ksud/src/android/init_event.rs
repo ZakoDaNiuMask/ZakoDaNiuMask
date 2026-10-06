@@ -7,7 +7,7 @@ use crate::{
     android::{
         boot_script, dynamic_manager, ksucalls,
         module::{self, ScriptWait, handle_updated_modules, metamodule, prune_modules},
-        plugin_lua, restorecon,
+        plugin_lua, restorecon, user_ko,
         utils::{self, is_safe_mode},
     },
     assets, defs,
@@ -137,6 +137,9 @@ pub fn on_post_fs_data() -> Result<()> {
     // User-configurable boot script for the post-fs-data stage
     boot_script::run("post-fs-data", wait);
 
+    // User kernel-module (KO) auto-load for the post-fs-data stage
+    user_ko::run("post-fs-data");
+
     // Lua plugins and module-level Lua scripts for the post-fs-data stage
     if let Err(e) = plugin_lua::exec_stage_lua("post-fs-data", true) {
         warn!("Failed to exec post-fs-data lua: {e}");
@@ -181,6 +184,9 @@ pub fn run_stage(stage: &str, wait: ScriptWait) {
 
     // user-configurable boot script for this stage
     boot_script::run(stage, wait);
+
+    // user kernel-module (KO) auto-load for this stage
+    user_ko::run(stage);
 
     // Lua plugins and module-level Lua scripts for this stage
     if let Err(e) = plugin_lua::exec_stage_lua(stage, false) {

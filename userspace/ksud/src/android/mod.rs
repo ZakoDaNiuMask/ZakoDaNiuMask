@@ -23,4 +23,5 @@ pub mod susfs;
 pub mod uapi;
 mod umount_config;
 mod unload;
+mod user_ko;
 pub mod utils;
