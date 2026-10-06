@@ -19,10 +19,10 @@ import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.AppSettingsRepository
 import com.zakodaniumask.manager.data.shell.ShortcutRepository
 import com.zakodaniumask.manager.ui.MainActivity
+import com.zakodaniumask.manager.ui.screen.main.ShortcutType
 import com.zakodaniumask.manager.ui.util.isColorOS
 import com.zakodaniumask.manager.ui.util.isHyperOS
 import com.zakodaniumask.manager.ui.util.isMiui
-import com.zakodaniumask.manager.ui.webui.WebUIActivity
 
 class Shortcut(
     private val settings: AppSettingsRepository,
@@ -30,14 +30,31 @@ class Shortcut(
 ) {
 
     private companion object {
-        const val TAG = "ModuleShortcut"
+        private const val TAG = "ModuleShortcut"
+        const val SCHEME_KSU = "ksu"
+        const val HOST_ACTION = "action"
+        const val HOST_WEBUI = "webui"
+    }
+
+    fun buildShortcutUri(moduleId: String, type: ShortcutType, intentToken: String): Uri {
+        val host = when (type) {
+            ShortcutType.Action -> HOST_ACTION
+            ShortcutType.WebUI -> HOST_WEBUI
+        }
+        return Uri.Builder()
+            .scheme(SCHEME_KSU)
+            .authority(host)
+            .appendQueryParameter("id", moduleId)
+            .appendQueryParameter("token", intentToken)
+            .build()
     }
 
     fun createModuleActionShortcut(
         context: Context,
         moduleId: String,
         name: String,
-        iconUri: String?
+        iconUri: String?,
+        intentToken: String,
     ) {
         val usingAltIcon = settings.getBoolean("use_alt_icon", false)
         val mainActivity = ComponentName(context, MainActivity::class.java.name)
@@ -47,8 +64,7 @@ class Shortcut(
         val shortcutIntent = Intent().apply {
             component = if (usingAltIcon) mainActivityAlias else mainActivity
             action = Intent.ACTION_VIEW
-            putExtra("shortcut_type", "module_action")
-            putExtra("module_id", moduleId)
+            data = buildShortcutUri(moduleId, ShortcutType.Action, intentToken)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         createModuleShortcut(
@@ -66,16 +82,14 @@ class Shortcut(
         context: Context,
         moduleId: String,
         name: String,
-        iconUri: String?
+        iconUri: String?,
+        intentToken: String,
     ) {
         val shortcutId = "module_webui_$moduleId"
 
-        val shortcutIntent = Intent(context, WebUIActivity::class.java).apply {
+        val shortcutIntent = Intent(context, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
-            data = "kernelsu://webui/$moduleId".toUri()
-            putExtra("id", moduleId)
-            putExtra("name", name)
-            putExtra("from_webui_shortcut", true)
+            data = buildShortcutUri(moduleId, ShortcutType.WebUI, intentToken)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         createModuleShortcut(

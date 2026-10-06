@@ -21,6 +21,7 @@ import com.zakodaniumask.manager.ui.theme.BackgroundManager
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.topjohnwu.superuser.ShellUtils
+import java.security.SecureRandom
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,6 +36,10 @@ class SettingsPlatformRepository(
     private val localeHelper: LocaleHelper,
     private val ksuCliRepository: KsuCliRepository,
 ) {
+    private companion object {
+        private val secureRandom = SecureRandom()
+    }
+
     fun load(): SettingsPlatformSnapshot {
         themeConfig.forceDarkMode = themeRepository.loadThemeMode()
         themeConfig.seedColor = themeRepository.loadSeedColor()
@@ -351,4 +356,15 @@ class SettingsPlatformRepository(
     private fun isSystemDark(): Boolean =
         application.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
                 Configuration.UI_MODE_NIGHT_YES
+
+    /** Per-install token used to validate ksu:// deep links and internal download installs. */
+    val intentToken: String
+        get() {
+            val existing = settings.getString("intent_token", null)
+            if (!existing.isNullOrBlank()) return existing
+            val token = ByteArray(32).also(secureRandom::nextBytes)
+                .joinToString(separator = "") { "%02x".format(it) }
+            settings.putString("intent_token", token)
+            return token
+        }
 }

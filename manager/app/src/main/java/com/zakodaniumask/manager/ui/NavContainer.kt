@@ -2,7 +2,6 @@ package com.zakodaniumask.manager.ui
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -23,8 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +45,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.app.ActivityCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigationevent.NavigationEventInfo
@@ -56,11 +52,7 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.zakodaniumask.manager.ui.activity.PermissionRequestInterface
 import com.zakodaniumask.manager.ui.animation.predictiveback.installerNavTransition
-import com.zakodaniumask.manager.ui.component.InstallConfirmationDialog
-import com.zakodaniumask.manager.ui.component.ZipFileDetector
-import com.zakodaniumask.manager.ui.component.ZipFileInfo
-import com.zakodaniumask.manager.ui.component.ZipType
-import com.zakodaniumask.manager.ui.navigation.HandleDeepLink
+import com.zakodaniumask.manager.ui.navigation.IntentDispatcher
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Navigator
 import com.zakodaniumask.manager.ui.navigation.Route
@@ -109,17 +101,13 @@ import com.zakodaniumask.manager.ui.util.LocalPortraitState
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.LocalStretchOverscrollCompensationState
 import com.zakodaniumask.manager.ui.util.rememberDeviceCornerRadius
-import com.zakodaniumask.manager.ui.viewmodel.MainIntentViewModel
 import com.zakodaniumask.manager.ui.viewmodel.PredictiveBackAnimation
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
-import com.zakodaniumask.manager.ui.webui.WebUIActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import top.yukonga.miuix.kmp.blur.LayerBackdrop
@@ -135,38 +123,13 @@ import kotlin.coroutines.resume
 
 @Composable
 fun NavContainer(
-    zipUri: List<Uri>?,
-    intentState: MutableStateFlow<Int>,
     settingsViewModel: SettingsViewModel,
-    showConfirmationDialog: MutableState<Boolean>,
-    pendingZipFiles: MutableState<List<ZipFileInfo>>,
+    intentChannel: Channel<Intent>,
 ) {
     val themeConfig: ThemeConfig = koinInject()
     val backgroundRenderState = LocalBackgroundRenderState.current
-    val zipFileDetector = koinInject<ZipFileDetector>()
     val activity = LocalActivity.current as MainActivity
     val context = LocalContext.current
-    val mainIntentViewModel = koinViewModel<MainIntentViewModel>()
-    val mainIntentState by mainIntentViewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(zipUri) {
-        if (zipUri.isNullOrEmpty()) return@LaunchedEffect
-
-        activity.lifecycleScope.launch(Dispatchers.IO) {
-            val zipFileInfos = zipUri.map { uri ->
-                zipFileDetector.parseZipFile(context, uri)
-            }.filter { it.type != ZipType.UNKNOWN }
-
-            withContext(Dispatchers.Main) {
-                if (zipFileInfos.isNotEmpty()) {
-                    pendingZipFiles.value = zipFileInfos
-                    showConfirmationDialog.value = true
-                } else {
-                    activity.finish()
-                }
-            }
-        }
-    }
 
     val settings by settingsViewModel.uiState.collectAsStateWithLifecycle()
     val systemDensity = LocalDensity.current
@@ -312,57 +275,7 @@ fun NavContainer(
         LocalNavigator provides navigator,
         LocalDensity provides density
     ) {
-        HandleDeepLink(
-            intentState = intentState.collectAsState()
-        )
-
-        ShortcutIntentHandler(
-            intentState = intentState
-        )
-
-        InstallConfirmationDialog(
-            show = showConfirmationDialog.value,
-            zipFiles = pendingZipFiles.value,
-            onConfirm = { confirmedFiles ->
-                showConfirmationDialog.value = false
-                activity.lifecycleScope.launch(Dispatchers.IO) {
-                    val moduleUris =
-                        confirmedFiles.filter { it.type == ZipType.MODULE }
-                            .map { it.uri }
-                    val kernelUris =
-                        confirmedFiles.filter { it.type == ZipType.KERNEL }
-                            .map { it.uri }
-
-                    when {
-                        kernelUris.isNotEmpty() && moduleUris.isEmpty() -> {
-                            if (kernelUris.size == 1 && mainIntentState.rootAvailable) {
-                                withContext(Dispatchers.Main) {
-                                    navigator.push(
-                                        Route.Install(
-                                            preselectedKernelUri = kernelUris.first()
-                                                .toString()
-                                        )
-                                    )
-                                }
-                            }
-                        }
-
-                        moduleUris.isNotEmpty() -> {
-                            withContext(Dispatchers.Main) {
-                                navigator.push(
-                                    Route.Flash.modules(moduleUris.map(Uri::toString))
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            onDismiss = {
-                showConfirmationDialog.value = false
-                pendingZipFiles.value = emptyList()
-                activity.finish()
-            }
-        )
+        IntentDispatcher(intentChannel)
 
         val navCornerRadius = rememberDeviceCornerRadius(defaultRadius = 0.dp)
         val roundAllCorners =
@@ -539,7 +452,7 @@ fun NavContainer(
                     backgroundRenderState = backgroundRenderState,
                     useBlur = useBlur,
                 ) {
-                    ExecuteModuleActionScreen(key.moduleId)
+                    ExecuteModuleActionScreen(key.moduleId, key.fromShortcut)
                 }
             }
             entry<Route.Home>(swipeDismiss = NavSwipeDirection.None) {
@@ -1036,40 +949,3 @@ fun rememberMaterial3BlurBackdrop(
     }
 }
 
-@Composable
-private fun ShortcutIntentHandler(
-    intentState: MutableStateFlow<Int>
-) {
-    val navigator = LocalNavigator.current
-    val activity = LocalActivity.current ?: return
-    val context = LocalContext.current
-    val intentStateValue by intentState.collectAsState()
-    LaunchedEffect(intentStateValue) {
-        val intent = activity.intent
-        val type = intent?.getStringExtra("shortcut_type") ?: return@LaunchedEffect
-        when (type) {
-            "module_action" -> {
-                val moduleId = intent.getStringExtra("module_id") ?: return@LaunchedEffect
-                navigator.push(Route.ExecuteModuleAction(moduleId))
-            }
-
-            "module_webui" -> {
-                val moduleId = intent.getStringExtra("module_id") ?: return@LaunchedEffect
-                val moduleName = intent.getStringExtra("module_name") ?: moduleId
-
-                val webIntent = Intent(context, WebUIActivity::class.java)
-                    .setData("kernelsu://webui/$moduleId".toUri())
-                    .putExtra("id", moduleId)
-                    .putExtra("name", moduleName)
-                    .putExtra("from_webui_shortcut", true)
-                    .addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK or
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    )
-                context.startActivity(webIntent)
-            }
-
-            else -> return@LaunchedEffect
-        }
-    }
-}

@@ -421,6 +421,10 @@
     <string name="choose_theme_color">选择主题色</string>
     <string name="horizon_kernel">刷写 AnyKernel3 压缩包</string>
     <string name="horizon_kernel_summary">刷入 Anykernel3 内核</string>
+    <string name="both_kernel_and_module_files">输入的 zip 文件同时含有 AnyKernel3 压缩包和模块</string>
+    <string name="more_than_one_kernel_file">输入的文件中有多于 1 个的 AnyKernel3 压缩包</string>
+    <string name="module_shortcut_copy_scheme">复制 URL Scheme</string>
+    <string name="module_shortcut_scheme_copied">已复制 URL Scheme</string>
     <string name="root_required">需要 root 权限</string>
     <string name="failed_reboot">重启失败</string>
     <string name="custom_settings">个性化设置</string>

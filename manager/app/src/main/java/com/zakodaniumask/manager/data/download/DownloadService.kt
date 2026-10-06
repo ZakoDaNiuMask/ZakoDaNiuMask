@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import com.zakodaniumask.manager.BuildConfig
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.settings.SettingsPlatformRepository
 import com.zakodaniumask.manager.data.update.ManagerUpdateRepository
 import com.zakodaniumask.manager.data.update.ZipRangeArchive
 import com.zakodaniumask.manager.ui.MainActivity
@@ -36,6 +37,7 @@ class DownloadService : Service() {
     private val downloadRepository: DownloadRepository by inject()
     private val httpClient: OkHttpClient by inject()
     private val managerUpdateRepository: ManagerUpdateRepository by inject()
+    private val settingsRepository: SettingsPlatformRepository by inject()
 
     companion object {
         const val CHANNEL_ID = "download_channel"
@@ -45,6 +47,7 @@ class DownloadService : Service() {
         const val ACTION_DISMISS_DOWNLOAD = "com.zakodaniumask.manager.action.DISMISS_DOWNLOAD"
         const val ACTION_INSTALL_MODULE = "com.zakodaniumask.manager.action.INSTALL_MODULE"
         const val EXTRA_URL = "url"
+        const val EXTRA_TOKEN = "token"
         const val EXTRA_FILE_NAME = "fileName"
         const val EXTRA_DOWNLOAD_ID = "downloadId"
         const val EXTRA_MODULE_URI = "moduleUri"
@@ -339,6 +342,7 @@ class DownloadService : Service() {
             action = ACTION_INSTALL_MODULE
             putExtra(EXTRA_MODULE_URI, uri.toString())
             putExtra(EXTRA_DOWNLOAD_ID, id)
+            putExtra(EXTRA_TOKEN, settingsRepository.intentToken)
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         val installPendingIntent = PendingIntent.getActivity(

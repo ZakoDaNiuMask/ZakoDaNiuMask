@@ -72,7 +72,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarDuration
@@ -81,7 +80,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -119,10 +117,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kyant.capsule.ContinuousRoundedRectangle
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.settings.SettingsPlatformRepository
 import com.zakodaniumask.manager.domain.model.InstalledModule
 import com.zakodaniumask.manager.domain.model.MetaModuleStatus
 import com.zakodaniumask.manager.domain.usecase.EnqueueDownloadUseCase
@@ -173,7 +171,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 
-private enum class ShortcutType {
+enum class ShortcutType {
     Action,
     WebUI
 }
@@ -453,7 +451,7 @@ fun ModulePage(bottomPadding: Dp) {
                     onUpdateModule = {
                         navigator.push(Route.Flash.moduleUpdate(it.toString()))
                     },
-                    onClickModule = { id, name, hasWebUi ->
+                    onClickModule = { id, hasWebUi ->
                         val currentTime = System.currentTimeMillis()
                         if (currentTime - lastClickTime < 600) {
                             Log.d("ModuleScreen", "Click too fast, ignoring")
@@ -465,9 +463,13 @@ fun ModulePage(bottomPadding: Dp) {
                             try {
                                 context.startActivity(
                                     Intent(context, WebUIActivity::class.java)
-                                    .setData("kernelsu://webui/$id".toUri())
-                                    .putExtra("id", id)
-                                        .putExtra("name", name)
+                                        .setData(
+                                            Uri.Builder()
+                                                .scheme("kernelsu")
+                                                .authority("webui")
+                                                .appendQueryParameter("id", id)
+                                                .build(),
+                                        ),
                                 )
                             } catch (e: Exception) {
                                 Log.e("ModuleScreen", "Error launching WebUI: ${e.message}", e)
@@ -581,13 +583,14 @@ private fun ModuleList(
     modifier: Modifier = Modifier,
     boxModifier: Modifier = Modifier,
     onUpdateModule: (Uri) -> Unit,
-    onClickModule: (id: String, name: String, hasWebUi: Boolean) -> Unit,
+    onClickModule: (id: String, hasWebUi: Boolean) -> Unit,
     context: Context,
     snackBarHost: SnackbarHostState,
     bottomPadding : Dp,
     topPadding : Dp,
 ) {
     val shortcut = koinInject<Shortcut>()
+    val settings = koinInject<SettingsPlatformRepository>()
     var showMetaModuleWarning by rememberSaveable { mutableStateOf(true) }
     val fetchRemoteText = koinInject<FetchRemoteTextUseCase>()
     val enqueueDownload = koinInject<EnqueueDownloadUseCase>()
@@ -675,7 +678,6 @@ private fun ModuleList(
     var defaultWebUiShortcutIconUri by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedShortcutType by rememberSaveable { mutableStateOf<ShortcutType?>(null) }
     val showShortcutDialog = remember { mutableStateOf(false) }
-    val showShortcutTypeRow = remember { mutableStateOf(false) }
 
     fun openShortcutDialogForType(type: ShortcutType) {
         selectedShortcutType = type
@@ -707,7 +709,8 @@ private fun ModuleList(
         moduleId: String,
         name: String,
         iconUri: String?,
-        type: ShortcutType
+        type: ShortcutType,
+        intentToken: String,
     ) {
         when (type) {
             ShortcutType.Action -> {
@@ -715,7 +718,8 @@ private fun ModuleList(
                     context = context,
                     moduleId = moduleId,
                     name = name,
-                    iconUri = iconUri
+                    iconUri = iconUri,
+                    intentToken = intentToken,
                 )
             }
 
@@ -724,7 +728,8 @@ private fun ModuleList(
                     context = context,
                     moduleId = moduleId,
                     name = name,
-                    iconUri = iconUri
+                    iconUri = iconUri,
+                    intentToken = intentToken,
                 )
             }
         }
@@ -846,7 +851,7 @@ private fun ModuleList(
         viewModel.dispatch(ModuleUiAction.SetRemoved(module.dirId, isUninstall))
     }
 
-    fun onModuleAddShortcut(module: InstalledModule) {
+    fun onModuleAddShortcut(module: InstalledModule, shortcutType: ShortcutType) {
         shortcutModuleId = module.id
         textFieldState.edit {
             replace(0, length, module.name)
@@ -859,9 +864,9 @@ private fun ModuleList(
         defaultWebUiShortcutIconUri = module.webUiIconPath
             ?.takeIf { it.isNotBlank() }
             ?.let { "su:$it" }
+        openShortcutDialogForType(shortcutType)
         if (module.hasActionScript && module.hasWebUi) {
             selectedShortcutType = null
-            showShortcutTypeRow.value = true
             openShortcutDialogForType(ShortcutType.Action)
         } else if (module.hasActionScript) {
             openShortcutDialogForType(ShortcutType.Action)
@@ -967,10 +972,10 @@ private fun ModuleList(
                         }
                     },
                     onClick = {
-                        onClickModule(it.dirId, it.name, it.hasWebUi)
+                        onClickModule(it.dirId, it.hasWebUi)
                     },
-                    onModuleAddShortcut = {
-                        onModuleAddShortcut(it)
+                    onModuleAddShortcut = { module, type ->
+                        onModuleAddShortcut(module, type)
                     },
                     showMoreModuleInfo = uiState.showMoreModuleInfo,
                 )
@@ -992,7 +997,6 @@ private fun ModuleList(
             ),
             onDismissRequest = {
                 showShortcutDialog.value = false
-                showShortcutTypeRow.value = false
             }
         ) {
             var error by remember { mutableStateOf("") }
@@ -1007,36 +1011,6 @@ private fun ModuleList(
                     modifier = Modifier
                         .padding(horizontal = 24.dp)
                 )
-                if (showShortcutTypeRow.value) {
-                    PrimaryTabRow(
-                        selectedTabIndex = selectedShortcutType?.ordinal ?: 0,
-                        containerColor = Color.Transparent,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Tab(
-                            selected = selectedShortcutType == ShortcutType.Action,
-                            onClick = {
-                                selectedShortcutType = ShortcutType.Action
-                                shortcutIconUri = defaultActionShortcutIconUri
-                                defaultShortcutIconUri = defaultActionShortcutIconUri
-                            },
-                            unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            text = { Text("Action") }
-                        )
-
-                        Tab(
-                            selected = selectedShortcutType == ShortcutType.WebUI,
-                            onClick = {
-                                selectedShortcutType = ShortcutType.WebUI
-                                shortcutIconUri = defaultWebUiShortcutIconUri
-                                defaultShortcutIconUri = defaultWebUiShortcutIconUri
-                            },
-                            unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            text = { Text("WebUI") }
-                        )
-                    }
-                }
-
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -1068,7 +1042,7 @@ private fun ModuleList(
                     if (shortcutIconUri == defaultShortcutIconUri) {
                         item {
                             SettingsBaseWidget(
-                                icon = Icons.TwoTone.Photo,
+                                iconPlaceholder = false,
                                 isOnBackground = false,
                                 title = stringResource(id = R.string.module_shortcut_icon_pick),
                                 onClick = {
@@ -1086,7 +1060,7 @@ private fun ModuleList(
                     } else {
                         item {
                             SettingsBaseWidget(
-                                icon = Icons.TwoTone.Restore,
+                                iconPlaceholder = false,
                                 isOnBackground = false,
                                 title = stringResource(id = R.string.restore),
                                 onClick = {
@@ -1123,7 +1097,7 @@ private fun ModuleList(
                     if (hasExistingShortcut) {
                         item {
                             SettingsJumpPageWidget(
-                                icon = Icons.TwoTone.Delete,
+                                iconPlaceholder = false,
                                 renderBackgroundBlur = false,
                                 title = stringResource(id = R.string.module_shortcut_delete),
                                 onClick = {
@@ -1136,6 +1110,33 @@ private fun ModuleList(
                                 },
                             )
                         }
+                    }
+
+                    item {
+                        SettingsJumpPageWidget(
+                            iconPlaceholder = false,
+                            renderBackgroundBlur = false,
+                            title = stringResource(R.string.module_shortcut_copy_scheme),
+                            onClick = {
+                                val currentModuleId = shortcutModuleId
+                                val type = selectedShortcutType
+                                if (currentModuleId.isNullOrBlank() || type == null) {
+                                    return@SettingsJumpPageWidget
+                                }
+                                val url = shortcut.buildShortcutUri(
+                                    currentModuleId,
+                                    type,
+                                    settings.intentToken,
+                                ).toString()
+                                val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                                clipboard.setPrimaryClip(ClipData.newPlainText("KernelSU deep link", url))
+                                Toast.makeText(
+                                    context,
+                                    stringResource(R.string.module_shortcut_scheme_copied),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            },
+                        )
                     }
                 }
                 Row(
@@ -1162,7 +1163,8 @@ private fun ModuleList(
                                     moduleId = moduleId,
                                     name = textFieldState.text.toString(),
                                     iconUri = shortcutIconUri,
-                                    type = type
+                                    type = type,
+                                    intentToken = settings.intentToken
                                 )
                             }
                             showShortcutDialog.value = false
@@ -1197,7 +1199,7 @@ fun ModuleItem(
     onCheckChanged: suspend (Boolean) -> Boolean,
     onUpdate: (InstalledModule) -> Unit,
     onClick: (InstalledModule) -> Unit,
-    onModuleAddShortcut: (InstalledModule) -> Unit,
+    onModuleAddShortcut: (InstalledModule, ShortcutType) -> Unit,
     showMoreModuleInfo: Boolean,
 ) {
     val themeConfig: ThemeConfig = koinInject()
@@ -1240,7 +1242,10 @@ fun ModuleItem(
                     if (module.hasActionScript || module.hasWebUi) {
                         combinedClickable(
                             onLongClick = {
-                                onModuleAddShortcut(module)
+                                onModuleAddShortcut(
+                                    module,
+                                    if (module.hasActionScript) ShortcutType.Action else ShortcutType.WebUI
+                                )
                             },
                             onClick = {
                                 if (module.hasWebUi) {
