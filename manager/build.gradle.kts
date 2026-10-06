@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.agp.app) apply false
+    alias(libs.plugins.agp.library) apply false
     alias(libs.plugins.agp.test) apply false
     alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.kotlin) apply false

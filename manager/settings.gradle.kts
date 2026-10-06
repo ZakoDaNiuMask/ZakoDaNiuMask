@@ -23,3 +23,6 @@ rootProject.name = "ZakoDaNiuMask"
 include(":app")
 include(":baselineprofile")
 include(":lint-rules")
+include(":axeron-api")
+include(":axeron-adb")
+include(":axeron-server")
