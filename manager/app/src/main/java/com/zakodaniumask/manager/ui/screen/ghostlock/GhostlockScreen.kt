@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.zakodaniumask.manager.ui.screen.ghostlock
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -83,6 +84,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import com.zakodaniumask.manager.ghostlock.R as GR
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun GhostlockScreen() {
