@@ -95,6 +95,11 @@ private val PORTED_COMPONENTS = listOf(
         website = "https://github.com/LyraVoid/FolkPatch",
     ),
     PortedComponent(
+        name = "AxManager (Axeron)",
+        licenseName = "Apache-2.0",
+        website = "https://github.com/fahrez182/AxManager",
+    ),
+    PortedComponent(
         name = "Lua",
         licenseName = "MIT",
         website = "https://www.lua.org/",

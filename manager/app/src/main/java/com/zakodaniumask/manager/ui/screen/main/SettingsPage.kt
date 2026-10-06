@@ -474,6 +474,17 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
+                        item {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Adb,
+                                title = stringResource(R.string.axeron_title),
+                                description = stringResource(R.string.axeron_settings_summary),
+                                onClick = {
+                                    navigator.push(Route.Axeron)
+                                }
+                            )
+                        }
+
                         if (homeState.systemStatus.isFullFeatured) {
                             item {
                                 SettingsJumpPageWidget(

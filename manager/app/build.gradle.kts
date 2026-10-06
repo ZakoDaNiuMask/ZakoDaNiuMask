@@ -190,6 +190,10 @@ dependencies {
     lintChecks(project(":lint-rules"))
     baselineProfile(project(":baselineprofile"))
 
+    implementation(project(":axeron-api"))
+    implementation(project(":axeron-adb"))
+    implementation(project(":axeron-server"))
+
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.android)

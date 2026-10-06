@@ -26,6 +26,8 @@ class KernelSUApplication : Application() {
             }
         }
 
+        com.zakodaniumask.manager.axeron.AxSettings.initialize(this)
+
         val koin = startKoin {
             androidLogger()
             androidContext(this@KernelSUApplication)

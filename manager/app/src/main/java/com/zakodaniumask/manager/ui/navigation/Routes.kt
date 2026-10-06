@@ -159,6 +159,14 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object Axeron : Route
+
+    @Parcelize
+    @Serializable
+    data object AxeronShell : Route
+
+    @Parcelize
+    @Serializable
     data object OnlinePlugin : Route
 
     @Parcelize

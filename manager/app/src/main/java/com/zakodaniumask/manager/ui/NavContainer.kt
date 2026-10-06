@@ -79,6 +79,8 @@ import com.zakodaniumask.manager.ui.screen.UmountManagerScreen
 import com.zakodaniumask.manager.ui.screen.about.AboutScreen
 import com.zakodaniumask.manager.ui.screen.about.OpenSourceLicenseScreen
 import com.zakodaniumask.manager.ui.screen.bootscript.BootScriptScreen
+import com.zakodaniumask.manager.ui.screen.axeron.AxeronPage
+import com.zakodaniumask.manager.ui.screen.axeron.AxeronShellPage
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
 import com.zakodaniumask.manager.ui.screen.plugin.OnlinePluginScreen
@@ -640,6 +642,28 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     KpmPage()
+                }
+            }
+            entry<Route.Axeron>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    AxeronPage()
+                }
+            }
+            entry<Route.AxeronShell>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    AxeronShellPage()
                 }
             }
             entry<Route.OnlinePlugin>(swipeDismiss = swipeBackDirection) {
