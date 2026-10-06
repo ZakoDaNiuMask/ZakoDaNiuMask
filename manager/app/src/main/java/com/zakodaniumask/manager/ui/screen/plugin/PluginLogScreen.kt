@@ -1,7 +1,6 @@
 package com.zakodaniumask.manager.ui.screen.plugin
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxSize
@@ -112,11 +111,10 @@ fun PluginLogScreen(pluginId: String, pluginName: String) {
                     .fillMaxSize()
                     .blurSource()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = PaddingValues(
-                    top = paddingValues.calculateTopPadding() + 8.dp,
-                    bottom = paddingValues.calculateBottomPadding() + 16.dp,
-                ),
             ) {
+                item {
+                    Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
+                }
                 item {
                     Text(
                         text = logText.ifBlank { stringResource(R.string.plugin_log_empty) },
@@ -124,6 +122,9 @@ fun PluginLogScreen(pluginId: String, pluginName: String) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
                 }
             }
         }

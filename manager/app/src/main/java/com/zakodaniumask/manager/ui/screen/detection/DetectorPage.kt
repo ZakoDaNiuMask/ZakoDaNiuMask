@@ -8,7 +8,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -170,37 +169,34 @@ fun DetectorPage(bottomPadding: Dp) {
                 .fillMaxSize()
                 .blurSource()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + bottomPadding + 12.dp,
-            ),
         ) {
             item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
+            }
+            item {
                 WarningCard(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp, bottom = 12.dp),
                     message = stringResource(R.string.root_detection_warning),
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.secondaryContainer,
                 )
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
             suModel?.let { model ->
                 item {
                     SectionTitle(stringResource(R.string.detector_su))
                     HeadlineCard(model)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
                 item {
                     FactsBlock(model.facts)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
                 rootSection(R.string.root_detection_section_artifacts, model.artifactRows)
                 rootSection(R.string.root_detection_section_context, model.contextRows)
                 item {
                     SectionTitle(stringResource(R.string.root_detection_section_impact))
                     ImpactsSection(model.impacts)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
                 rootSection(R.string.root_detection_section_methods, model.methodRows)
                 rootSection(R.string.root_detection_section_scan, model.scanRows)
@@ -215,7 +211,6 @@ fun DetectorPage(bottomPadding: Dp) {
                 item {
                     SectionTitle(stringResource(R.string.detector_bootloader))
                     BootloaderSection(bootloader)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
@@ -223,7 +218,6 @@ fun DetectorPage(bottomPadding: Dp) {
                 item {
                     SectionTitle(stringResource(R.string.detector_tee))
                     TeeSection(tee)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
@@ -231,7 +225,6 @@ fun DetectorPage(bottomPadding: Dp) {
                 item {
                     SectionTitle(stringResource(R.string.detector_system_properties))
                     SystemPropertiesSection(properties)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
@@ -239,7 +232,6 @@ fun DetectorPage(bottomPadding: Dp) {
                 item {
                     SectionTitle(stringResource(R.string.detector_kernel_check))
                     KernelCheckSection(kernel)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
                 quickSettings(
                     actions = state.actions[DetectorSection.KERNEL_CHECK].orEmpty(),
@@ -252,7 +244,6 @@ fun DetectorPage(bottomPadding: Dp) {
                 item {
                     SectionTitle(stringResource(R.string.detector_selinux))
                     SelinuxSection(selinux)
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
                 quickSettings(
                     actions = state.actions[DetectorSection.SELINUX].orEmpty(),
@@ -287,13 +278,21 @@ fun DetectorPage(bottomPadding: Dp) {
                     }
                 }
             }
+
+            item {
+                Spacer(
+                    modifier = Modifier.height(
+                        paddingValues.calculateBottomPadding() + bottomPadding + 12.dp
+                    )
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun BootloaderSection(report: BootloaderReport) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = statusIcon(report.status.toRootStatus()),
@@ -337,7 +336,7 @@ private fun BootloaderSection(report: BootloaderReport) {
 
 @Composable
 private fun TeeSection(report: TeeReport) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = statusIcon(report.status.toRootStatus()),
@@ -386,7 +385,7 @@ private fun TeeSection(report: TeeReport) {
 
 @Composable
 private fun SystemPropertiesSection(report: SystemPropertiesReport) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = statusIcon(report.status.toRootStatus()),
@@ -427,7 +426,7 @@ private fun systemPropertiesVerdict(report: SystemPropertiesReport): Int = when 
 
 @Composable
 private fun KernelCheckSection(report: KernelCheckReport) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = statusIcon(report.status.toRootStatus()),
@@ -470,7 +469,7 @@ private fun KernelCheckSection(report: KernelCheckReport) {
 
 @Composable
 private fun SelinuxSection(report: SelinuxReport) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = statusIcon(report.status.toRootStatus()),
@@ -510,14 +509,13 @@ private fun LazyListScope.quickSettings(
     if (actions.isEmpty()) return
     item {
         SectionTitle(stringResource(R.string.detector_quick_settings))
-        SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        SegmentedColumn {
             actions.forEach { action ->
                 item {
                     QuickSettingRow(action = action, onToggle = onToggle, onJump = onJump)
                 }
             }
         }
-        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
@@ -653,7 +651,7 @@ private fun SectionTitle(title: String) {
 
 @Composable
 private fun HeadlineCard(model: RootDetectionModel) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = statusIcon(model.status),
@@ -749,7 +747,7 @@ private fun RootRowItem(row: RootRow) {
 
 @Composable
 private fun ImpactsSection(impacts: List<RootImpact>) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         impacts.forEach { impact ->
             item {
                 SettingsBaseWidget(

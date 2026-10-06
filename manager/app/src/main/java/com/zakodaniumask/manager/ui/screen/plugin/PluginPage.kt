@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -200,13 +199,13 @@ fun PluginPage() {
                 .fillMaxSize()
                 .blurSource()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + 12.dp,
-            ),
         ) {
             item {
-                SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
+            }
+
+            item {
+                SegmentedColumn {
                     item {
                         SettingsJumpPageWidget(
                             icon = Icons.TwoTone.Cloud,
@@ -231,32 +230,33 @@ fun PluginPage() {
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
             if (!rootAvailable) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.plugin_root_required_hint),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.errorContainer,
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             } else if (uiState.plugins.isEmpty()) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.plugin_empty_hint),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             } else {
                 item {
-                    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SegmentedColumn {
                         uiState.plugins.forEach { plugin ->
                             item {
                                 PluginRow(
@@ -297,6 +297,10 @@ fun PluginPage() {
                         }
                     }
                 }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
             }
         }
     }

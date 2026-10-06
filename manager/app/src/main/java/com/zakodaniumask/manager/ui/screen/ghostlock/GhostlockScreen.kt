@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -215,12 +214,17 @@ internal fun GhostlockScaffold(
                     .fillMaxSize()
                     .blurSource()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = PaddingValues(
-                    top = padding.calculateTopPadding() + 8.dp,
-                    bottom = padding.calculateBottomPadding() + 12.dp,
-                ),
-                content = content,
-            )
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(padding.calculateTopPadding()))
+                }
+
+                content()
+
+                item {
+                    Spacer(modifier = Modifier.height(padding.calculateBottomPadding()))
+                }
+            }
         }
     }
 
@@ -338,7 +342,7 @@ private fun GhostlockOverlays(state: GhostlockUiState, actions: GhostlockActions
             },
             sheetState = sheetState,
         ) {
-            Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 24.dp)) {
+            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -494,7 +498,7 @@ private fun StatusCard(state: GhostlockUiState) {
         RootlessStatus.NOT_RUNNING -> stringResource(GR.string.shizuku_status_not_running)
         RootlessStatus.NOT_REQUIRED -> stringResource(GR.string.shizuku_summary)
     }
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.PlayArrow,
@@ -515,7 +519,7 @@ private fun ControlCard(
     actions: GhostlockActions,
     onPickCpu: () -> Unit,
 ) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsSwitchWidget(
                 icon = Icons.TwoTone.PlayArrow,
@@ -565,7 +569,7 @@ private fun ControlCard(
 
 @Composable
 private fun ActionsCard(actions: GhostlockActions, navigator: Navigator) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsJumpPageWidget(
                 icon = Icons.TwoTone.BugReport,
@@ -631,7 +635,7 @@ private fun ActionsCard(actions: GhostlockActions, navigator: Navigator) {
 
 @Composable
 private fun ProfileCard(state: GhostlockUiState, navigator: Navigator) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsJumpPageWidget(
                 icon = Icons.TwoTone.BugReport,
@@ -815,7 +819,7 @@ internal fun SectionTitle(text: String) {
         text = text,
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
     )
 }
 
@@ -838,7 +842,7 @@ internal fun ActionRow(resId: Int, onClick: () -> Unit) {
 
 @Composable
 internal fun OverrideRow(label: String, value: String, onValueChange: (String) -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
         Text(text = label, style = MaterialTheme.typography.bodySmall)
         OutlinedTextField(
             value = value,

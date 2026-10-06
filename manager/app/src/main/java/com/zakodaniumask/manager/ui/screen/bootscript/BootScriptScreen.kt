@@ -3,7 +3,6 @@ package com.zakodaniumask.manager.ui.screen.bootscript
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -161,35 +160,37 @@ fun BootScriptScreen() {
                 .fillMaxSize()
                 .blurSource()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + 12.dp,
-            ),
         ) {
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
+            }
+
             if (!uiState.isRootAvailable) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.boot_script_root_required),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.errorContainer,
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             } else {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.boot_script_summary),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
             item {
-                SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                SegmentedColumn {
                     item {
                         SettingsSwitchWidget(
                             icon = Icons.TwoTone.PowerSettingsNew,
@@ -211,11 +212,10 @@ fun BootScriptScreen() {
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
             item {
-                SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                SegmentedColumn {
                     item {
                         Column(modifier = Modifier.padding(vertical = 8.dp)) {
                             SettingsTextFieldWidget(
@@ -235,7 +235,6 @@ fun BootScriptScreen() {
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
             item {
@@ -267,9 +266,13 @@ fun BootScriptScreen() {
                             )
                         },
                     ) {
-                        Text(stringResource(R.string.boot_script_reset))
-                    }
-                }
+                     Text(stringResource(R.string.boot_script_reset))
+                     }
+                 }
+             }
+
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
             }
         }
     }

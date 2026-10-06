@@ -8,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -169,35 +168,37 @@ fun UserKoPage() {
                 .fillMaxSize()
                 .blurSource()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + 12.dp,
-            ),
         ) {
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
+            }
+
             if (!uiState.rootAvailable) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.user_ko_root_required),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.errorContainer,
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
             item {
                 WarningCard(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp, bottom = 12.dp),
                     message = stringResource(R.string.user_ko_warning),
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.secondaryContainer,
                 )
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
             item {
-                SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                SegmentedColumn {
                     item {
                         SettingsJumpPageWidget(
                             icon = Icons.TwoTone.PlayArrow,
@@ -216,13 +217,14 @@ fun UserKoPage() {
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
             if (uiState.modules.isEmpty()) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.user_ko_empty),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
@@ -230,7 +232,7 @@ fun UserKoPage() {
                 }
             } else {
                 item {
-                    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SegmentedColumn {
                         uiState.modules.forEach { module ->
                             item(key = "header_${module.id}") {
                                 UserKoModuleRow(
@@ -274,6 +276,10 @@ fun UserKoPage() {
                         }
                     }
                 }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
             }
         }
     }

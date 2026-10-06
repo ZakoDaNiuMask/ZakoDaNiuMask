@@ -172,7 +172,7 @@ fun AxeronPage() {
                 }
 
                 item {
-                    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SegmentedColumn {
                         item {
                             SettingsBaseWidget(
                                 icon = if (running) Icons.TwoTone.CheckCircle else Icons.TwoTone.Cancel,
@@ -233,7 +233,7 @@ fun AxeronPage() {
                 }
 
                 item {
-                    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SegmentedColumn {
                         item {
                             SettingsBaseWidget(
                                 icon = Icons.TwoTone.PowerSettingsNew,

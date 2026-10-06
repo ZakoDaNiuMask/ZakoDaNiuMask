@@ -211,7 +211,7 @@ fun GhostlockAboutScreen() {
 
     GhostlockScaffold(title = stringResource(GR.string.about)) {
         item {
-            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 Text(
                     text = stringResource(GR.string.opensource_info),
                     style = MaterialTheme.typography.bodyMedium,
@@ -220,7 +220,7 @@ fun GhostlockAboutScreen() {
             }
         }
         item {
-            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 Text(
                     text = stringResource(R.string.ghostlock_about_thanks),
                     style = MaterialTheme.typography.bodyMedium,

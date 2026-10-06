@@ -1,7 +1,6 @@
 package com.zakodaniumask.manager.ui.screen.plugin
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
@@ -133,34 +132,37 @@ fun OnlinePluginScreen() {
                 .fillMaxSize()
                 .blurSource()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + 12.dp,
-            ),
         ) {
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
+            }
+
             val error = uiState.error
             if (error != null) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = error,
                         color = MaterialTheme.colorScheme.errorContainer,
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
             if (uiState.plugins.isEmpty() && error == null) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.plugin_empty),
                         color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     )
                 }
             } else {
                 item {
-                    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SegmentedColumn {
                         uiState.plugins.forEach { online ->
                             item {
                                 SettingsBaseWidget(
@@ -196,6 +198,10 @@ fun OnlinePluginScreen() {
                         }
                     }
                 }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
             }
         }
     }

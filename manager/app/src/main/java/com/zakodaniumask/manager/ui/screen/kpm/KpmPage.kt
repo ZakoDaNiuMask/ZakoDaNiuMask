@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -190,24 +189,25 @@ fun KpmPage() {
                 .fillMaxSize()
                 .blurSource()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding() + 5.dp,
-                bottom = paddingValues.calculateBottomPadding() + 12.dp,
-            ),
         ) {
+            item {
+                Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding()))
+            }
+
             if (!uiState.supported) {
                 item {
                     WarningCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp, bottom = 12.dp),
                         message = stringResource(R.string.kpm_not_supported_summary),
                         shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.errorContainer,
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             } else {
                 item {
-                    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    SegmentedColumn {
                         item {
                             SettingsBaseWidget(
                                 iconPlaceholder = false,
@@ -225,7 +225,6 @@ fun KpmPage() {
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
                 item {
@@ -235,13 +234,14 @@ fun KpmPage() {
                         },
                         title = stringResource(R.string.kpm_load_module),
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
                 if (uiState.modules.isEmpty()) {
                     item {
                         WarningCard(
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 8.dp, bottom = 12.dp),
                             message = stringResource(R.string.kpm_no_modules),
                             shape = RoundedCornerShape(16.dp),
                             color = MaterialTheme.colorScheme.secondaryContainer,
@@ -249,7 +249,7 @@ fun KpmPage() {
                     }
                 } else {
                     item {
-                        SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        SegmentedColumn {
                             uiState.modules.forEach { module ->
                                 item {
                                     KpmModuleRow(
@@ -278,6 +278,10 @@ fun KpmPage() {
                             }
                         }
                     }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding()))
                 }
             }
         }
@@ -386,7 +390,7 @@ private fun SettingsJumpRow(
     title: String,
     onClick: () -> Unit,
 ) {
-    SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    SegmentedColumn {
         item {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Add,
