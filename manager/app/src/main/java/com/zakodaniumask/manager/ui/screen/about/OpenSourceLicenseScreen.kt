@@ -89,6 +89,16 @@ private val PORTED_COMPONENTS = listOf(
         licenseName = "GPL-3.0",
         website = "https://github.com/Baka-SU/BakaSU",
     ),
+    PortedComponent(
+        name = "FolkPatch",
+        licenseName = "GPL-3.0",
+        website = "https://github.com/LyraVoid/FolkPatch",
+    ),
+    PortedComponent(
+        name = "Lua",
+        licenseName = "MIT",
+        website = "https://www.lua.org/",
+    ),
 )
 
 

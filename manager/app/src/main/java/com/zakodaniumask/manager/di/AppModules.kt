@@ -14,6 +14,8 @@ import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.UmountRepository
 import com.zakodaniumask.manager.data.kpm.KpmRepository
+import com.zakodaniumask.manager.data.plugin.OnlinePluginRepository
+import com.zakodaniumask.manager.data.plugin.PluginRepository
 import com.zakodaniumask.manager.data.logging.BugreportRepository
 import com.zakodaniumask.manager.data.logging.SulogRepository
 import com.zakodaniumask.manager.data.module.ModuleActionRepository
@@ -58,7 +60,19 @@ import com.zakodaniumask.manager.domain.usecase.CleanSulogUseCase
 import com.zakodaniumask.manager.domain.usecase.ClearDynamicManagerUseCase
 import com.zakodaniumask.manager.domain.usecase.ConfigureSuLogUseCase
 import com.zakodaniumask.manager.domain.usecase.ControlAppUseCase
+import com.zakodaniumask.manager.domain.usecase.ClearPluginLogUseCase
 import com.zakodaniumask.manager.domain.usecase.ControlKpmModuleUseCase
+import com.zakodaniumask.manager.domain.usecase.DownloadOnlinePluginUseCase
+import com.zakodaniumask.manager.domain.usecase.GetOnlinePluginsUseCase
+import com.zakodaniumask.manager.domain.usecase.GetPluginConfigUseCase
+import com.zakodaniumask.manager.domain.usecase.GetPluginLogUseCase
+import com.zakodaniumask.manager.domain.usecase.GetPluginsUseCase
+import com.zakodaniumask.manager.domain.usecase.InstallPluginUseCase
+import com.zakodaniumask.manager.domain.usecase.RunPluginActionUseCase
+import com.zakodaniumask.manager.domain.usecase.RunPluginCallbackUseCase
+import com.zakodaniumask.manager.domain.usecase.SetPluginConfigUseCase
+import com.zakodaniumask.manager.domain.usecase.SetPluginEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.UninstallPluginUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKpmModuleInfoUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKpmModulesUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKpmStatusUseCase
@@ -172,6 +186,8 @@ import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
 import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
+import com.zakodaniumask.manager.ui.viewmodel.OnlinePluginViewModel
+import com.zakodaniumask.manager.ui.viewmodel.PluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SuSFSViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SulogViewModel
@@ -244,6 +260,8 @@ val repositoryModule = module {
     single { com.zakodaniumask.manager.data.selinux.SelinuxDetector() }
     singleOf(::BootScriptRepository)
     singleOf(::KpmRepository)
+    singleOf(::PluginRepository)
+    singleOf(::OnlinePluginRepository)
     singleOf(::CountRepository)
     singleOf(::InstalledPackageCache)
     singleOf(::AppIconDataSource)
@@ -365,6 +383,18 @@ val useCaseModule = module {
     factoryOf(::LoadKpmModuleUseCase)
     factoryOf(::UnloadKpmModuleUseCase)
     factoryOf(::ControlKpmModuleUseCase)
+    factoryOf(::GetPluginsUseCase)
+    factoryOf(::InstallPluginUseCase)
+    factoryOf(::UninstallPluginUseCase)
+    factoryOf(::SetPluginEnabledUseCase)
+    factoryOf(::RunPluginCallbackUseCase)
+    factoryOf(::RunPluginActionUseCase)
+    factoryOf(::GetPluginConfigUseCase)
+    factoryOf(::SetPluginConfigUseCase)
+    factoryOf(::GetPluginLogUseCase)
+    factoryOf(::ClearPluginLogUseCase)
+    factoryOf(::GetOnlinePluginsUseCase)
+    factoryOf(::DownloadOnlinePluginUseCase)
     factoryOf(::ApplyLanguageUseCase)
     factoryOf(::IsSystemLanguageSettingsUseCase)
     factoryOf(::LaunchSystemLanguageSettingsUseCase)
@@ -446,6 +476,8 @@ val viewModelModule = module {
     viewModelOf(::DetectorViewModel)
     viewModelOf(::BootScriptViewModel)
     viewModelOf(::KpmViewModel)
+    viewModelOf(::PluginViewModel)
+    viewModelOf(::OnlinePluginViewModel)
     viewModelOf(::InstallViewModel)
     viewModelOf(::MainIntentViewModel)
     viewModelOf(::KernelFlashViewModel)

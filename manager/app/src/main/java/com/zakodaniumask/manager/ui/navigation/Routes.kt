@@ -159,6 +159,17 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object OnlinePlugin : Route
+
+    @Parcelize
+    @Serializable
+    data class PluginLog(
+        val pluginId: String,
+        val pluginName: String,
+    ) : Route
+
+    @Parcelize
+    @Serializable
     data class KernelFlash(
         val kernelUri: String,
         val selectedSlot: String?,

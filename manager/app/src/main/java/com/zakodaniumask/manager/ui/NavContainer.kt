@@ -81,6 +81,8 @@ import com.zakodaniumask.manager.ui.screen.about.OpenSourceLicenseScreen
 import com.zakodaniumask.manager.ui.screen.bootscript.BootScriptScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
+import com.zakodaniumask.manager.ui.screen.plugin.OnlinePluginScreen
+import com.zakodaniumask.manager.ui.screen.plugin.PluginLogScreen
 import com.zakodaniumask.manager.ui.screen.main.MainScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.ModuleRepoScreen
 import com.zakodaniumask.manager.ui.screen.moduleRepo.OnlineModuleDetailScreen
@@ -638,6 +640,28 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     KpmPage()
+                }
+            }
+            entry<Route.OnlinePlugin>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    OnlinePluginScreen()
+                }
+            }
+            entry<Route.PluginLog>(swipeDismiss = swipeBackDirection) { key ->
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    PluginLogScreen(key.pluginId, key.pluginName)
                 }
             }
             entry<Route.PartitionManager>(swipeDismiss = swipeBackDirection) {

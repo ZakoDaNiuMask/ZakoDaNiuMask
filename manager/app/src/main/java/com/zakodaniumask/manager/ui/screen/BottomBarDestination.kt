@@ -3,6 +3,7 @@ package com.zakodaniumask.manager.ui.screen
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AdminPanelSettings
+import androidx.compose.material.icons.twotone.Code
 import androidx.compose.material.icons.twotone.Extension
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.Security
@@ -16,6 +17,7 @@ import com.zakodaniumask.manager.ui.screen.main.HomePage
 import com.zakodaniumask.manager.ui.screen.main.ModulePage
 import com.zakodaniumask.manager.ui.screen.main.SettingsPage
 import com.zakodaniumask.manager.ui.screen.main.SuperUserPage
+import com.zakodaniumask.manager.ui.screen.plugin.PluginPage
 
 enum class BottomBarDestination(
     val direction: @Composable (bottomPadding: Dp) -> Unit,
@@ -50,6 +52,13 @@ enum class BottomBarDestination(
         R.string.module,
         Icons.TwoTone.Extension,
         Icons.TwoTone.Extension,
+        true
+    ),
+    Plugin(
+        { bottomPadding -> PluginPage(bottomPadding) },
+        R.string.plugin_title,
+        Icons.TwoTone.Code,
+        Icons.TwoTone.Code,
         true
     ),
     Settings(
