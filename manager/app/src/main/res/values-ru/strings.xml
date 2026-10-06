@@ -556,4 +556,14 @@
     <string name="home_kernel_type_gki1">GKI 1.0</string>
     <string name="home_kernel_type_nongki">Non-GKI</string>
     <string name="home_load_mode_lkm">LKM</string>
+    <string name="settings_enable_swipe_dismiss_summary">Свайпните от края экрана, чтобы вернуться на предыдущую страницу.</string>
+    <string name="settings_pager_gesture_mode">Режим управления жестами перелистывания</string>
+    <string name="settings_enable_swipe_dismiss">Жест свайпа назад</string>
+    <string name="settings_pager_gesture_native">По умолчанию</string>
+    <string name="settings_pager_gesture_cross_axis">Поперечная ось</string>
+    <string name="settings_pager_gesture_ios_like">Как в iOS</string>
+    <string name="both_kernel_and_module_files">Входные zip-архивы содержат как AnyKernel3, так и модули</string>
+    <string name="more_than_one_kernel_file">Входные файлы содержат более одного файла AnyKernel3</string>
+    <string name="module_shortcut_copy_scheme">Копировать URL-схему</string>
+    <string name="module_shortcut_scheme_copied">URL-схема скопирована</string>
 </resources>

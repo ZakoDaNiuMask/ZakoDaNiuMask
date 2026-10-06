@@ -562,4 +562,6 @@
     <string name="home_kernel_type_gki1">GKI 1.0</string>
     <string name="home_kernel_type_nongki">Non-GKI</string>
     <string name="home_load_mode_lkm">LKM</string>
+    <string name="more_than_one_kernel_file">Знайдено більше 1 файлу anykernel3 у вхідних файлах</string>
+    <string name="both_kernel_and_module_files">Вхідні zip-архіви містять як anykernel3, так і модулі</string>
 </resources>
