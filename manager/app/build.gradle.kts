@@ -197,6 +197,7 @@ dependencies {
     implementation(project(":axeron-api"))
     implementation(project(":axeron-adb"))
     implementation(project(":axeron-server"))
+    implementation(project(":ghostlock"))
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)

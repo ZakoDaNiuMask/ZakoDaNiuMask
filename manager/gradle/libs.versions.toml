@@ -37,6 +37,7 @@ xz = "1.12"
 bouncycastle = "1.86"
 boringssl = "20251124"
 rikkaHidden = "4.4.0"
+typesafe-config = "1.4.9"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
@@ -119,6 +120,7 @@ androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jv
 androidx-lifecycle-livedata-core-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-core-ktx", version.ref = "lifecycle" }
 rikka-hidden-compat = { group = "dev.rikka.hidden", name = "compat", version.ref = "rikkaHidden" }
 rikka-hidden-stub = { group = "dev.rikka.hidden", name = "stub", version.ref = "rikkaHidden" }
+typesafe-config = { module = "com.typesafe:config", version.ref = "typesafe-config" }
 
 # Core module (required for accessing library data)
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }

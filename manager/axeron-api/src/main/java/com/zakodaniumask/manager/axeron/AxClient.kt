@@ -33,6 +33,20 @@ object AxClient {
     fun exec(command: String): String? =
         runCatching { mutableService.value?.exec(command) }.getOrNull()
 
+    /** Starts a shell command in the background; no output is captured. */
+    fun execDetached(command: String) {
+        runCatching { mutableService.value?.execDetached(command) }
+    }
+
+    fun writeFile(path: String, data: ByteArray): Boolean =
+        runCatching { mutableService.value?.writeFile(path, data) }.getOrDefault(false)
+
+    fun readText(path: String): String? =
+        runCatching { mutableService.value?.readFile(path)?.toString(Charsets.UTF_8) }.getOrNull()
+
+    fun fileExists(path: String): Boolean =
+        runCatching { mutableService.value?.fileExists(path) }.getOrDefault(false)
+
     /**
      * Runs a command, preferring the root shell when available and falling back to the rootless
      * server otherwise.

@@ -18,6 +18,7 @@ import android.os.Process
 import com.zakodaniumask.manager.axeron.AxConstants
 import com.zakodaniumask.manager.axeron.IAxeronService
 import org.lsposed.hiddenapibypass.HiddenApiBypass
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 object Server {
@@ -74,6 +75,30 @@ private class AxeronService : IAxeronService.Stub() {
     override fun getUid(): Int = Process.myUid()
 
     override fun exec(command: String): String = runShell(command)
+
+    /** Starts the command in the background and returns immediately. */
+    override fun execDetached(command: String) {
+        runCatching {
+            ProcessBuilder("sh", "-c", command)
+                .redirectErrorStream(true)
+                .start()
+        }
+    }
+
+    override fun writeFile(path: String, data: ByteArray): Boolean = runCatching {
+        val file = File(path)
+        file.parentFile?.mkdirs()
+        file.writeBytes(data)
+        true
+    }.getOrDefault(false)
+
+    override fun readFile(path: String): ByteArray? = runCatching {
+        val file = File(path)
+        if (file.isFile) file.readBytes() else null
+    }.getOrNull()
+
+    override fun fileExists(path: String): Boolean =
+        runCatching { File(path).exists() }.getOrDefault(false)
 
     override fun exit() {
         Process.killProcess(Process.myPid())

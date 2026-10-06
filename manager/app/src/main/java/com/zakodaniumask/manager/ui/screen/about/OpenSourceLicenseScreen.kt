@@ -100,6 +100,26 @@ private val PORTED_COMPONENTS = listOf(
         website = "https://github.com/fahrez182/AxManager",
     ),
     PortedComponent(
+        name = "GhostLock",
+        licenseName = "Apache-2.0",
+        website = "https://github.com/YuKongA/ghostlock-app",
+    ),
+    PortedComponent(
+        name = "NebuSec CyberMeowfia",
+        licenseName = "Apache-2.0",
+        website = "https://github.com/NebuSec/CyberMeowfia",
+    ),
+    PortedComponent(
+        name = "JoinChang ghostlock-oneplus",
+        licenseName = "Apache-2.0",
+        website = "https://github.com/JoinChang/ghostlock-oneplus",
+    ),
+    PortedComponent(
+        name = "x-spy CVE-2026-43499-popsicle",
+        licenseName = "Apache-2.0",
+        website = "https://github.com/x-spy/CVE-2026-43499-popsicle",
+    ),
+    PortedComponent(
         name = "Lua",
         licenseName = "MIT",
         website = "https://www.lua.org/",
