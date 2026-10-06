@@ -644,6 +644,9 @@
     <string name="plugin_empty">No plugins installed</string>
     <string name="plugin_empty_hint">Install a plugin ZIP, or place main.lua under /data/adb/plugins/&lt;id&gt;/</string>
     <string name="online_plugin_title">Online plugins</string>
+    <string name="plugin_root_required_hint">Local plugin management requires root. You can still browse and download online plugins.</string>
+    <string name="settings_ignore_uapi">Ignore UAPI compatibility</string>
+    <string name="settings_ignore_uapi_summary">Treat the manager as usable even when the kernel UAPI version does not match. Advanced: some features may misbehave. Also lets plugins run at boot.</string>
     <string name="no_any_umount_path">No existing umount paths</string>
     <string name="add_umount_path">Add Umount Path</string>
     <string name="mount_path">Mount Path</string>

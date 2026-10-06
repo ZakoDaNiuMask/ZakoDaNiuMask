@@ -26,6 +26,7 @@ data class SettingsPlatformSnapshot(
     val useSoftReboot: Boolean = false,
     val enableSwipeDismiss: Boolean = true,
     val pagerInterceptionMode: Int = 1,
+    val ignoreUapi: Boolean = false,
 )
 
 data class PlatformFeatureStatus(
@@ -85,4 +86,5 @@ sealed interface PlatformSetting {
     data class UseSoftReboot(val enabled: Boolean) : PlatformSetting
     data class SwipeDismiss(val enabled: Boolean) : PlatformSetting
     data class PagerInterceptionMode(val value: Int) : PlatformSetting
+    data class IgnoreUapi(val enabled: Boolean) : PlatformSetting
 }

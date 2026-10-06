@@ -59,7 +59,7 @@ enum class BottomBarDestination(
         R.string.plugin_title,
         Icons.TwoTone.Code,
         Icons.TwoTone.Code,
-        true
+        false
     ),
     Settings(
         { bottomPadding -> SettingsPage(bottomPadding) },

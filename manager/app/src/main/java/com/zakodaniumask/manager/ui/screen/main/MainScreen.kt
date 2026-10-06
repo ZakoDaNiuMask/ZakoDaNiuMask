@@ -67,6 +67,13 @@ fun MainScreen(
         pageCount = { pages.size }
     )
 
+    // Keep the selection valid when the page list changes (e.g. ignoring UAPI adds pages).
+    LaunchedEffect(pages.size) {
+        if (uiSelectedPage > pages.lastIndex) {
+            uiSelectedPage = pages.lastIndex.coerceAtLeast(0)
+        }
+    }
+
     val pagerMode = PagerInterceptionMode.entries.getOrElse(pagerInterceptionMode) {
         PagerInterceptionMode.Native
     }

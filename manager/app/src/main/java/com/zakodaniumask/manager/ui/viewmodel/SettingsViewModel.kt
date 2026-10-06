@@ -101,6 +101,7 @@ data class SettingsUiState(
     val useSoftReboot: Boolean = false,
     val enableSwipeDismiss: Boolean = true,
     val pagerInterceptionMode: Int = 1,
+    val ignoreUapi: Boolean = false,
 )
 
 sealed interface SettingsUiAction {
@@ -142,6 +143,7 @@ sealed interface SettingsUiAction {
     data class SetUseSoftReboot(val enabled: Boolean) : SettingsUiAction
     data class SetSwipeDismiss(val enabled: Boolean) : SettingsUiAction
     data class SetPagerInterceptionMode(val index: Int) : SettingsUiAction
+    data class SetIgnoreUapi(val enabled: Boolean) : SettingsUiAction
 }
 
 sealed interface SettingsUiEvent {
@@ -459,7 +461,13 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetSwipeDismiss -> handleSwipeDismissChange(action.enabled)
             is SettingsUiAction.SetPagerInterceptionMode ->
                 handlePagerInterceptionModeChange(action.index)
+            is SettingsUiAction.SetIgnoreUapi -> handleIgnoreUapiChange(action.enabled)
         }
+    }
+
+    fun handleIgnoreUapiChange(enabled: Boolean) {
+        mutableState.update { it.copy(ignoreUapi = enabled) }
+        updatePlatformAsync(PlatformSetting.IgnoreUapi(enabled))
     }
 
     fun handleBuiltinMonospaceFontChange(checked: Boolean) {
@@ -524,6 +532,7 @@ fun dispatch(action: SettingsUiAction) {
                 useSoftReboot = snapshot.useSoftReboot,
                 enableSwipeDismiss = snapshot.enableSwipeDismiss,
                 pagerInterceptionMode = snapshot.pagerInterceptionMode,
+                ignoreUapi = snapshot.ignoreUapi,
             )
         }
     }

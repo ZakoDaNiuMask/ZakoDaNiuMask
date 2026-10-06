@@ -461,6 +461,19 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
+                        item(visible = homeState.systemStatus.isManager) {
+                            SettingsSwitchWidget(
+                                icon = Icons.TwoTone.Policy,
+                                title = stringResource(R.string.settings_ignore_uapi),
+                                description = stringResource(R.string.settings_ignore_uapi_summary),
+                                checked = uiState.ignoreUapi,
+                                onCheckedChange = { enabled ->
+                                    settingsViewModel.dispatch(SettingsUiAction.SetIgnoreUapi(enabled))
+                                    homeViewModel.refreshData(true)
+                                },
+                            )
+                        }
+
                         if (homeState.systemStatus.isFullFeatured) {
                             item {
                                 SettingsJumpPageWidget(

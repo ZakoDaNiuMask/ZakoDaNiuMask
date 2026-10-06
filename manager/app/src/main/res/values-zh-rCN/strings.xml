@@ -638,6 +638,9 @@
     <string name="plugin_empty">未安装任何插件</string>
     <string name="plugin_empty_hint">安装插件 ZIP，或将 main.lua 放入 /data/adb/plugins/&lt;id&gt;/</string>
     <string name="online_plugin_title">在线插件</string>
+    <string name="plugin_root_required_hint">本地插件管理需要 root。你仍可浏览和下载在线插件。</string>
+    <string name="settings_ignore_uapi">忽略 UAPI 兼容性</string>
+    <string name="settings_ignore_uapi_summary">即使内核 UAPI 版本不匹配，也将管理器视为可用。进阶选项：部分功能可能异常；同时允许插件在开机时运行。</string>
     <string name="no_any_umount_path">没有任何内核卸载路径</string>
     <string name="add_umount_path">添加 Umount 路径</string>
     <string name="mount_path">挂载路径</string>

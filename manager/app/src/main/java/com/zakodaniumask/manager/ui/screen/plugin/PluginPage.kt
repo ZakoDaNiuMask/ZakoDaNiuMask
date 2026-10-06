@@ -80,6 +80,7 @@ import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
+import com.zakodaniumask.manager.ui.viewmodel.HomeViewModel
 import com.zakodaniumask.manager.ui.viewmodel.PluginEvent
 import com.zakodaniumask.manager.ui.viewmodel.PluginViewModel
 import java.io.File
@@ -96,9 +97,12 @@ fun PluginPage(bottomPadding: Dp) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val viewModel: PluginViewModel = koinViewModel()
+    val homeViewModel: HomeViewModel = koinViewModel()
     val getPluginConfig: GetPluginConfigUseCase = koinInject()
     val setPluginConfig: SetPluginConfigUseCase = koinInject()
     val uiState by viewModel.state.collectAsStateWithLifecycle()
+    val homeState by homeViewModel.uiState.collectAsStateWithLifecycle()
+    val rootAvailable = homeState.systemStatus.isRootAvailable
     val navigator = LocalNavigator.current
     val snackBarHost = LocalSnackbarHost.current
     val context = LocalContext.current
@@ -186,8 +190,10 @@ fun PluginPage(bottomPadding: Dp) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { pickPlugin.launch("application/zip") }) {
-                Icon(Icons.TwoTone.Add, contentDescription = stringResource(R.string.plugin_install))
+            if (rootAvailable) {
+                FloatingActionButton(onClick = { pickPlugin.launch("application/zip") }) {
+                    Icon(Icons.TwoTone.Add, contentDescription = stringResource(R.string.plugin_install))
+                }
             }
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
@@ -224,7 +230,17 @@ fun PluginPage(bottomPadding: Dp) {
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            if (uiState.plugins.isEmpty()) {
+            if (!rootAvailable) {
+                item {
+                    WarningCard(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        message = stringResource(R.string.plugin_root_required_hint),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.errorContainer,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            } else if (uiState.plugins.isEmpty()) {
                 item {
                     WarningCard(
                         modifier = Modifier.padding(horizontal = 16.dp),

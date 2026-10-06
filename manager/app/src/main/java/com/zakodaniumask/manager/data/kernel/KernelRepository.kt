@@ -3,6 +3,7 @@ package com.zakodaniumask.manager.data.kernel
 import android.app.Application
 import com.zakodaniumask.manager.Natives
 import com.zakodaniumask.manager.Natives.KernelPatchImplementation
+import com.zakodaniumask.manager.data.AppSettingsRepository
 import com.zakodaniumask.manager.data.shell.KsuCliRepository
 import com.zakodaniumask.manager.data.system.isSELinuxPermissive
 import com.zakodaniumask.manager.domain.model.KernelFeatureSettings
@@ -16,6 +17,7 @@ import kotlinx.coroutines.withContext
 class KernelRepository(
     private val application: Application,
     private val ksuCliRepository: KsuCliRepository,
+    private val settings: AppSettingsRepository,
 ) {
     suspend fun getStatus(): KernelStatus = withContext(Dispatchers.IO) {
         val kernelVersion = getKernelVersion()
@@ -25,6 +27,8 @@ class KernelRepository(
         val managerUapi = runCatching { Natives.managerUAPIVersion }.getOrDefault(1)
         val fullVersion = runCatching { Natives.getFullVersion() }.getOrDefault("Unknown")
         val isRootAvailable = runCatching { ksuCliRepository.rootAvailable() }.getOrDefault(false)
+        val uapiMatched = runCatching { Natives.isFullFeatured() }.getOrDefault(false)
+        val ignoreUapi = settings.getBoolean("ignore_uapi", false)
         KernelStatus(
             isManager = isManager,
             ksuVersion = ksuVersion,
@@ -34,8 +38,7 @@ class KernelRepository(
             lkmMode = ksuVersion?.let { if (kernelVersion.isGKI()) Natives.isLkmMode else null },
             kernelVersion = kernelVersion,
             isRootAvailable = isRootAvailable,
-            isFullFeatured = isRootAvailable && runCatching { Natives.isFullFeatured() }
-                .getOrDefault(false),
+            isFullFeatured = isRootAvailable && isManager && (uapiMatched || ignoreUapi),
             isSELinuxPermissive = runCatching { isSELinuxPermissive() }.getOrDefault(false),
             isOfficialSignature = runCatching {
                 ksuCliRepository.isOfficialSignature(application.packageResourcePath)

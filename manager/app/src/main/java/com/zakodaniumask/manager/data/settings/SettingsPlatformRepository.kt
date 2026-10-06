@@ -86,6 +86,7 @@ class SettingsPlatformRepository(
             useSoftReboot = settings.getBoolean("use_soft_reboot", false),
             enableSwipeDismiss = settings.getBoolean("enable_swipe_dismiss", true),
             pagerInterceptionMode = settings.getInt("pager_interception_mode", 1).coerceIn(0, 2),
+            ignoreUapi = settings.getBoolean("ignore_uapi", false),
         )
     }
 
@@ -201,6 +202,8 @@ class SettingsPlatformRepository(
 
             is PlatformSetting.PagerInterceptionMode ->
                 settings.putInt("pager_interception_mode", setting.value.coerceIn(0, 2))
+
+            is PlatformSetting.IgnoreUapi -> setIgnoreUapi(setting.enabled)
         }
         Result.success(load())
     } catch (error: CancellationException) {
@@ -210,8 +213,21 @@ class SettingsPlatformRepository(
     }
 
     fun isSoftRebootPreferred(): Boolean =
-        Natives.isFullFeatured() &&
+        (Natives.isFullFeatured() || settings.getBoolean("ignore_uapi", false)) &&
             (Natives.isLateLoadMode || settings.getBoolean("use_soft_reboot", false))
+
+    private fun setIgnoreUapi(enabled: Boolean) {
+        settings.putBoolean("ignore_uapi", enabled)
+        val marker = "/data/adb/ksu/.ignore_uapi"
+        val command = if (enabled) {
+            "mkdir -p /data/adb/ksu && touch $marker"
+        } else {
+            "rm -f $marker"
+        }
+        runCatching {
+            ShellUtils.fastCmd(ksuCliRepository.getRootShell(), command)
+        }
+    }
 
     suspend fun getFeatureStatus(): PlatformFeatureStatus = withContext(Dispatchers.IO) {
         PlatformFeatureStatus(
