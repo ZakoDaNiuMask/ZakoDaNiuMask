@@ -81,6 +81,7 @@ import com.zakodaniumask.manager.ui.screen.about.OpenSourceLicenseScreen
 import com.zakodaniumask.manager.ui.screen.bootscript.BootScriptScreen
 import com.zakodaniumask.manager.ui.screen.axeron.AxeronPage
 import com.zakodaniumask.manager.ui.screen.axeron.AxeronShellPage
+import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
 import com.zakodaniumask.manager.ui.screen.plugin.OnlinePluginScreen
@@ -664,6 +665,17 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     AxeronShellPage()
+                }
+            }
+            entry<Route.Ghostlock>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    GhostlockScreen()
                 }
             }
             entry<Route.OnlinePlugin>(swipeDismiss = swipeBackDirection) {

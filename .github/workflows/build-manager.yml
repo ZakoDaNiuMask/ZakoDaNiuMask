@@ -127,6 +127,8 @@ jobs:
     defaults:
       run:
         working-directory: ./manager
+    env:
+      ONDK_VERSION: "r30.1"
 
     steps:
       - name: Checkout
@@ -188,6 +190,44 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Cache ONDK
+        id: ondk-cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/ondk
+          key: ondk-${{ env.ONDK_VERSION }}-linux
+
+      - name: Download ONDK
+        if: steps.ondk-cache.outputs.cache-hit != 'true'
+        run: |
+          url="https://github.com/topjohnwu/ondk/releases/download/${ONDK_VERSION}/ondk-${ONDK_VERSION}-linux.tar.xz"
+          mkdir -p "${{ runner.temp }}/ondk"
+          curl -fL "$url" -o "${{ runner.temp }}/ondk.tar.xz"
+          tar -C "${{ runner.temp }}/ondk" --strip-components=1 -xf "${{ runner.temp }}/ondk.tar.xz"
+
+      - name: Build GhostLock native payload
+        run: |
+          export ANDROID_NDK_HOME="${{ runner.temp }}/ondk"
+          export NDK_ROOT="$ANDROID_NDK_HOME"
+          make -C ghostlock/native/ghostlock ghostlock
+          mkdir -p ghostlock/src/main/jniLibs/arm64-v8a
+          cp ghostlock/native/build/native/ghostlock ghostlock/src/main/jniLibs/arm64-v8a/libghostlock.so
+
+      - name: Build GhostLock extractor
+        run: |
+          NDK="${{ runner.temp }}/ondk"
+          CC="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang"
+          export CC_aarch64_linux_android="$CC"
+          export AR_aarch64_linux_android="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$CC"
+          cargo build --release --target aarch64-linux-android --manifest-path ghostlock/native/extract_rs/Cargo.toml
+          cp ghostlock/native/extract_rs/target/aarch64-linux-android/release/ghostlock-extract ghostlock/src/main/jniLibs/arm64-v8a/libextract.so
 
       - name: Build APK
         run: |

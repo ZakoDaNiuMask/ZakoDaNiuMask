@@ -667,6 +667,8 @@
     <string name="axeron_backend_root">Root</string>
     <string name="axeron_backend_rootless">免 root（shell）</string>
     <string name="axeron_backend_none">未激活</string>
+    <string name="ghostlock_title">GhostLock</string>
+    <string name="ghostlock_settings_summary">通过 CVE-2026-43499 内核漏洞获取临时 root（无需解锁 Bootloader）</string>
     <string name="settings_ignore_uapi">忽略 UAPI 兼容性</string>
     <string name="settings_ignore_uapi_summary">即使内核 UAPI 版本不匹配，也将管理器视为可用。进阶选项：部分功能可能异常；同时允许插件在开机时运行。</string>
     <string name="no_any_umount_path">没有任何内核卸载路径</string>

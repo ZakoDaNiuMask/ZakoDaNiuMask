@@ -41,6 +41,9 @@ import com.zakodaniumask.manager.data.startup.ApplicationInitializationRepositor
 import com.zakodaniumask.manager.data.startup.StartupRepository
 import com.zakodaniumask.manager.data.susfs.SuSFSConfigHelper
 import com.zakodaniumask.manager.data.susfs.SuSFSRepository
+import com.zakodaniumask.manager.ghostlock.data.AndroidGhostlockRepository
+import com.zakodaniumask.manager.ghostlock.domain.repository.GhostlockRepository
+import com.zakodaniumask.manager.ghostlock.ui.GhostlockViewModel
 import com.zakodaniumask.manager.data.system.HomeRuntimeRepository
 import com.zakodaniumask.manager.data.system.HomeStateRepository
 import com.zakodaniumask.manager.data.text.HanziToPinyin
@@ -320,6 +323,7 @@ val repositoryModule = module {
     singleOf(::ProfileTemplateRepository)
     singleOf(::SuSFSConfigHelper)
     singleOf(::SuSFSRepository)
+    singleOf(::AndroidGhostlockRepository) bind GhostlockRepository::class
     singleOf(::MonetCompatColorSource)
     singleOf(::ThemeRepository)
     single {
@@ -479,6 +483,7 @@ val viewModelModule = module {
     viewModelOf(::BootScriptViewModel)
     viewModelOf(::KpmViewModel)
     viewModelOf(::PluginViewModel)
+    viewModelOf(::GhostlockViewModel)
     viewModelOf(::OnlinePluginViewModel)
     viewModelOf(::InstallViewModel)
     viewModelOf(::MainIntentViewModel)

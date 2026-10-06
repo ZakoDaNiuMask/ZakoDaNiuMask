@@ -485,6 +485,17 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
+                        item {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.BugReport,
+                                title = stringResource(R.string.ghostlock_title),
+                                description = stringResource(R.string.ghostlock_settings_summary),
+                                onClick = {
+                                    navigator.push(Route.Ghostlock)
+                                }
+                            )
+                        }
+
                         if (homeState.systemStatus.isFullFeatured) {
                             item {
                                 SettingsJumpPageWidget(
