@@ -99,6 +99,10 @@ android {
             excludes += "DebugProbesKt.bin"
             // https://issueantenna.com/repo/kotlin/kotlinx.coroutines/issues/3158
             excludes += "kotlin-tooling-metadata.json"
+            // Duplicate license/notice files shipped by the BouncyCastle jars.
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/NOTICE.md"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 
