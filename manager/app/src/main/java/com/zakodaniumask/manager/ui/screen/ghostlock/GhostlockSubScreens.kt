@@ -3,7 +3,6 @@ package com.zakodaniumask.manager.ui.screen.ghostlock
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.ghostlock.domain.model.ProfileConfig
 import com.zakodaniumask.manager.ghostlock.ui.GhostlockViewModel
+import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsJumpPageWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsSwitchWidget
 import com.zakodaniumask.manager.ui.navigation.Route
@@ -65,12 +65,14 @@ fun GhostlockAdvancedScreen() {
         }
         item {
             SegmentedColumn {
-                items(state.executionFields) { field ->
-                    OverrideRow(
-                        label = field.path,
-                        value = state.executionEditing[field.path] ?: field.value.toString(),
-                        onValueChange = { actions.onExecutionFieldChanged(field.path, it) },
-                    )
+                state.executionFields.forEach { field ->
+                    item {
+                        OverrideRow(
+                            label = field.path,
+                            value = state.executionEditing[field.path] ?: field.value.toString(),
+                            onValueChange = { actions.onExecutionFieldChanged(field.path, it) },
+                        )
+                    }
                 }
             }
         }
@@ -158,14 +160,16 @@ fun GhostlockParametersScreen() {
     GhostlockScaffold(title = stringResource(GR.string.parameters)) {
         item {
             SegmentedColumn(title = stringResource(GR.string.parameters)) {
-                items(state.profileOverrideRoots) { node ->
+                state.profileOverrideRoots.forEach { node ->
                     if (!node.isGroup) {
-                        OverrideRow(
-                            label = node.name,
-                            value = state.profileOverrideEditing[node.path]
-                                ?: node.value?.toString().orEmpty(),
-                            onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
-                        )
+                        item {
+                            OverrideRow(
+                                label = node.name,
+                                value = state.profileOverrideEditing[node.path]
+                                    ?: node.value?.toString().orEmpty(),
+                                onValueChange = { actions.onProfileOverrideChanged(node.path, it) },
+                            )
+                        }
                     }
                 }
             }
@@ -185,7 +189,7 @@ fun GhostlockBuiltinScreen() {
     GhostlockScaffold(title = stringResource(GR.string.load_config_title)) {
         item {
             SegmentedColumn(title = stringResource(GR.string.load_config_title)) {
-                items(state.builtinProfiles) { release ->
+                state.builtinProfiles.forEach { release ->
                     item {
                         SelectRow(release, release == state.activeBuiltinProfile) {
                             actions.onSelectBuiltinProfile(release)
@@ -198,7 +202,7 @@ fun GhostlockBuiltinScreen() {
         if (state.builtinTemplates.isNotEmpty()) {
             item {
                 SegmentedColumn(title = stringResource(GR.string.templates_section)) {
-                    items(state.builtinTemplates) { release ->
+                    state.builtinTemplates.forEach { release ->
                         item {
                             SelectRow(release, false) { actions.onSelectBuiltinProfile(release) }
                         }
