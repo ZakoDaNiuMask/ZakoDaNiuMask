@@ -9,6 +9,8 @@ mod kpm;
 mod ksucalls;
 mod late_load;
 mod module;
+mod plugin;
+mod plugin_lua;
 mod profile;
 pub(crate) mod resetprop;
 mod restorecon;

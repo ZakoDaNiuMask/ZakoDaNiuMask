@@ -7,7 +7,7 @@ use crate::{
     android::{
         boot_script, dynamic_manager, ksucalls,
         module::{self, ScriptWait, handle_updated_modules, metamodule, prune_modules},
-        restorecon,
+        plugin_lua, restorecon,
         utils::{self, is_safe_mode},
     },
     assets, defs,
@@ -137,6 +137,14 @@ pub fn on_post_fs_data() -> Result<()> {
     // User-configurable boot script for the post-fs-data stage
     boot_script::run("post-fs-data", wait);
 
+    // Lua plugins and module-level Lua scripts for the post-fs-data stage
+    if let Err(e) = plugin_lua::exec_stage_lua("post-fs-data", true) {
+        warn!("Failed to exec post-fs-data lua: {e}");
+    }
+    if let Err(e) = plugin_lua::exec_plugin_stage("post-fs-data") {
+        warn!("Failed to exec plugin post-fs-data: {e}");
+    }
+
     run_stage("post-mount", wait);
 
     std::env::set_current_dir("/").with_context(|| "failed to chdir to /")?;
@@ -173,6 +181,14 @@ pub fn run_stage(stage: &str, wait: ScriptWait) {
 
     // user-configurable boot script for this stage
     boot_script::run(stage, wait);
+
+    // Lua plugins and module-level Lua scripts for this stage
+    if let Err(e) = plugin_lua::exec_stage_lua(stage, false) {
+        warn!("Failed to exec {stage} lua: {e}");
+    }
+    if let Err(e) = plugin_lua::exec_plugin_stage(stage) {
+        warn!("Failed to exec plugin {stage}: {e}");
+    }
 }
 
 pub fn on_services() {

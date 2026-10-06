@@ -159,6 +159,12 @@ enum Commands {
         command: kpm_cmd::Kpm,
     },
 
+    /// Manage Lua plugins
+    Plugin {
+        #[command(subcommand)]
+        command: PluginCommand,
+    },
+
     /// Flash and inspect partition images
     Flash {
         #[command(subcommand)]
@@ -837,6 +843,64 @@ mod kpm_cmd {
 }
 
 #[derive(clap::Subcommand, Debug)]
+enum PluginCommand {
+    /// List installed plugins
+    List,
+    /// Install a plugin from <ZIP>
+    Install {
+        /// plugin zip file path
+        zip: String,
+    },
+    /// Uninstall a plugin
+    Uninstall {
+        /// plugin id
+        id: String,
+    },
+    /// Enable a plugin
+    Enable { id: String },
+    /// Disable a plugin
+    Disable { id: String },
+    /// Run a plugin callback
+    Run { id: String, function: String },
+    /// Run a plugin callback as a background daemon loop
+    Daemon {
+        /// plugin id
+        id: String,
+        /// callback function name
+        function: String,
+        /// loop interval in seconds
+        #[arg(default_value_t = 1)]
+        interval: u64,
+    },
+    /// Run the plugin's action callback
+    Action { id: String },
+    /// Show the last execution log of a plugin
+    Log { id: String },
+    /// Clear the log of a plugin (or all plugins if id is "all")
+    ClearLog { id: String },
+    /// Manage plugin user configuration
+    Config {
+        /// target plugin id
+        #[arg(long)]
+        id: Option<String>,
+        #[command(subcommand)]
+        command: PluginConfigCommand,
+    },
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum PluginConfigCommand {
+    /// List all config entries of the current plugin
+    List,
+    /// Read a config entry
+    Get { key: String },
+    /// Write a config entry
+    Set { key: String, value: String },
+    /// Delete a config entry
+    Delete { key: String },
+}
+
+#[derive(clap::Subcommand, Debug)]
 enum Initrc {
     /// Regenerate preinit rc file
     Refresh,
@@ -1133,6 +1197,83 @@ pub fn run() -> Result<()> {
                     Ok(())
                 }
                 Kpm::Version => kpm::version(),
+            }
+        }
+        Commands::Plugin { command } => {
+            use crate::android::{plugin, plugin_lua};
+            match command {
+                PluginCommand::List => plugin::list_plugins_json(),
+                PluginCommand::Install { zip } => plugin::install_plugin(&zip),
+                PluginCommand::Uninstall { id } => plugin::uninstall_plugin(&id),
+                PluginCommand::Enable { id } => plugin_lua::set_plugin_state(&id, true),
+                PluginCommand::Disable { id } => plugin_lua::set_plugin_state(&id, false),
+                PluginCommand::Run { id, function } => {
+                    plugin_lua::run_plugin_callback(&id, &function)
+                }
+                PluginCommand::Daemon {
+                    id,
+                    function,
+                    interval,
+                } => plugin_lua::run_plugin_daemon(&id, &function, interval),
+                PluginCommand::Action { id } => plugin_lua::run_plugin_callback(&id, "action"),
+                PluginCommand::Log { id } => {
+                    let log_path = plugin::plugin_path(&id)?.join("last_output.log");
+                    match std::fs::read_to_string(&log_path) {
+                        Ok(content) => println!("{content}"),
+                        Err(_) => println!("No log found for plugin '{id}'"),
+                    }
+                    Ok(())
+                }
+                PluginCommand::ClearLog { id } => {
+                    if id == "all" {
+                        let plugins_dir = std::path::Path::new(crate::defs::PLUGIN_DIR);
+                        if plugins_dir.exists() {
+                            for entry in std::fs::read_dir(plugins_dir)? {
+                                let log_path = entry?.path().join("last_output.log");
+                                let _ = std::fs::remove_file(&log_path);
+                            }
+                        }
+                        println!("All plugin logs cleared");
+                    } else {
+                        let log_path = plugin::plugin_path(&id)?.join("last_output.log");
+                        let _ = std::fs::remove_file(&log_path);
+                        println!("Log cleared for plugin '{id}'");
+                    }
+                    Ok(())
+                }
+                PluginCommand::Config { id, command } => {
+                    let plugin_id = match id {
+                        Some(value) => value,
+                        None => std::env::var("PLUGIN_ID").map_err(|_| {
+                            anyhow::anyhow!(
+                                "This command must be run in the context of a plugin or passed --id <id>"
+                            )
+                        })?,
+                    };
+                    match command {
+                        PluginConfigCommand::List => {
+                            let map = plugin::read_user_config(&plugin_id)?;
+                            println!("{}", serde_json::to_string_pretty(&map)?);
+                            Ok(())
+                        }
+                        PluginConfigCommand::Get { key } => {
+                            let map = plugin::read_user_config(&plugin_id)?;
+                            if let Some(value) = map.get(&key) {
+                                match value {
+                                    serde_json::Value::String(s) => println!("{s}"),
+                                    other => println!("{other}"),
+                                }
+                            }
+                            Ok(())
+                        }
+                        PluginConfigCommand::Set { key, value } => {
+                            plugin::set_user_config(&plugin_id, &key, &value)
+                        }
+                        PluginConfigCommand::Delete { key } => {
+                            plugin::delete_user_config(&plugin_id, &key)
+                        }
+                    }
+                }
             }
         }
         Commands::BootInfo { command } => match command {

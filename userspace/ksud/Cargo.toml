@@ -57,6 +57,8 @@ nom = "8"
 derive-new = "0.7"
 getopts = "0.2"
 serde = { version = "1.0", features = ["derive"] }
+# Embedded Lua runtime for Lua plugins (vendored builds Lua via cc for the NDK).
+mlua = { version = "=0.11.5", features = ["lua54", "vendored"] }
 ksuinit = { path = "../ksuinit" }
 adb_client = { git = "https://github.com/ReSukiSU/adb_client" }
 num_enum = "0.7"

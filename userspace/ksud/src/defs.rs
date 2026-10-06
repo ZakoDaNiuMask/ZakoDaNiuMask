@@ -70,6 +70,10 @@ mod android {
     pub const DYNAMIC_MANAGER: &str = concatcp!(WORKING_DIR, ".dynamic_manager");
     pub const SUSFS_CONFIG: &str = concatcp!(WORKING_DIR, ".susfs.json");
 
+    // Lua plugins (see android/plugin.rs and android/plugin_lua.rs)
+    pub const PLUGIN_DIR: &str = concatcp!(ADB_DIR, "plugins/");
+    pub const PLUGIN_STAGE_DIR: &str = concatcp!(ADB_DIR, "plugins_stage/");
+
     // User-configurable boot script, edited by the manager and executed by ksud during a boot stage.
     pub const BOOT_SCRIPT_PATH: &str = concatcp!(WORKING_DIR, "boot_script.sh");
     pub const BOOT_SCRIPT_CONFIG: &str = concatcp!(WORKING_DIR, "boot_script.json");
