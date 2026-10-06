@@ -101,6 +101,11 @@ pub fn on_post_fs_data() -> Result<()> {
         warn!("init features failed: {e}");
     }
 
+    #[cfg(all(target_arch = "aarch64", target_os = "android"))]
+    if let Err(e) = crate::android::kpm::booted_load() {
+        warn!("KPM: Failed to start KPM watcher: {e}");
+    }
+
     // Load susfs config entries that must capture metadata before mounts/overlays.
     crate::android::susfs::init_event::on_post_fs_data();
 

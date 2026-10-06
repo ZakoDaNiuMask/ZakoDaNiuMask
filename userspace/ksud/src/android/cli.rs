@@ -152,6 +152,13 @@ enum Commands {
         command: BootInfo,
     },
 
+    /// KPM module manager
+    #[cfg(all(target_arch = "aarch64", target_os = "android"))]
+    Kpm {
+        #[command(subcommand)]
+        command: kpm_cmd::Kpm,
+    },
+
     /// Flash and inspect partition images
     Flash {
         #[command(subcommand)]
@@ -804,6 +811,31 @@ enum UmountOp {
     List,
 }
 
+#[cfg(all(target_arch = "aarch64", target_os = "android"))]
+mod kpm_cmd {
+    use std::path::PathBuf;
+
+    use clap::Subcommand;
+
+    #[derive(Subcommand, Debug)]
+    pub enum Kpm {
+        /// Load a KPM module: load <path> [args]
+        Load { path: PathBuf, args: Option<String> },
+        /// Unload a KPM module: unload <name>
+        Unload { name: String },
+        /// Get number of loaded modules
+        Num,
+        /// List loaded KPM modules
+        List,
+        /// Get info of a KPM module: info <name>
+        Info { name: String },
+        /// Send control command to a KPM module: control <name> <args>
+        Control { name: String, args: String },
+        /// Print KPM Loader version
+        Version,
+    }
+}
+
 #[derive(clap::Subcommand, Debug)]
 enum Initrc {
     /// Regenerate preinit rc file
@@ -1082,6 +1114,27 @@ pub fn run() -> Result<()> {
 
         Commands::BootPatch(boot_patch) => crate::boot_patch::patch(boot_patch),
 
+        #[cfg(all(target_arch = "aarch64", target_os = "android"))]
+        Commands::Kpm { command } => {
+            use kpm_cmd::Kpm;
+
+            use crate::android::kpm;
+            match command {
+                Kpm::Load { path, args } => {
+                    kpm::load_module(path.to_str().unwrap(), args.as_deref())
+                }
+                Kpm::Unload { name } => kpm::unload_module(name),
+                Kpm::Num => kpm::num().map(|_| ()),
+                Kpm::List => kpm::list(),
+                Kpm::Info { name } => kpm::info(name),
+                Kpm::Control { name, args } => {
+                    let ret = kpm::control(name, args)?;
+                    println!("{ret}");
+                    Ok(())
+                }
+                Kpm::Version => kpm::version(),
+            }
+        }
         Commands::BootInfo { command } => match command {
             BootInfo::CurrentKmi => {
                 let kmi = crate::boot_patch::get_current_kmi()?;
