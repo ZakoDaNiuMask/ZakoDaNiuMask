@@ -47,6 +47,7 @@ import com.zakodaniumask.manager.data.text.HanziToPinyin
 import com.zakodaniumask.manager.data.theme.MonetCompatColorSource
 import com.zakodaniumask.manager.data.theme.ThemeRepository
 import com.zakodaniumask.manager.data.update.ManagerUpdateRepository
+import com.zakodaniumask.manager.data.privilege.PrivilegeManager
 import com.zakodaniumask.manager.data.webui.WebUiRepository
 import com.zakodaniumask.manager.domain.text.TextTransliterator
 import com.zakodaniumask.manager.domain.usecase.AddUmountPathUseCase
@@ -312,6 +313,7 @@ val repositoryModule = module {
     singleOf(::ModulePreferencesRepository)
     singleOf(::ModuleActionRepository)
     singleOf(::WebResourceRepository)
+    singleOf(::PrivilegeManager)
     singleOf(::WebUiRepository)
     singleOf(::ModuleFileRepository)
     singleOf(::ProfileRepository)

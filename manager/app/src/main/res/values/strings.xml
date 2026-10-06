@@ -668,6 +668,11 @@
     <string name="axeron_shell_desc">Run commands with shell or root privileges</string>
     <string name="axeron_shell_command">Command</string>
     <string name="axeron_shell_run">Run</string>
+    <string name="axeron_backend">Privileged backend</string>
+    <string name="axeron_backend_desc">Root is always used when available; only an unrooted device falls back to the rootless shell</string>
+    <string name="axeron_backend_root">Root</string>
+    <string name="axeron_backend_rootless">Rootless (shell)</string>
+    <string name="axeron_backend_none">Not active</string>
     <string name="settings_ignore_uapi">Ignore UAPI compatibility</string>
     <string name="settings_ignore_uapi_summary">Treat the manager as usable even when the kernel UAPI version does not match. Advanced: some features may misbehave. Also lets plugins run at boot.</string>
     <string name="no_any_umount_path">No existing umount paths</string>

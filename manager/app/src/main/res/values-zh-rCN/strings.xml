@@ -662,6 +662,11 @@
     <string name="axeron_shell_desc">以 shell 或 root 权限执行命令</string>
     <string name="axeron_shell_command">命令</string>
     <string name="axeron_shell_run">执行</string>
+    <string name="axeron_backend">特权后端</string>
+    <string name="axeron_backend_desc">只要存在 root 就始终使用 root；仅未 root 的设备才会回退到免 root 的 shell</string>
+    <string name="axeron_backend_root">Root</string>
+    <string name="axeron_backend_rootless">免 root（shell）</string>
+    <string name="axeron_backend_none">未激活</string>
     <string name="settings_ignore_uapi">忽略 UAPI 兼容性</string>
     <string name="settings_ignore_uapi_summary">即使内核 UAPI 版本不匹配，也将管理器视为可用。进阶选项：部分功能可能异常；同时允许插件在开机时运行。</string>
     <string name="no_any_umount_path">没有任何内核卸载路径</string>

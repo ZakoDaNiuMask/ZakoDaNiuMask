@@ -1,6 +1,9 @@
 package com.zakodaniumask.manager.data.webui
 
+import com.zakodaniumask.manager.axeron.AxClient
+import com.zakodaniumask.manager.data.privilege.PrivilegeManager
 import com.zakodaniumask.manager.data.shell.KsuCliRepository
+import com.zakodaniumask.manager.domain.model.PrivBackend
 import com.zakodaniumask.manager.domain.model.WebUiCommandResult
 import com.zakodaniumask.manager.domain.model.WebUiModuleInfo
 import com.zakodaniumask.manager.domain.model.WebUiProcess
@@ -10,23 +13,27 @@ import com.topjohnwu.superuser.internal.UiThreadHandler
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
 import java.util.concurrent.CompletableFuture
+import kotlinx.coroutines.runBlocking
 
 class WebUiRepository(
     private val ksuCliRepository: KsuCliRepository,
+    private val privilegeManager: PrivilegeManager,
 ) {
     fun execute(command: String, globalMnt: Boolean = true): WebUiCommandResult {
-        val result = ksuCliRepository.withNewRootShell(globalMnt) {
-            newJob().add(command).to(ArrayList(), ArrayList()).exec()
-        }
+        val result = runBlocking { privilegeManager.exec(command, globalMnt) }
         return WebUiCommandResult(
             code = result.code,
-            stdout = result.out.joinToString("\n"),
-            stderr = result.err.joinToString("\n"),
+            stdout = result.stdout,
+            stderr = result.stderr,
         )
     }
 
     fun spawn(command: String, globalMnt: Boolean = true): WebUiProcess =
-        ShellWebUiProcess(ksuCliRepository.createRootShell(globalMnt), command)
+        when (privilegeManager.current()) {
+            PrivBackend.ROOT -> ShellWebUiProcess(ksuCliRepository.createRootShell(globalMnt), command)
+            PrivBackend.ROOTLESS -> RootlessWebUiProcess(command)
+            PrivBackend.NONE -> UnavailableWebUiProcess()
+        }
 
     fun listModules(): String = ksuCliRepository.listModules()
 
@@ -82,5 +89,49 @@ class WebUiRepository(
         override fun close() {
             runCatching { shell.close() }
         }
+    }
+
+    private class RootlessWebUiProcess(
+        private val command: String,
+    ) : WebUiProcess {
+        override fun start(
+            onStdout: (String) -> Unit,
+            onStderr: (String) -> Unit,
+            onComplete: (WebUiCommandResult) -> Unit,
+        ) {
+            try {
+                val output = AxClient.exec(command)
+                if (output != null) onStdout(output)
+                onComplete(
+                    WebUiCommandResult(
+                        code = if (output != null) 0 else -1,
+                        stdout = output.orEmpty(),
+                        stderr = "",
+                    )
+                )
+            } catch (error: Throwable) {
+                onComplete(WebUiCommandResult(-1, "", error.message.orEmpty()))
+            }
+        }
+
+        override fun close() = Unit
+    }
+
+    private class UnavailableWebUiProcess : WebUiProcess {
+        override fun start(
+            onStdout: (String) -> Unit,
+            onStderr: (String) -> Unit,
+            onComplete: (WebUiCommandResult) -> Unit,
+        ) {
+            onComplete(
+                WebUiCommandResult(
+                    code = -1,
+                    stdout = "",
+                    stderr = "No privileged backend available",
+                )
+            )
+        }
+
+        override fun close() = Unit
     }
 }

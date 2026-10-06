@@ -53,7 +53,9 @@ import com.zakodaniumask.manager.axeron.AxClient
 import com.zakodaniumask.manager.axeron.AxSettings
 import com.zakodaniumask.manager.axeron.AxStarter
 import com.zakodaniumask.manager.axeron.adb.AdbPairingService
+import com.zakodaniumask.manager.data.privilege.PrivilegeManager
 import com.zakodaniumask.manager.data.shell.KsuCliRepository
+import com.zakodaniumask.manager.domain.model.PrivBackend
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.WarningCard
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
@@ -81,6 +83,7 @@ fun AxeronPage() {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val ksuCliRepository: KsuCliRepository = koinInject()
+    val privilegeManager: PrivilegeManager = koinInject()
     val navigator = LocalNavigator.current
     val snackBarHost = LocalSnackbarHost.current
     val context = LocalContext.current
@@ -94,6 +97,7 @@ fun AxeronPage() {
     var uidText by remember { mutableStateOf("") }
     var tcpMode by remember { mutableStateOf(AxSettings.getTcpMode()) }
     var activeOnBoot by remember { mutableStateOf(AxSettings.isActiveOnBoot()) }
+    var backend by remember { mutableStateOf(PrivBackend.NONE) }
 
     val startedMsg = stringResource(R.string.axeron_started)
     val startFailedMsg = stringResource(R.string.axeron_start_failed)
@@ -103,6 +107,7 @@ fun AxeronPage() {
         running = AxClient.isRunning()
         versionText = AxClient.getVersion()?.toString().orEmpty()
         uidText = AxClient.getUid()?.toString().orEmpty()
+        backend = privilegeManager.current()
     }
 
     LaunchedEffect(Unit) {
@@ -181,6 +186,21 @@ fun AxeronPage() {
                                 } else {
                                     MaterialTheme.colorScheme.surfaceContainerHighest
                                 },
+                                onClick = null,
+                            )
+                        }
+                        item {
+                            SettingsBaseWidget(
+                                icon = Icons.TwoTone.Code,
+                                iconSize = 18.dp,
+                                title = stringResource(R.string.axeron_backend),
+                                description = stringResource(
+                                    when (backend) {
+                                        PrivBackend.ROOT -> R.string.axeron_backend_root
+                                        PrivBackend.ROOTLESS -> R.string.axeron_backend_rootless
+                                        PrivBackend.NONE -> R.string.axeron_backend_none
+                                    }
+                                ),
                                 onClick = null,
                             )
                         }

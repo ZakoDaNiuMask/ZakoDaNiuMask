@@ -39,10 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import com.topjohnwu.superuser.ShellUtils
 import com.zakodaniumask.manager.R
-import com.zakodaniumask.manager.axeron.AxClient
-import com.zakodaniumask.manager.data.shell.KsuCliRepository
+import com.zakodaniumask.manager.data.privilege.PrivilegeManager
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.theme.CardConfig
@@ -50,9 +48,7 @@ import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.zakodaniumask.manager.ui.theme.blurEffect
 import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -60,7 +56,7 @@ import org.koin.compose.koinInject
 fun AxeronShellPage() {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
-    val ksuCliRepository: KsuCliRepository = koinInject()
+    val privilegeManager: PrivilegeManager = koinInject()
     val navigator = LocalNavigator.current
     val scope = rememberCoroutineScope()
 
@@ -128,14 +124,14 @@ fun AxeronShellPage() {
                     onClick = {
                         val cmd = command
                         scope.launch {
-                            output = withContext(Dispatchers.IO) {
-                                runCatching {
-                                    if (AxClient.isRunning()) {
-                                        AxClient.exec(cmd).orEmpty()
-                                    } else {
-                                        ShellUtils.fastCmd(ksuCliRepository.getRootShell(), cmd)
-                                    }
-                                }.getOrElse { it.message.orEmpty() }
+                            val result = privilegeManager.exec(cmd)
+                            output = buildString {
+                                if (result.stdout.isNotEmpty()) append(result.stdout)
+                                if (result.stderr.isNotEmpty()) {
+                                    if (isNotEmpty()) append('\n')
+                                    append(result.stderr)
+                                }
+                                if (isEmpty()) append("exit ${result.code}")
                             }
                         }
                     },
