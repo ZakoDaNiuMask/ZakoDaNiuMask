@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +42,7 @@ import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.zakodaniumask.manager.ui.theme.blurEffect
 import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -51,6 +53,7 @@ fun PluginLogScreen(pluginId: String, pluginName: String) {
     val getPluginLog: GetPluginLogUseCase = koinInject()
     val clearPluginLog: ClearPluginLogUseCase = koinInject()
     val navigator = LocalNavigator.current
+    val scope = rememberCoroutineScope()
 
     var logText by remember { mutableStateOf("") }
     val scrollBehavior =
@@ -75,8 +78,10 @@ fun PluginLogScreen(pluginId: String, pluginName: String) {
                 navigationIcon = { AppBackButton(onClick = { navigator.pop() }) },
                 actions = {
                     IconButton(onClick = {
-                        clearPluginLog(pluginId)
-                        logText = ""
+                        scope.launch {
+                            clearPluginLog(pluginId)
+                            logText = ""
+                        }
                     }) {
                         Icon(
                             Icons.TwoTone.DeleteSweep,

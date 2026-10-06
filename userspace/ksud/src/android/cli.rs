@@ -1219,8 +1219,10 @@ pub fn run() -> Result<()> {
                 PluginCommand::Log { id } => {
                     let log_path = plugin::plugin_path(&id)?.join("last_output.log");
                     match std::fs::read_to_string(&log_path) {
-                        Ok(content) => println!("{content}"),
-                        Err(_) => println!("No log found for plugin '{id}'"),
+                        std::result::Result::Ok(content) => println!("{content}"),
+                        std::result::Result::Err(_) => {
+                            println!("No log found for plugin '{id}'");
+                        }
                     }
                     Ok(())
                 }
