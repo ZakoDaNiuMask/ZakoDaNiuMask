@@ -89,7 +89,9 @@ import kotlin.time.Duration.Companion.milliseconds
 fun KernelFlashScreen(
     kernelUri: String,
     selectedSlot: String? = null,
-    skipKsud: Boolean = false
+    skipKsud: Boolean = false,
+    kpmPatchEnabled: Boolean = false,
+    kpmUndoPatch: Boolean = false,
 ) {
     val context = LocalContext.current
 
@@ -119,8 +121,16 @@ fun KernelFlashScreen(
     }
 
     // 开始刷写
-    LaunchedEffect(kernelUri, selectedSlot, skipKsud) {
-        viewModel.dispatch(KernelFlashUiAction.Start(kernelUri, selectedSlot, skipKsud))
+    LaunchedEffect(kernelUri, selectedSlot, skipKsud, kpmPatchEnabled, kpmUndoPatch) {
+        viewModel.dispatch(
+            KernelFlashUiAction.Start(
+                kernelUri,
+                selectedSlot,
+                skipKsud,
+                kpmPatchEnabled,
+                kpmUndoPatch,
+            )
+        )
     }
 
     LaunchedEffect(flashState.isCompleted, uiState.autoExit) {

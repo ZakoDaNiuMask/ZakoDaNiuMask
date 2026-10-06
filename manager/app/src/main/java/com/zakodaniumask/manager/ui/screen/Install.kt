@@ -95,6 +95,31 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
+enum class KpmPatchOption {
+    FOLLOW_KERNEL,
+    PATCH_KPM,
+    UNDO_PATCH_KPM,
+}
+
+@Composable
+private fun KpmPatchOptionItem(
+    title: String,
+    description: String,
+    selected: Boolean,
+    onSelect: () -> Unit,
+) {
+    SettingsBaseWidget(
+        iconPlaceholder = false,
+        selected = selected,
+        title = title,
+        description = description,
+        onClick = onSelect,
+        leadingContent = {
+            RadioButton(selected = selected, onClick = null)
+        },
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun InstallScreen(
@@ -763,6 +788,7 @@ private fun Anykernel3InstallPage(
     val ak3PreflightConfirmText = stringResource(R.string.ak3_preflight_confirm)
     var ak3InstallMethod by remember { mutableStateOf<InstallMethod?>(null) }
     var skipKsud by remember { mutableStateOf(false) }
+    var kpmPatchOption by remember { mutableStateOf(KpmPatchOption.FOLLOW_KERNEL) }
     var showSlotSelectionDialog by remember { mutableStateOf(false) }
     var tempKernelUri by remember { mutableStateOf<Uri?>(null) }
     var advancedOptionsShown by remember { mutableStateOf(false) }
@@ -824,6 +850,8 @@ private fun Anykernel3InstallPage(
                             kernelUri = uri.toString(),
                             selectedSlot = method.slot,
                             skipKsud = skipKsud,
+                            kpmPatchEnabled = kpmPatchOption == KpmPatchOption.PATCH_KPM,
+                            kpmUndoPatch = kpmPatchOption == KpmPatchOption.UNDO_PATCH_KPM,
                         )
                     )
                 }
@@ -878,6 +906,8 @@ private fun Anykernel3InstallPage(
                             kernelUri = remoteBootImageSource.contentUri(file).toString(),
                             selectedSlot = if (isAbDevice) slotSuffix else null,
                             skipKsud = skipKsud,
+                            kpmPatchEnabled = kpmPatchOption == KpmPatchOption.PATCH_KPM,
+                            kpmUndoPatch = kpmPatchOption == KpmPatchOption.UNDO_PATCH_KPM,
                         )
                     )
                 } catch (cancelled: CancellationException) {
@@ -1013,6 +1043,30 @@ private fun Anykernel3InstallPage(
                                             onCheckedChange = null,
                                         )
                                     },
+                                )
+                            }
+                            item {
+                                KpmPatchOptionItem(
+                                    title = stringResource(R.string.kpm_patch_follow),
+                                    description = stringResource(R.string.kpm_patch_follow_desc),
+                                    selected = kpmPatchOption == KpmPatchOption.FOLLOW_KERNEL,
+                                    onSelect = { kpmPatchOption = KpmPatchOption.FOLLOW_KERNEL },
+                                )
+                            }
+                            item {
+                                KpmPatchOptionItem(
+                                    title = stringResource(R.string.kpm_patch_apply),
+                                    description = stringResource(R.string.kpm_patch_apply_desc),
+                                    selected = kpmPatchOption == KpmPatchOption.PATCH_KPM,
+                                    onSelect = { kpmPatchOption = KpmPatchOption.PATCH_KPM },
+                                )
+                            }
+                            item {
+                                KpmPatchOptionItem(
+                                    title = stringResource(R.string.kpm_patch_undo),
+                                    description = stringResource(R.string.kpm_patch_undo_desc),
+                                    selected = kpmPatchOption == KpmPatchOption.UNDO_PATCH_KPM,
+                                    onSelect = { kpmPatchOption = KpmPatchOption.UNDO_PATCH_KPM },
                                 )
                             }
                         }

@@ -6,13 +6,18 @@ import android.util.Log
 import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.shell.KsuCliRepository
 import com.zakodaniumask.manager.domain.model.FlashProgress
+import com.zakodaniumask.manager.utils.AssetsUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 /**
  * @author ShirkNeko
@@ -84,6 +89,8 @@ class HorizonKernelWorker(
     private val ksuCliRepository: KsuCliRepository,
     private val slot: String? = null,
     private val skipKsud: Boolean = false,
+    private val kpmPatchEnabled: Boolean = false,
+    private val kpmUndoPatch: Boolean = false,
 ) : Thread() {
     var uri: Uri? = null
 
@@ -101,6 +108,12 @@ class HorizonKernelWorker(
             state.updateStep(context.getString(R.string.horizon_copying_files))
             state.updateProgress(0.2f)
             copyToCache(zipFile)
+
+            if (kpmPatchEnabled || kpmUndoPatch) {
+                state.updateStep(context.getString(R.string.kpm_preparing_tools))
+                state.updateProgress(0.35f)
+                performKpmPatch(zipFile)
+            }
 
             state.updateStep(context.getString(R.string.horizon_flashing))
             state.updateProgress(0.7f)
@@ -148,6 +161,126 @@ class HorizonKernelWorker(
             throw IOException(context.getString(R.string.horizon_copy_failed))
         }
     }
+
+    private fun performKpmPatch(zipFile: File) {
+        val workDir = File(context.cacheDir, "kpm")
+        workDir.deleteRecursively()
+        if (!workDir.mkdirs()) {
+            throw IOException(context.getString(R.string.kpm_patch_operation_failed, ""))
+        }
+
+        val kptools = File(workDir, "kptools")
+        val kpimg = File(workDir, "kpimg")
+        AssetsUtil.exportFiles(context, "kptools", kptools.absolutePath)
+        AssetsUtil.exportFiles(context, "kpimg", kpimg.absolutePath)
+        if (!kptools.isFile || !kpimg.isFile) {
+            throw IOException(context.getString(R.string.kpm_patch_operation_failed, ""))
+        }
+        kptools.setExecutable(true)
+
+        val extractDir = File(workDir, "extracted")
+        extractDir.mkdirs()
+        unzip(zipFile, extractDir)
+
+        val image = extractDir.walkTopDown()
+            .firstOrNull { it.isFile && it.name.contains("Image") }
+            ?: throw IOException(context.getString(R.string.kpm_image_file_not_found))
+
+        state.addLog(context.getString(R.string.kpm_found_image_file, image.absolutePath))
+        state.updateStep(
+            context.getString(
+                if (kpmUndoPatch) R.string.kpm_undoing_patch else R.string.kpm_applying_patch
+            )
+        )
+
+        val flag = if (kpmUndoPatch) "-u" else "-p"
+        val output = File(image.parentFile, "oImage")
+        val command = buildString {
+            append(quote(kptools.absolutePath))
+            append(" ").append(flag).append(" -s 123")
+            append(" -i ").append(quote(image.name))
+            append(" -k ").append(quote(kpimg.absolutePath))
+            append(" -o ").append(quote(output.name))
+        }
+        val exitCode = runInDir(image.parentFile, command)
+        if (exitCode != 0 || !output.isFile) {
+            throw IOException(
+                context.getString(
+                    if (kpmUndoPatch) R.string.kpm_undo_patch_failed else R.string.kpm_patch_failed
+                )
+            )
+        }
+        if (!output.renameTo(File(image.parentFile, image.name))) {
+            output.copyTo(File(image.parentFile, image.name), overwrite = true)
+            output.delete()
+        }
+
+        state.addLog(
+            context.getString(
+                if (kpmUndoPatch) R.string.kpm_undo_patch_success else R.string.kpm_patch_success
+            )
+        )
+
+        val patched = File(workDir, "patched_${zipFile.name}")
+        repackZip(extractDir, patched)
+        if (!patched.renameTo(zipFile)) {
+            patched.copyTo(zipFile, overwrite = true)
+            patched.delete()
+        }
+        state.addLog(context.getString(R.string.kpm_file_repacked))
+        workDir.deleteRecursively()
+    }
+
+    private fun runInDir(dir: File, command: String): Int {
+        val shell = ksuCliRepository.getRootShell()
+        val result = shell.newJob()
+            .add("cd ${quote(dir.absolutePath)} && $command")
+            .to(ArrayList(), ArrayList())
+            .exec()
+        return result.code
+    }
+
+    private fun unzip(zipFile: File, targetDir: File) {
+        ZipInputStream(zipFile.inputStream()).use { zis ->
+            var entry = zis.nextEntry
+            while (entry != null) {
+                val outFile = File(targetDir, entry.name)
+                if (entry.isDirectory) {
+                    outFile.mkdirs()
+                } else {
+                    outFile.parentFile?.mkdirs()
+                    FileOutputStream(outFile).use { fos -> zis.copyTo(fos) }
+                }
+                zis.closeEntry()
+                entry = zis.nextEntry
+            }
+        }
+    }
+
+    private fun repackZip(sourceDir: File, zipFilePath: File) {
+        val buffer = ByteArray(8192)
+        FileOutputStream(zipFilePath).use { fos ->
+            ZipOutputStream(fos).use { zos ->
+                sourceDir.walkTopDown().forEach { file ->
+                    if (!file.isFile) return@forEach
+                    val relative = file.relativeTo(sourceDir).path
+                    val entry = ZipEntry(relative)
+                    entry.time = file.lastModified()
+                    zos.putNextEntry(entry)
+                    file.inputStream().use { fis ->
+                        var length = fis.read(buffer)
+                        while (length > 0) {
+                            zos.write(buffer, 0, length)
+                            length = fis.read(buffer)
+                        }
+                    }
+                    zos.closeEntry()
+                }
+            }
+        }
+    }
+
+    private fun quote(value: String): String = "'" + value.replace("'", "'\"'\"'") + "'"
 
     private fun handleOutput(line: String) {
         Log.i(TAG, line)

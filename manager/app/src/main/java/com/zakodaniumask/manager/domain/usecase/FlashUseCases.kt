@@ -7,6 +7,11 @@ class ObserveKernelFlashUseCase(private val repository: FlashRepository) {
 }
 
 class StartKernelFlashUseCase(private val repository: FlashRepository) {
-    operator fun invoke(uri: String, selectedSlot: String?, skipKsud: Boolean = false) =
-        repository.startKernelFlash(uri, selectedSlot, skipKsud)
+    operator fun invoke(
+        uri: String,
+        selectedSlot: String?,
+        skipKsud: Boolean = false,
+        kpmPatchEnabled: Boolean = false,
+        kpmUndoPatch: Boolean = false,
+    ) = repository.startKernelFlash(uri, selectedSlot, skipKsud, kpmPatchEnabled, kpmUndoPatch)
 }
