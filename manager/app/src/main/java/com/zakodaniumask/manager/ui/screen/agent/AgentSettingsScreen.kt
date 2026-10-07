@@ -53,6 +53,7 @@ import com.zakodaniumask.manager.data.agent.mcp.AgentTool
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
+import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.zakodaniumask.manager.ui.theme.blurEffect
@@ -186,6 +187,14 @@ fun AgentSettingsScreen() {
                             options = LlmProviderType.entries.map { it.label },
                             onSelect = { provider = LlmProviderType.entries[it] },
                         )
+                    }
+                    item {
+                        Button(
+                            onClick = { navigator.push(Route.AgentProviders) },
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        ) {
+                            Text(stringResource(R.string.agent_provider_manage))
+                        }
                     }
                     item {
                         ChoiceField(

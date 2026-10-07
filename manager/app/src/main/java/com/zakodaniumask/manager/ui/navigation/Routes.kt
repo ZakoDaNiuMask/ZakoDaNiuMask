@@ -179,6 +179,14 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object AgentProviders : Route
+
+    @Parcelize
+    @Serializable
+    data class AgentProviderEdit(val profileId: String) : Route
+
+    @Parcelize
+    @Serializable
     data object AgentAudit : Route
 
     @Parcelize

@@ -82,6 +82,8 @@ import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockUserProfileScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
 import com.zakodaniumask.manager.ui.screen.agent.AgentAuditScreen
+import com.zakodaniumask.manager.ui.screen.agent.AgentProviderEditScreen
+import com.zakodaniumask.manager.ui.screen.agent.AgentProvidersScreen
 import com.zakodaniumask.manager.ui.screen.agent.AgentSettingsScreen
 import com.zakodaniumask.manager.ui.screen.spoof.CpuSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.MemSpoofScreen
@@ -624,6 +626,28 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     AgentSettingsScreen()
+                }
+            }
+            entry<Route.AgentProviders>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    AgentProvidersScreen()
+                }
+            }
+            entry<Route.AgentProviderEdit>(swipeDismiss = swipeBackDirection) { key ->
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    AgentProviderEditScreen(profileId = key.profileId)
                 }
             }
             entry<Route.AgentAudit>(swipeDismiss = swipeBackDirection) {

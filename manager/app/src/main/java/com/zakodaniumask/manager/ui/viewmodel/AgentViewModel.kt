@@ -148,7 +148,7 @@ class AgentViewModel(
                 try {
                     val provider = providerFor(candidate.provider)
                     val config = LlmHttpConfig(
-                        endpoint = candidate.endpoint,
+                        endpoint = candidate.endpoint.ifBlank { candidate.provider.defaultEndpoint },
                         apiKey = candidate.apiKey,
                         model = candidate.model,
                         temperature = candidate.temperature,
@@ -294,7 +294,7 @@ class AgentViewModel(
             var thinkingId: Long? = null
             val thinking = StringBuilder()
             val httpConfig = LlmHttpConfig(
-                endpoint = settings.endpoint,
+                endpoint = settings.endpoint.ifBlank { settings.provider.defaultEndpoint },
                 apiKey = settings.apiKey,
                 model = settings.model,
                 temperature = settings.temperature,

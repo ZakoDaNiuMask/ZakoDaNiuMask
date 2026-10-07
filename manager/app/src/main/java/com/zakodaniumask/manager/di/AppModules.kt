@@ -14,6 +14,7 @@ import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.SpoofRepository
 import com.zakodaniumask.manager.data.agent.AgentMcpPolicyRepository
+import com.zakodaniumask.manager.data.agent.AgentProviderStore
 import com.zakodaniumask.manager.data.agent.AgentSessionStore
 import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.agent.AgentToolRouter
@@ -346,6 +347,7 @@ val repositoryModule = module {
     single { AgentToolRouter(get(), get()) }
     single { AgentSettingsRepository(get()) }
     single { AgentSessionStore(androidApplication()) }
+    single { AgentProviderStore(androidApplication()) }
     single { AgentMcpPolicyRepository(get()) }
     single { DetectorRepository(get(), get(), get(), get(), get(), get()) }
     single { ShellExecutor(get(), get()) }

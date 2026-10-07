@@ -53,10 +53,19 @@ data class LlmResponse(
 )
 
 /** Provider identifiers persisted in settings. */
-enum class LlmProviderType(val id: String, val label: String) {
-    OPENAI("openai", "OpenAI compatible"),
-    ANTHROPIC("anthropic", "Anthropic"),
-    GEMINI("gemini", "Gemini");
+enum class LlmProviderType(
+    val id: String,
+    val label: String,
+    val defaultEndpoint: String,
+    val openAiCompatible: Boolean,
+) {
+    OPENAI("openai", "OpenAI", "https://api.openai.com/v1", true),
+    ANTHROPIC("anthropic", "Anthropic", "https://api.anthropic.com", false),
+    GEMINI("gemini", "Gemini", "https://generativelanguage.googleapis.com", false),
+    XAI("xai", "xAI", "https://api.x.ai/v1", true),
+    OPENROUTER("openrouter", "OpenRouter", "https://openrouter.ai/api/v1", true),
+    KIMI("kimi", "Moonshot Kimi", "https://api.moonshot.cn/v1", true),
+    CUSTOM("custom", "Custom (OpenAI compatible)", "", true);
 
     companion object {
         fun fromId(id: String): LlmProviderType =

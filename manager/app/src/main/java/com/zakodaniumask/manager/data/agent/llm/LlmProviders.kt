@@ -546,7 +546,7 @@ class GeminiProvider : LlmProvider {
 }
 
 fun providerFor(type: LlmProviderType): LlmProvider = when (type) {
-    LlmProviderType.OPENAI -> OpenAiCompatibleProvider()
     LlmProviderType.ANTHROPIC -> AnthropicProvider()
     LlmProviderType.GEMINI -> GeminiProvider()
+    else -> OpenAiCompatibleProvider()
 }
