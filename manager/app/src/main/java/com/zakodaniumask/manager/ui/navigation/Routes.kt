@@ -175,6 +175,18 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object AgentSettings : Route
+
+    @Parcelize
+    @Serializable
+    data object AgentAudit : Route
+
+    @Parcelize
+    @Serializable
+    data object NavigationLayout : Route
+
+    @Parcelize
+    @Serializable
     data object Axeron : Route
 
     @Parcelize

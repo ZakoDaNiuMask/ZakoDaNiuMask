@@ -3,6 +3,7 @@ package com.zakodaniumask.manager.ui.screen
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AdminPanelSettings
+import androidx.compose.material.icons.twotone.AutoAwesome
 import androidx.compose.material.icons.twotone.Extension
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.Security
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.ui.screen.agent.AgentPage
 import com.zakodaniumask.manager.ui.screen.detection.DetectorPage
 import com.zakodaniumask.manager.ui.screen.main.HomePage
 import com.zakodaniumask.manager.ui.screen.main.ModulePage
@@ -52,6 +54,13 @@ enum class BottomBarDestination(
         Icons.TwoTone.Extension,
         true
     ),
+    Agent(
+        { bottomPadding -> AgentPage(bottomPadding) },
+        R.string.agent,
+        Icons.TwoTone.AutoAwesome,
+        Icons.TwoTone.AutoAwesome,
+        false
+    ),
     Settings(
         { bottomPadding -> SettingsPage(bottomPadding) },
         R.string.settings,
@@ -69,6 +78,35 @@ enum class BottomBarDestination(
                 BottomBarDestination.entries.filter {
                     !it.rootRequired
                 }
+            }
+        }
+
+        /**
+         * Apply the user's navigation preference on top of the availability filter.
+         * [order] holds enum names; unknown entries keep their default relative
+         * order at the end. [hidden] names are removed, except Home which is
+         * always kept so the bar is never empty. Agent is never force-hidden.
+         */
+        fun getPages(
+            isKsuValid: Boolean,
+            order: List<String>,
+            hidden: Set<String>,
+        ): List<BottomBarDestination> {
+            val base = getPages(isKsuValid)
+            val visible = base.filter { destination ->
+                when (destination) {
+                    BottomBarDestination.Home -> true
+                    else -> destination.name !in hidden
+                }
+            }
+            val effectiveOrder = if (order.isEmpty()) {
+                base.map { it.name }
+            } else {
+                order
+            }
+            return visible.sortedBy { destination ->
+                val index = effectiveOrder.indexOf(destination.name)
+                if (index < 0) Int.MAX_VALUE else index
             }
         }
     }

@@ -96,6 +96,8 @@ class SettingsPlatformRepository(
                 .coerceIn(1, 10),
             showFullStatus = settings.getBoolean("show_fingerprint", false),
             enableWebDebugging = settings.getBoolean("enable_web_debugging", false),
+            navOrder = settings.getStringSet("nav_order", emptySet()).toList(),
+            navHidden = settings.getStringSet("nav_hidden", emptySet()),
         )
     }
 
@@ -221,6 +223,12 @@ class SettingsPlatformRepository(
 
             is PlatformSetting.WebDebugging ->
                 settings.putBoolean("enable_web_debugging", setting.enabled)
+
+            is PlatformSetting.NavOrder ->
+                settings.putStringSet("nav_order", setting.value.toSet())
+
+            is PlatformSetting.NavHidden ->
+                settings.putStringSet("nav_hidden", setting.value)
         }
         Result.success(load())
     } catch (error: CancellationException) {

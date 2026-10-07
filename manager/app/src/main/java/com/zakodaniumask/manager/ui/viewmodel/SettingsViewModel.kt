@@ -117,6 +117,8 @@ data class SettingsUiState(
     val moduleDescriptionMaxLines: Int = 4,
     val showFullStatus: Boolean = false,
     val enableWebDebugging: Boolean = false,
+    val navOrder: List<String> = emptyList(),
+    val navHidden: Set<String> = emptySet(),
 )
 
 sealed interface SettingsUiAction {
@@ -166,6 +168,8 @@ sealed interface SettingsUiAction {
     data class SetModuleDescriptionMaxLines(val value: Int) : SettingsUiAction
     data class SetShowFullStatus(val enabled: Boolean) : SettingsUiAction
     data class SetWebDebugging(val enabled: Boolean) : SettingsUiAction
+    data class SetNavOrder(val order: List<String>) : SettingsUiAction
+    data class SetNavHidden(val hidden: Set<String>) : SettingsUiAction
 }
 
 sealed interface SettingsUiEvent {
@@ -561,6 +565,8 @@ fun dispatch(action: SettingsUiAction) {
                 handleModuleDescriptionMaxLinesChange(action.value)
             is SettingsUiAction.SetShowFullStatus -> handleShowFullStatusChange(action.enabled)
             is SettingsUiAction.SetWebDebugging -> handleWebDebuggingChange(action.enabled)
+            is SettingsUiAction.SetNavOrder -> handleNavOrderChange(action.order)
+            is SettingsUiAction.SetNavHidden -> handleNavHiddenChange(action.hidden)
         }
     }
 
@@ -583,6 +589,16 @@ fun dispatch(action: SettingsUiAction) {
     fun handleWebDebuggingChange(enabled: Boolean) {
         mutableState.update { it.copy(enableWebDebugging = enabled) }
         updatePlatformAsync(PlatformSetting.WebDebugging(enabled))
+    }
+
+    fun handleNavOrderChange(order: List<String>) {
+        mutableState.update { it.copy(navOrder = order) }
+        updatePlatformAsync(PlatformSetting.NavOrder(order))
+    }
+
+    fun handleNavHiddenChange(hidden: Set<String>) {
+        mutableState.update { it.copy(navHidden = hidden) }
+        updatePlatformAsync(PlatformSetting.NavHidden(hidden))
     }
 
     fun handleBuiltinMonospaceFontChange(checked: Boolean) {
@@ -651,6 +667,8 @@ fun dispatch(action: SettingsUiAction) {
                 moduleDescriptionMaxLines = snapshot.moduleDescriptionMaxLines,
                 showFullStatus = snapshot.showFullStatus,
                 enableWebDebugging = snapshot.enableWebDebugging,
+                navOrder = snapshot.navOrder,
+                navHidden = snapshot.navHidden,
             )
         }
     }

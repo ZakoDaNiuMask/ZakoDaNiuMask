@@ -42,6 +42,7 @@ import com.zakodaniumask.manager.ui.util.LocalPortraitState
 import com.zakodaniumask.manager.ui.util.LocalSelectedPage
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.viewmodel.HomeViewModel
+import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import top.yukonga.miuix.kmp.utils.PagerGestureNestedScrollConnection
@@ -57,8 +58,17 @@ fun MainScreen(
     val themeConfig: ThemeConfig = koinInject()
     val homeViewModel = koinViewModel<HomeViewModel>()
     val homeState by homeViewModel.uiState.collectAsStateWithLifecycle()
-    val pages = remember(homeState.systemStatus.isFullFeatured) {
-        BottomBarDestination.getPages(homeState.systemStatus.isFullFeatured)
+    val settingsState by koinViewModel<SettingsViewModel>().uiState.collectAsStateWithLifecycle()
+    val pages = remember(
+        homeState.systemStatus.isFullFeatured,
+        settingsState.navOrder,
+        settingsState.navHidden,
+    ) {
+        BottomBarDestination.getPages(
+            homeState.systemStatus.isFullFeatured,
+            settingsState.navOrder,
+            settingsState.navHidden,
+        )
     }
 
     var uiSelectedPage by rememberSaveable { mutableIntStateOf(0) }

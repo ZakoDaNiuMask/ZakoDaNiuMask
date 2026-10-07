@@ -53,6 +53,7 @@ import androidx.compose.material.icons.twotone.Security
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Share
 import androidx.compose.material.icons.twotone.Storage
+import androidx.compose.material.icons.twotone.ViewSidebar
 import androidx.compose.material.icons.twotone.Visibility
 import androidx.compose.material.icons.twotone.VisibilityOff
 import androidx.compose.material.icons.twotone.Update
@@ -534,6 +535,17 @@ fun SettingsPage(bottomPadding: Dp) {
                                 description = stringResource(R.string.theme_settings),
                                 onClick = {
                                     navigator.push(Route.ThemeSettings)
+                                }
+                            )
+                        }
+
+                        item {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.ViewSidebar,
+                                title = stringResource(R.string.navigation_layout),
+                                description = stringResource(R.string.navigation_layout_summary),
+                                onClick = {
+                                    navigator.push(Route.NavigationLayout)
                                 }
                             )
                         }

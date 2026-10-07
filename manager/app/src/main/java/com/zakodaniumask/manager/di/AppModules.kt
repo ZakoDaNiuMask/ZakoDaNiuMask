@@ -13,6 +13,11 @@ import com.zakodaniumask.manager.data.flash.FlashRepository
 import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.SpoofRepository
+import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
+import com.zakodaniumask.manager.data.agent.AgentToolRouter
+import com.zakodaniumask.manager.data.agent.mcp.KsudMcpClient
+import com.zakodaniumask.manager.data.agent.mcp.KsudMcpProcess
+import com.zakodaniumask.manager.data.agent.mcp.ManagerMcpServer
 import com.zakodaniumask.manager.data.kernel.UmountRepository
 import com.zakodaniumask.manager.data.kpm.KpmRepository
 import com.zakodaniumask.manager.data.userko.UserKoRepository
@@ -207,6 +212,7 @@ import com.zakodaniumask.manager.ui.viewmodel.UserKoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.CpuSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.UtsSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.MemSpoofViewModel
+import com.zakodaniumask.manager.ui.viewmodel.AgentViewModel
 import com.zakodaniumask.manager.ui.viewmodel.OnlinePluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.PluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
@@ -330,6 +336,11 @@ val repositoryModule = module {
     singleOf(::BugreportRepository)
     singleOf(::UmountRepository)
     singleOf(::SpoofRepository)
+    single { KsudMcpProcess(get()) }
+    single { KsudMcpClient(get()) }
+    singleOf(::ManagerMcpServer)
+    single { AgentToolRouter(get(), get()) }
+    single { AgentSettingsRepository(get()) }
     singleOf(::ModuleCatalogRepository)
     singleOf(::ModuleRepository)
     singleOf(::ModulePreferencesRepository)
@@ -518,6 +529,7 @@ val viewModelModule = module {
     viewModelOf(::CpuSpoofViewModel)
     viewModelOf(::UtsSpoofViewModel)
     viewModelOf(::MemSpoofViewModel)
+    viewModelOf(::AgentViewModel)
     viewModelOf(::PluginViewModel)
 
     viewModelOf(::OnlinePluginViewModel)

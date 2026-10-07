@@ -81,9 +81,12 @@ import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockScreen
 import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockUserProfileScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
+import com.zakodaniumask.manager.ui.screen.agent.AgentAuditScreen
+import com.zakodaniumask.manager.ui.screen.agent.AgentSettingsScreen
 import com.zakodaniumask.manager.ui.screen.spoof.CpuSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.MemSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.UtsSpoofScreen
+import com.zakodaniumask.manager.ui.screen.themeSettings.NavigationLayoutScreen
 import com.zakodaniumask.manager.ui.screen.userko.UserKoPage
 import com.zakodaniumask.manager.ui.screen.plugin.OnlinePluginScreen
 import com.zakodaniumask.manager.ui.screen.plugin.PluginPage
@@ -610,6 +613,39 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     MemSpoofScreen()
+                }
+            }
+            entry<Route.AgentSettings>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    AgentSettingsScreen()
+                }
+            }
+            entry<Route.AgentAudit>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    AgentAuditScreen()
+                }
+            }
+            entry<Route.NavigationLayout>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    NavigationLayoutScreen()
                 }
             }
             entry<Route.Axeron>(swipeDismiss = swipeBackDirection) {

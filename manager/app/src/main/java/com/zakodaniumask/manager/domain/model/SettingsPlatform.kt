@@ -30,6 +30,8 @@ data class SettingsPlatformSnapshot(
     val moduleDescriptionMaxLines: Int = 4,
     val showFullStatus: Boolean = false,
     val enableWebDebugging: Boolean = false,
+    val navOrder: List<String> = emptyList(),
+    val navHidden: Set<String> = emptySet(),
 )
 
 data class PlatformFeatureStatus(
@@ -97,4 +99,6 @@ sealed interface PlatformSetting {
     data class ModuleDescriptionMaxLines(val value: Int) : PlatformSetting
     data class ShowFullStatus(val enabled: Boolean) : PlatformSetting
     data class WebDebugging(val enabled: Boolean) : PlatformSetting
+    data class NavOrder(val value: List<String>) : PlatformSetting
+    data class NavHidden(val value: Set<String>) : PlatformSetting
 }
