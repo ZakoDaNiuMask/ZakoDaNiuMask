@@ -149,6 +149,20 @@ static bool is_ksud_exists()
     return true;
 }
 
+/*
+ * Narrow port of JingMatrix/KernelSU's su fallback: on allow_shell images
+ * without an installed manager there is no ksud to redirect 'su' to, but the
+ * shell is expected to keep working before any manager is installed. The
+ * fallback is restricted to SHELL_UID: the manager and any uid in a leftover
+ * on-disk allowlist keep the no-redirect behaviour, because a bare shell
+ * answers `su -c <cmd> <user>` by running <cmd> as root instead of as <user>.
+ * The caller must hold ksu_cred (override_creds), because /data/adb is 0700.
+ */
+static bool ksu_su_sh_fallback(uid_t caller_uid)
+{
+    return !is_ksud_exists() && allow_shell && caller_uid == SHELL_UID;
+}
+
 extern bool ksu_kernel_umount_enabled;
 
 #ifdef CONFIG_KSU_TRACEPOINT_HOOK
@@ -178,6 +192,14 @@ long ksu_handle_faccessat_sucompat_internal(int orig_nr, struct pt_regs *regs)
             pr_info("faccessat su->ksud!\n");
             orig_filename = *filename_user;
             *filename_user = ksud_user_path();
+            ret = ksu_syscall_table[orig_nr](regs);
+            revert_creds(old_cred);
+            *filename_user = orig_filename;
+            return ret;
+        } else if (ksu_su_sh_fallback(ksu_get_uid_t(current_uid()))) {
+            pr_info("faccessat su->sh (no ksud, allow_shell)!\n");
+            orig_filename = *filename_user;
+            *filename_user = sh_user_path();
             ret = ksu_syscall_table[orig_nr](regs);
             revert_creds(old_cred);
             *filename_user = orig_filename;
@@ -213,6 +235,14 @@ long ksu_handle_stat_sucompat_internal(int orig_nr, struct pt_regs *regs)
             pr_info("newfstatat su->ksud!\n");
             orig_filename = *filename_user;
             *filename_user = ksud_user_path();
+            ret = ksu_syscall_table[orig_nr](regs);
+            revert_creds(old_cred);
+            *filename_user = orig_filename;
+            return ret;
+        } else if (ksu_su_sh_fallback(ksu_get_uid_t(current_uid()))) {
+            pr_info("newfstatat su->sh (no ksud, allow_shell)!\n");
+            orig_filename = *filename_user;
+            *filename_user = sh_user_path();
             ret = ksu_syscall_table[orig_nr](regs);
             revert_creds(old_cred);
             *filename_user = orig_filename;
@@ -273,6 +303,32 @@ static long ksu_handle_execve_sucompat_common_internal(const char __user **filen
     }
 
     old_cred = override_creds(ksu_cred);
+    if (ksu_su_sh_fallback(ksu_get_uid_t(current_uid()))) {
+        ksud_file = filp_open(sh_path, O_PATH, 0);
+        revert_creds(old_cred);
+        if (!IS_ERR(ksud_file)) {
+            pr_info("sys_execve su->sh (no ksud, allow_shell)\n");
+            fd_install(tmp_fd, ksud_file);
+
+            // execve(file, argv, environ)
+            // execveat(fd, file, argv, environ, flags)
+            orig_regs[0] = PT_REGS_SYSCALL_PARM1(regs);
+            orig_regs[1] = regs->__PT_PARM2_REG;
+            orig_regs[2] = regs->__PT_PARM3_REG;
+            orig_regs[3] = regs->__PT_SYSCALL_PARM4_REG;
+            orig_regs[4] = regs->__PT_PARM5_REG;
+            regs->__PT_PARM5_REG = AT_EMPTY_PATH;
+            regs->__PT_SYSCALL_PARM4_REG = envp;
+            regs->__PT_PARM3_REG = (unsigned long)argv_user;
+            regs->__PT_PARM2_REG = empty_user_path();
+            PT_REGS_SYSCALL_PARM1(regs) = tmp_fd;
+
+            return ksu_syscall_table[__NR_execveat](regs);
+        }
+        pr_err("open sh err: %ld\n", PTR_ERR(ksud_file));
+        put_unused_fd(tmp_fd);
+        goto do_orig_execve;
+    }
     ksud_file = filp_open(KSUD_PATH, O_PATH, 0);
     revert_creds(old_cred);
     if (IS_ERR(ksud_file)) {

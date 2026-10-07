@@ -14,6 +14,9 @@
 #define FIRST_APP_ZYGOTE_ISOLATED_UID 90000
 #define LAST_APP_ZYGOTE_ISOLATED_UID 98999
 
+#define SYSTEM_UID 1000
+#define SHELL_UID 2000
+
 void ksu_allowlist_init(void);
 
 void ksu_allowlist_exit(void);
