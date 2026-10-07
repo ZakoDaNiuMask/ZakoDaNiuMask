@@ -144,7 +144,7 @@
     <string name="agent_mode_read_only">Read only</string>
     <string name="agent_mode_write">Allow writes (confirm)</string>
     <string name="agent_mode_full_auto">Full auto (confirm danger)</string>
-    <string name="agent_thinking">Reasoning effort</string>
+    <string name="agent_reasoning_effort">Reasoning effort</string>
     <string name="agent_thinking_off">Off</string>
     <string name="agent_thinking_low">Low</string>
     <string name="agent_thinking_medium">Medium</string>

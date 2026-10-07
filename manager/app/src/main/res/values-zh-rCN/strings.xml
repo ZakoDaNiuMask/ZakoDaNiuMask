@@ -145,7 +145,7 @@
     <string name="agent_mode_read_only">只读</string>
     <string name="agent_mode_write">允许写入（需确认）</string>
     <string name="agent_mode_full_auto">全自动（仅高危需确认）</string>
-    <string name="agent_thinking">推理强度</string>
+    <string name="agent_reasoning_effort">推理强度</string>
     <string name="agent_thinking_off">关闭</string>
     <string name="agent_thinking_low">低</string>
     <string name="agent_thinking_medium">中</string>

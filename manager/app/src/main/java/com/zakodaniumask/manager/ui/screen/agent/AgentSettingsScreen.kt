@@ -197,7 +197,7 @@ fun AgentSettingsScreen() {
                     }
                     item {
                         ChoiceField(
-                            label = stringResource(R.string.agent_thinking),
+                            label = stringResource(R.string.agent_reasoning_effort),
                             value = thinkingLabels[thinking.ordinal],
                             options = thinkingLabels,
                             onSelect = { thinking = ThinkingLevel.entries[it] },
