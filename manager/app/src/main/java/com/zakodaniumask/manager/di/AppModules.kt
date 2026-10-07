@@ -12,6 +12,7 @@ import com.zakodaniumask.manager.data.file.ModuleFileRepository
 import com.zakodaniumask.manager.data.flash.FlashRepository
 import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
+import com.zakodaniumask.manager.data.kernel.SpoofRepository
 import com.zakodaniumask.manager.data.kernel.UmountRepository
 import com.zakodaniumask.manager.data.kpm.KpmRepository
 import com.zakodaniumask.manager.data.userko.UserKoRepository
@@ -199,6 +200,8 @@ import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
 import com.zakodaniumask.manager.ui.viewmodel.UserKoViewModel
+import com.zakodaniumask.manager.ui.viewmodel.CpuSpoofViewModel
+import com.zakodaniumask.manager.ui.viewmodel.UtsSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.OnlinePluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.PluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
@@ -321,6 +324,7 @@ val repositoryModule = module {
     singleOf(::SulogRepository)
     singleOf(::BugreportRepository)
     singleOf(::UmountRepository)
+    singleOf(::SpoofRepository)
     singleOf(::ModuleCatalogRepository)
     singleOf(::ModuleRepository)
     singleOf(::ModulePreferencesRepository)
@@ -502,6 +506,8 @@ val viewModelModule = module {
     viewModelOf(::BootScriptViewModel)
     viewModelOf(::KpmViewModel)
     viewModelOf(::UserKoViewModel)
+    viewModelOf(::CpuSpoofViewModel)
+    viewModelOf(::UtsSpoofViewModel)
     viewModelOf(::PluginViewModel)
 
     viewModelOf(::OnlinePluginViewModel)

@@ -163,6 +163,14 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object CpuSpoof : Route
+
+    @Parcelize
+    @Serializable
+    data object UtsSpoof : Route
+
+    @Parcelize
+    @Serializable
     data object Axeron : Route
 
     @Parcelize
