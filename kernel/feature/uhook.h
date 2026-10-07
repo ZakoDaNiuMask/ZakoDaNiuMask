@@ -7,7 +7,7 @@ struct ksu_uhook_cmd;
 int ksu_uhook(struct ksu_uhook_cmd *cmd);
 
 /* Resolve kernel symbols and initialise the hook table. Safe to call once. */
-void ksu_uhook_init(void);
+void __init ksu_uhook_init(void);
 void ksu_uhook_exit(void);
 
 #endif

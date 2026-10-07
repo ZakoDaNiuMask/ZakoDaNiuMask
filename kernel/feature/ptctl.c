@@ -1309,7 +1309,7 @@ static const struct ksu_feature_handler ptctl_handler = {
     .set_handler = ptctl_feature_set,
 };
 
-void ksu_ptctl_init(void)
+void __init ksu_ptctl_init(void)
 {
     p_find_task_by_vpid = (find_task_by_vpid_t)find_kernel_symbol_exact("find_task_by_vpid");
     p_access_process_vm = (access_process_vm_t)find_kernel_symbol_exact("access_process_vm");

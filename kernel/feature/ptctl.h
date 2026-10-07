@@ -8,7 +8,7 @@ struct ksu_ptctl_cmd;
 int ksu_ptctl(struct ksu_ptctl_cmd *cmd);
 
 /* Registers the signal kprobe used by KILLGUARD. Safe to call once at init. */
-void ksu_ptctl_init(void);
+void __init ksu_ptctl_init(void);
 void ksu_ptctl_exit(void);
 
 #endif

@@ -1236,7 +1236,7 @@ static const struct ksu_feature_handler uhook_handler = {
     .set_handler = uhook_feature_set,
 };
 
-void ksu_uhook_init(void)
+void __init ksu_uhook_init(void)
 {
     p_find_task_by_vpid = (find_task_by_vpid_t)find_kernel_symbol_exact("find_task_by_vpid");
     p_uprobe_register = (uprobe_register_t)find_kernel_symbol_exact("uprobe_register");
