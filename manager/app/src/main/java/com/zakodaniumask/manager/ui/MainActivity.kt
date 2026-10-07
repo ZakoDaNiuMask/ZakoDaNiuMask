@@ -47,6 +47,8 @@ class MainActivity : ComponentActivity() {
     private val themeUtils: ThemeUtils by inject()
     private val applyLanguage: ApplyLanguageUseCase by inject()
     private val startupState by lazy { observeStartupState() }
+    private var splashStartedAt = 0L
+    private val splashAnimationDurationMs = 500L
 
     private lateinit var themeChangeObserver: ThemeChangeContentObserver
     private var isInitialized = false
@@ -60,6 +62,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
             val splashScreen = installSplashScreen()
+            splashStartedAt = android.os.SystemClock.uptimeMillis()
 
             // Enable edge to edge
             enableEdgeToEdge()
@@ -73,7 +76,9 @@ class MainActivity : ComponentActivity() {
             splashScreen.setKeepOnScreenCondition {
                 when (startupState.value) {
                     StartupState.Loading -> true
-                    StartupState.Ready -> false
+                    StartupState.Ready ->
+                        android.os.SystemClock.uptimeMillis() - splashStartedAt <
+                            splashAnimationDurationMs
                     is StartupState.Failed -> false
                 }
             }
