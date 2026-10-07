@@ -93,6 +93,10 @@
     <string name="settings_selinux_hide_summary">Prevent applications from detecting SELinux modifications</string>
     <string name="settings_selinux_hide_reboot_required">Reboot to take effect</string>
     <string name="settings_selinux_hide_failed">Error: %d</string>
+    <string name="settings_mount_hide">Hide module mounts</string>
+    <string name="settings_mount_hide_summary">Filter module mounts from /proc mount views of isolated and app processes; complements kernel umount and SuSFS</string>
+    <string name="settings_mount_hide_reboot_required">Reboot to take effect</string>
+    <string name="settings_mount_hide_failed">Error: %d</string>
     <string name="reboot_to_apply">Reboot to take effect</string>
     <string name="module_magisk_conflict">Modules are unavailable due to a conflict with Magisk!</string>
     <string name="profile" translatable="false">App Profile</string>

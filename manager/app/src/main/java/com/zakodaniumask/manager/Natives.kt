@@ -156,6 +156,16 @@ object Natives {
     external fun isSelinuxHideEnabled(): Boolean
     external fun setSelinuxHideEnabled(enabled: Boolean): Int
 
+    /**
+     * Mount hide filters module mounts from /proc mount views of isolated and
+     * app processes.
+     *  0: disabled
+     *  1: enabled
+     *  negative : error
+     */
+    external fun isMountHideEnabled(): Boolean
+    external fun setMountHideEnabled(enabled: Boolean): Int
+
     external fun isKPMEnabled(): Boolean
     external fun getHookType(): String
 

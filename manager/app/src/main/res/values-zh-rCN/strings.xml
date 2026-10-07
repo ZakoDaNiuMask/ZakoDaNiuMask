@@ -94,6 +94,10 @@
     <string name="settings_selinux_hide_summary">阻止应用检测 SELinux 修改</string>
     <string name="settings_selinux_hide_reboot_required">重启生效</string>
     <string name="settings_selinux_hide_failed">错误： %d</string>
+    <string name="settings_mount_hide">隐藏模块挂载</string>
+    <string name="settings_mount_hide_summary">从隔离进程与应用进程的 /proc 挂载视图中过滤模块挂载；与内核卸载和 SuSFS 互补</string>
+    <string name="settings_mount_hide_reboot_required">重启后生效</string>
+    <string name="settings_mount_hide_failed">错误：%d</string>
     <string name="reboot_to_apply">重启生效</string>
     <string name="module_magisk_conflict">因与 Magisk 有冲突，所有模块不可用！</string>
     <string name="profile_default">默认</string>

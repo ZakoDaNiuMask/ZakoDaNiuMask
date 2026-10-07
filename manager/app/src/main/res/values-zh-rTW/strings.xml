@@ -92,6 +92,10 @@
     <string name="settings_selinux_hide_summary">限制應用檢測 SELinux 修改</string>
     <string name="settings_selinux_hide_reboot_required">重新啟動後生效</string>
     <string name="settings_selinux_hide_failed">錯誤: %d</string>
+    <string name="settings_mount_hide">隱藏模組掛載</string>
+    <string name="settings_mount_hide_summary">從隔離程序與應用程式的 /proc 掛載檢視中過濾模組掛載；與核心卸載和 SuSFS 互補</string>
+    <string name="settings_mount_hide_reboot_required">重新開機後生效</string>
+    <string name="settings_mount_hide_failed">錯誤：%d</string>
     <string name="reboot_to_apply">重新啟動後生效</string>
     <string name="module_magisk_conflict">與 Magisk 發生衝突，無法使用模組功能！</string>
     <string name="profile_default">預設</string>

@@ -15,6 +15,7 @@ import com.zakodaniumask.manager.domain.usecase.GetPlatformFeatureStatusUseCase
 import com.zakodaniumask.manager.domain.usecase.LoadSettingsPlatformUseCase
 import com.zakodaniumask.manager.domain.usecase.SetDefaultUmountModulesUseCase
 import com.zakodaniumask.manager.domain.usecase.SetKernelUmountEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.SetMountHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSuEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.UpdateAppearanceUseCase
@@ -96,6 +97,8 @@ data class SettingsUiState(
     val isSuLogEnabled: Boolean = false,
     val selinuxHideStatus: String = "",
     val isSelinuxHideEnabled: Boolean = false,
+    val mountHideStatus: String = "",
+    val isMountHideEnabled: Boolean = false,
     val defaultUmountModules: Boolean = false,
     val useBuiltinMonoFont: Boolean = false,
     val useSoftReboot: Boolean = false,
@@ -140,6 +143,7 @@ sealed interface SettingsUiAction {
     data class SetKernelUmount(val enabled: Boolean) : SettingsUiAction
     data class SetAutoJailbreak(val enabled: Boolean) : SettingsUiAction
     data class SetSelinuxHide(val enabled: Boolean) : SettingsUiAction
+    data class SetMountHide(val enabled: Boolean) : SettingsUiAction
     data class SetAdbRoot(val enabled: Boolean) : SettingsUiAction
     data class SetSuLog(val enabled: Boolean) : SettingsUiAction
     data class SetDefaultUmountModules(val enabled: Boolean) : SettingsUiAction
@@ -168,6 +172,7 @@ class SettingsViewModel(
     private val setKernelUmountEnabled: SetKernelUmountEnabledUseCase,
     private val setSuLogEnabled: ConfigureSuLogUseCase,
     private val setSelinuxHideEnabled: SetSelinuxHideEnabledUseCase,
+    private val setMountHideEnabled: SetMountHideEnabledUseCase,
     private val setDefaultUmountModules: SetDefaultUmountModulesUseCase,
 ) : ViewModel() {
     private val mutableState = MutableStateFlow(SettingsUiState())
@@ -208,6 +213,8 @@ fun initialize() {
                     isSuLogEnabled = features.suLogEnabled,
                     selinuxHideStatus = platform.selinuxHideStatus,
                     isSelinuxHideEnabled = features.selinuxHideEnabled,
+                    mountHideStatus = platform.mountHideStatus,
+                    isMountHideEnabled = features.mountHideEnabled,
                     defaultUmountModules = features.defaultUmountModules,
                 )
             }
@@ -407,6 +414,23 @@ fun initialize() {
         }
     }
 
+    fun handleMountHideChange(checked: Boolean) {
+        viewModelScope.launch {
+            val status = setMountHideEnabled(checked)
+            mutableState.update { it.copy(isMountHideEnabled = checked) }
+            when (status) {
+                0 -> Unit
+                -11 -> mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_mount_hide_reboot_required)
+                )
+
+                else -> mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_mount_hide_failed, status)
+                )
+            }
+        }
+    }
+
     fun handleDefaultUmountModulesChange(checked: Boolean) {
         viewModelScope.launch {
             if (setDefaultUmountModules(checked)) {
@@ -457,6 +481,7 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetKernelUmount -> handleKernelUmountChange(action.enabled)
             is SettingsUiAction.SetAutoJailbreak -> handleAutoJailbreakChange(action.enabled)
             is SettingsUiAction.SetSelinuxHide -> handleSelinuxHideChange(action.enabled)
+            is SettingsUiAction.SetMountHide -> handleMountHideChange(action.enabled)
             is SettingsUiAction.SetAdbRoot -> handleAdbRootChange(action.enabled)
             is SettingsUiAction.SetSuLog -> handleSuLogChange(action.enabled)
             is SettingsUiAction.SetDefaultUmountModules ->

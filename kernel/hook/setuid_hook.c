@@ -26,6 +26,7 @@
 #endif
 #include "compat/kernel_compat.h"
 #include "feature/kernel_umount.h"
+#include "feature/mount_hide.h"
 #include "feature/sucompat.h"
 #ifdef CONFIG_KSU_SUSFS
 #include <linux/susfs_def.h>
@@ -191,10 +192,12 @@ int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid)
 void __init ksu_setuid_hook_init(void)
 {
     ksu_kernel_umount_init();
+    ksu_mount_hide_init();
 }
 
 void __exit ksu_setuid_hook_exit(void)
 {
     pr_info("ksu_setuid_hook_exit\n");
     ksu_kernel_umount_exit();
+    ksu_mount_hide_exit();
 }

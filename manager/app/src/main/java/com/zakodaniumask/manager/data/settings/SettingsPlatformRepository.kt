@@ -269,6 +269,9 @@ class SettingsPlatformRepository(
             selinuxHideStatus = runCatching {
                 ksuCliRepository.getFeatureStatus("selinux_hide")
             }.getOrDefault(""),
+            mountHideStatus = runCatching {
+                ksuCliRepository.getFeatureStatus("mount_hide")
+            }.getOrDefault(""),
         )
     }
 

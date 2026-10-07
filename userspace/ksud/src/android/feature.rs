@@ -26,6 +26,7 @@ pub enum FeatureId {
     Sulog = 2,
     AdbRoot = 3,
     SelinuxHide = 4,
+    MountHide = 16,
 }
 
 impl FeatureId {
@@ -36,6 +37,7 @@ impl FeatureId {
             2 => Some(Self::Sulog),
             3 => Some(Self::AdbRoot),
             4 => Some(Self::SelinuxHide),
+            16 => Some(Self::MountHide),
             _ => None,
         }
     }
@@ -47,6 +49,7 @@ impl FeatureId {
             Self::Sulog => "sulog",
             Self::AdbRoot => "adb_root",
             Self::SelinuxHide => "selinux_hide",
+            Self::MountHide => "mount_hide",
         }
     }
 
@@ -65,6 +68,9 @@ impl FeatureId {
             Self::SelinuxHide => {
                 "SELinux Hide - sanitize /sys/fs/selinux access results for app UIDs"
             }
+            Self::MountHide => {
+                "Mount Hide - filter module mounts from /proc mount views of isolated and app processes"
+            }
         }
     }
 }
@@ -76,6 +82,7 @@ fn parse_feature_id(name: &str) -> Result<FeatureId> {
         "sulog" | "2" => Ok(FeatureId::Sulog),
         "adb_root" | "3" => Ok(FeatureId::AdbRoot),
         "selinux_hide" | "4" => Ok(FeatureId::SelinuxHide),
+        "mount_hide" | "16" => Ok(FeatureId::MountHide),
         _ => bail!("Unknown feature: {name}"),
     }
 }
@@ -322,6 +329,7 @@ pub fn list_features() {
         FeatureId::Sulog,
         FeatureId::AdbRoot,
         FeatureId::SelinuxHide,
+        FeatureId::MountHide,
     ];
 
     for feature_id in &all_features {
@@ -385,6 +393,7 @@ pub fn save_config() -> Result<()> {
         FeatureId::Sulog,
         FeatureId::AdbRoot,
         FeatureId::SelinuxHide,
+        FeatureId::MountHide,
     ];
 
     for feature_id in &all_features {

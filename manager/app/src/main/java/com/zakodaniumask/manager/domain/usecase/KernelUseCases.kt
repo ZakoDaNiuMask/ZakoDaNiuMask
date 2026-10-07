@@ -30,6 +30,10 @@ class SetSelinuxHideEnabledUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setSelinuxHideEnabled(enabled)
 }
 
+class SetMountHideEnabledUseCase(private val repository: KernelRepository) {
+    suspend operator fun invoke(enabled: Boolean) = repository.setMountHideEnabled(enabled)
+}
+
 class SetDefaultUmountModulesUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setDefaultUmountModules(enabled)
 }

@@ -51,6 +51,7 @@ import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Share
 import androidx.compose.material.icons.twotone.Storage
 import androidx.compose.material.icons.twotone.Visibility
+import androidx.compose.material.icons.twotone.VisibilityOff
 import androidx.compose.material.icons.twotone.Update
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -348,6 +349,28 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { checked ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetSelinuxHide(
+                                                checked
+                                            )
+                                        )
+                                    },
+                                )
+                            }
+
+                            item {
+                                val mountHideSummary = when (uiState.mountHideStatus) {
+                                    "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                    "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                    else -> stringResource(id = R.string.settings_mount_hide_summary)
+                                }
+                                SettingsSwitchWidget(
+                                    icon = Icons.TwoTone.VisibilityOff,
+                                    title = stringResource(id = R.string.settings_mount_hide),
+                                    description = mountHideSummary,
+                                    enabled = uiState.mountHideStatus == "supported",
+                                    checked = uiState.isMountHideEnabled,
+                                    onCheckedChange = { checked ->
+                                        settingsViewModel.dispatch(
+                                            SettingsUiAction.SetMountHide(
                                                 checked
                                             )
                                         )

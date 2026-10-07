@@ -70,6 +70,7 @@ class KernelRepository(
             kernelUmountEnabled = runCatching { Natives.isKernelUmountEnabled() }.getOrDefault(false),
             suLogEnabled = runCatching { Natives.isSuLogEnabled() }.getOrDefault(false),
             selinuxHideEnabled = runCatching { Natives.isSelinuxHideEnabled() }.getOrDefault(false),
+            mountHideEnabled = runCatching { Natives.isMountHideEnabled() }.getOrDefault(false),
             defaultUmountModules = runCatching { Natives.isDefaultUmountModules() }.getOrDefault(
                 false
             ),
@@ -90,6 +91,12 @@ class KernelRepository(
 
     suspend fun setSelinuxHideEnabled(enabled: Boolean): Int = withContext(Dispatchers.IO) {
         Natives.setSelinuxHideEnabled(enabled).also {
+            ksuCliRepository.execKsud("feature save", true)
+        }
+    }
+
+    suspend fun setMountHideEnabled(enabled: Boolean): Int = withContext(Dispatchers.IO) {
+        Natives.setMountHideEnabled(enabled).also {
             ksuCliRepository.execKsud("feature save", true)
         }
     }

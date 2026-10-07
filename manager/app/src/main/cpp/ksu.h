@@ -70,6 +70,11 @@ int set_selinux_hide_enabled(bool enabled);
 
 bool is_selinux_hide_enabled();
 
+// Mount hide
+int set_mount_hide_enabled(bool enabled);
+
+bool is_mount_hide_enabled();
+
 bool get_managers_list(struct ksu_get_managers_cmd **out_cmd);
 bool get_allow_list(struct ksu_new_get_allow_list_cmd *);
 
