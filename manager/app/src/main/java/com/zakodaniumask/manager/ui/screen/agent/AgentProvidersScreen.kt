@@ -152,7 +152,6 @@ fun AgentProvidersScreen() {
                                         Icon(
                                             Icons.TwoTone.CheckCircle,
                                             contentDescription = activeLabel,
-                                            tint = MaterialTheme.colorScheme.primary,
                                         )
                                     } else {
                                         IconButton(onClick = { activate(profile) }) {
@@ -356,7 +355,7 @@ fun AgentProviderEditScreen(profileId: String) {
                             title = stringResource(R.string.agent_extra_headers),
                             useLabelAsPlaceholder = true,
                             leadingContent = { Icon(Icons.TwoTone.DataObject, contentDescription = null) },
-                            lineLimits = TextFieldLineLimits.FourLines,
+                            lineLimits = TextFieldLineLimits.MultiLine(minHeightInLines = 3, maxHeightInLines = 6),
                         )
                     }
                     item {
@@ -425,6 +424,7 @@ fun AgentProviderEditScreen(profileId: String) {
     }
 }
 
+@Composable
 private fun Icon(
     image: androidx.compose.ui.graphics.vector.ImageVector,
     contentDescription: String?,

@@ -174,6 +174,8 @@ fun AgentSettingsScreen() {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val savedMessage = stringResource(R.string.agent_settings_saved)
+    val policyTitle = stringResource(R.string.agent_policy_title)
+    val domainsTitle = stringResource(R.string.agent_domains_title)
     val testDescription = state.testResult?.let { result ->
         val llm = if (result.llmOk) {
             stringResource(R.string.agent_test_llm_ok)
@@ -324,7 +326,7 @@ fun AgentSettingsScreen() {
                             title = stringResource(R.string.agent_extra_headers),
                             useLabelAsPlaceholder = true,
                             leadingContent = { Icon(Icons.TwoTone.DataObject) },
-                            lineLimits = TextFieldLineLimits.FourLines,
+                            lineLimits = TextFieldLineLimits.MultiLine(minHeightInLines = 3, maxHeightInLines = 6),
                         )
                     }
                     item {
@@ -534,7 +536,7 @@ fun AgentSettingsScreen() {
 
             lazySegmentColumn(
                 items = tools,
-                title = stringResource(R.string.agent_policy_title),
+                title = policyTitle,
                 key = { _, tool -> tool.name },
             ) { _, tool ->
                 val selection = when (tool.name) {
@@ -566,7 +568,7 @@ fun AgentSettingsScreen() {
 
             lazySegmentColumn(
                 items = domains,
-                title = stringResource(R.string.agent_domains_title),
+                title = domainsTitle,
                 key = { _, domain -> domain },
             ) { _, domain ->
                 SettingsSwitchWidget(

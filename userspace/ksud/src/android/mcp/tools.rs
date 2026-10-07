@@ -172,7 +172,10 @@ schema_fn!(sch_prop_name, [s("name", "property name")]);
 schema_fn!(sch_module_install, [s("zip", "module zip path on device")]);
 schema_fn!(
     sch_module_config_get,
-    [s("key", "config key"), so("internal", "internal module name")]
+    [
+        s("key", "config key"),
+        so("internal", "internal module name")
+    ]
 );
 schema_fn!(
     sch_module_config_set,
@@ -184,9 +187,15 @@ schema_fn!(
 );
 schema_fn!(
     sch_module_config_key,
-    [s("key", "config key"), so("internal", "internal module name")]
+    [
+        s("key", "config key"),
+        so("internal", "internal module name")
+    ]
 );
-schema_fn!(sch_module_config_internal, [so("internal", "internal module name")]);
+schema_fn!(
+    sch_module_config_internal,
+    [so("internal", "internal module name")]
+);
 schema_fn!(sch_dynamic_manager_apk, [s("apk", "apk path")]);
 schema_fn!(
     sch_flash_image,
