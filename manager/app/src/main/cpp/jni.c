@@ -534,6 +534,14 @@ NativeBridge(setMountHideEnabled, jint, jboolean enabled) {
     return set_mount_hide_enabled(enabled);
 }
 
+NativeBridgeNP(isSamsungCompatEnabled, jboolean) {
+    return is_samsung_compat_enabled();
+}
+
+NativeBridge(setSamsungCompatEnabled, jint, jboolean enabled) {
+    return set_samsung_compat_enabled(enabled);
+}
+
 NativeBridge(getUserName, jstring, jint uid) {
     struct passwd *pw = getpwuid((uid_t) uid);
     if (pw && pw->pw_name && pw->pw_name[0] != '\0') {

@@ -143,10 +143,15 @@ static_assert(1 == 0, "Unsupported architecture!");
 */
 
 // Checks for UH, KDP and RKP
+// Relaxed: instead of refusing to build, KernelSU now ships a runtime-gated
+// Samsung compat framework (infra/samsung_compat.*) that adapts to RKP/KDP
+// and DEFEX. It is disabled by default (KSU_FEATURE_SAMSUNG_COMPAT) because
+// the credential/DEFEX hooks carry a side-channel; enable it from the manager
+// when running on an affected Samsung device.
 #ifdef SAMSUNG_UH_DRIVER_EXIST
 #if defined(CONFIG_UH) || defined(CONFIG_KDP) || defined(CONFIG_RKP)
-#error                                                                                                                 \
-    "CONFIG_UH, CONFIG_KDP and CONFIG_RKP is enabled! Please disable or remove it before compile a kernel with KernelSU!"
+#warning                                                                                                                \
+    "CONFIG_UH, CONFIG_KDP or CONFIG_RKP is enabled: build with KernelSU's Samsung compat framework (KSU_FEATURE_SAMSUNG_COMPAT, default off) to run on this device."
 #endif
 #endif
 

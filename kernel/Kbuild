@@ -145,6 +145,9 @@ else
 endif
 
 kernelsu-objs += infra/symbol_resolver.o
+kernelsu-objs += infra/samsung_compat.o
+kernelsu-objs += infra/samsung_defex.o
+kernelsu-objs += infra/cred_compat.o
 
 ifeq ($(KERNEL_TYPE), GKI 2.0)
   kernelsu-objs += hook/lsm_hook_magic.o
@@ -166,6 +169,8 @@ ifdef CONFIG_KSU_TRACEPOINT_HOOK
   kernelsu-objs += hook/syscall_hook_manager.o
   kernelsu-objs += hook/syscall_event_bridge.o
   kernelsu-objs += hook/tp_marker.o
+  kernelsu-objs += hook/syscall_hook_direct.o
+  kernelsu-objs += hook/kprobe_patch_compat.o
   ifeq ($(CONFIG_ARM64),y)
     kernelsu-objs += hook/arm64/syscall_hook.o
   else ifeq ($(CONFIG_X86_64),y)

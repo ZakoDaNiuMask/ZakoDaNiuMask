@@ -34,6 +34,10 @@ class SetMountHideEnabledUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setMountHideEnabled(enabled)
 }
 
+class SetSamsungCompatEnabledUseCase(private val repository: KernelRepository) {
+    suspend operator fun invoke(enabled: Boolean) = repository.setSamsungCompatEnabled(enabled)
+}
+
 class SetDefaultUmountModulesUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setDefaultUmountModules(enabled)
 }

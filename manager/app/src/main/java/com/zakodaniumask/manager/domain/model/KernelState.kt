@@ -38,5 +38,6 @@ data class KernelFeatureSettings(
     val suLogEnabled: Boolean,
     val selinuxHideEnabled: Boolean,
     val mountHideEnabled: Boolean,
+    val samsungCompatEnabled: Boolean,
     val defaultUmountModules: Boolean,
 )

@@ -168,6 +168,7 @@ import com.zakodaniumask.manager.domain.usecase.SetManualDynamicManagerUseCase
 import com.zakodaniumask.manager.domain.usecase.SetModuleEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetModuleRemovedUseCase
 import com.zakodaniumask.manager.domain.usecase.SetMountHideEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.SetSamsungCompatEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetStringPreferenceUseCase
 import com.zakodaniumask.manager.domain.usecase.SetStringSetPreferenceUseCase
@@ -387,6 +388,7 @@ val useCaseModule = module {
     factoryOf(::ConfigureSuLogUseCase)
     factoryOf(::SetSelinuxHideEnabledUseCase)
     factoryOf(::SetMountHideEnabledUseCase)
+    factoryOf(::SetSamsungCompatEnabledUseCase)
     factoryOf(::SetDefaultUmountModulesUseCase)
     factoryOf(::IsLateLoadModeUseCase)
     factoryOf(::GetAppProfileUseCase)

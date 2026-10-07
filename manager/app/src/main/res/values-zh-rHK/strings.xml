@@ -487,6 +487,9 @@
     <string name="settings_mount_hide_summary">從隔離進程與應用的 /proc 掛載視圖中過濾模組掛載；與內核卸載和 SuSFS 互補</string>
     <string name="settings_mount_hide_reboot_required">重啟後生效</string>
     <string name="settings_mount_hide_failed">錯誤：%d</string>
+    <string name="settings_samsung_compat">三星兼容（RKP/KDP/DEFEX）</string>
+    <string name="settings_samsung_compat_summary">適配三星 RKP/KDP 憑證保護與 DEFEX。存在側信道，僅在受影響的三星設備上開啟。更改後需重啟。</string>
+    <string name="settings_samsung_compat_applied">三星兼容設置已保存，重啟後生效</string>
     <string name="profile_flags">標籤</string>
     <string name="profile_flags_desc_no_new_privs">禁止透過 KernelSU 從此 Root Profile 環境中進一步提升權限。</string>
     <string name="conflict_with_apatch">偵測到 APatch，所有功能可能無法運作。</string>

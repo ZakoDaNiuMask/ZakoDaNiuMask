@@ -36,6 +36,8 @@
 #include "feature/sucompat.h"
 #include "feature/selinux_hide.h"
 #include "feature/uts_spoof.h"
+#include "infra/samsung_compat.h"
+#include "infra/samsung_defex.h"
 #include "infra/symbol_resolver.h"
 
 #ifdef CONFIG_ARM64
@@ -240,6 +242,9 @@ int __init kernelsu_init(void)
     }
 
     ksu_init_symbol_resolver();
+    ksu_samsung_compat_probe();
+    ksu_samsung_compat_init();
+    ksu_samsung_defex_init();
     if (spoof_release || spoof_version) {
         ksu_spoof_version(spoof_release, spoof_version);
     }
@@ -312,6 +317,8 @@ void __exit kernelsu_exit(void)
 {
     // Phase 1: Stop all hooks first to prevent new callbacks
     ksu_hook_exit();
+    ksu_samsung_defex_exit();
+    ksu_samsung_compat_exit();
     ksu_supercalls_exit();
     if (!ksu_late_loaded)
         ksu_ksud_exit();

@@ -272,6 +272,9 @@ class SettingsPlatformRepository(
             mountHideStatus = runCatching {
                 ksuCliRepository.getFeatureStatus("mount_hide")
             }.getOrDefault(""),
+            samsungCompatStatus = runCatching {
+                ksuCliRepository.getFeatureStatus("samsung_compat")
+            }.getOrDefault(""),
         )
     }
 

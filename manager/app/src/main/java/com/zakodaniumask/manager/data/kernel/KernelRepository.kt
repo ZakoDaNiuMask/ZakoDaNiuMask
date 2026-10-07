@@ -71,6 +71,8 @@ class KernelRepository(
             suLogEnabled = runCatching { Natives.isSuLogEnabled() }.getOrDefault(false),
             selinuxHideEnabled = runCatching { Natives.isSelinuxHideEnabled() }.getOrDefault(false),
             mountHideEnabled = runCatching { Natives.isMountHideEnabled() }.getOrDefault(false),
+            samsungCompatEnabled =
+                runCatching { Natives.isSamsungCompatEnabled() }.getOrDefault(false),
             defaultUmountModules = runCatching { Natives.isDefaultUmountModules() }.getOrDefault(
                 false
             ),
@@ -97,6 +99,12 @@ class KernelRepository(
 
     suspend fun setMountHideEnabled(enabled: Boolean): Int = withContext(Dispatchers.IO) {
         Natives.setMountHideEnabled(enabled).also {
+            ksuCliRepository.execKsud("feature save", true)
+        }
+    }
+
+    suspend fun setSamsungCompatEnabled(enabled: Boolean): Int = withContext(Dispatchers.IO) {
+        Natives.setSamsungCompatEnabled(enabled).also {
             ksuCliRepository.execKsud("feature save", true)
         }
     }

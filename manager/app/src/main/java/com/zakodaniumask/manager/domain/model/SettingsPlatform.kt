@@ -41,6 +41,7 @@ data class PlatformFeatureStatus(
     val sulogStatus: String = "",
     val selinuxHideStatus: String = "",
     val mountHideStatus: String = "",
+    val samsungCompatStatus: String = "",
 )
 
 sealed interface AppearanceSetting {

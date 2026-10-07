@@ -75,6 +75,11 @@ int set_mount_hide_enabled(bool enabled);
 
 bool is_mount_hide_enabled();
 
+// Samsung compat
+int set_samsung_compat_enabled(bool enabled);
+
+bool is_samsung_compat_enabled();
+
 bool get_managers_list(struct ksu_get_managers_cmd **out_cmd);
 bool get_allow_list(struct ksu_new_get_allow_list_cmd *);
 

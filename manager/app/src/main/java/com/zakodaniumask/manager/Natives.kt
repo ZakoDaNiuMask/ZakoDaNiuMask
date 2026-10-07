@@ -166,6 +166,16 @@ object Natives {
     external fun isMountHideEnabled(): Boolean
     external fun setMountHideEnabled(enabled: Boolean): Int
 
+    /**
+     * Samsung compat (RKP/KDP cred path + DEFEX neutralization). Carries a
+     * side channel; enable only on affected Samsung devices.
+     *  0: disabled (default)
+     *  1: enabled
+     *  negative : error
+     */
+    external fun isSamsungCompatEnabled(): Boolean
+    external fun setSamsungCompatEnabled(enabled: Boolean): Int
+
     external fun isKPMEnabled(): Boolean
     external fun getHookType(): String
 

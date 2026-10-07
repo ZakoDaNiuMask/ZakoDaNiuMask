@@ -278,6 +278,25 @@ bool is_mount_hide_enabled() {
     return value != 0;
 }
 
+int set_samsung_compat_enabled(bool enabled) {
+    if (!set_feature(KSU_FEATURE_SAMSUNG_COMPAT, enabled ? 1 : 0)) {
+        return -errno;
+    }
+    return 0;
+}
+
+bool is_samsung_compat_enabled() {
+    uint64_t value = 0;
+    bool supported = false;
+    if (!get_feature(KSU_FEATURE_SAMSUNG_COMPAT, &value, &supported)) {
+        return false;
+    }
+    if (!supported) {
+        return false;
+    }
+    return value != 0;
+}
+
 bool is_sulog_enabled() {
     uint64_t value = 0;
     bool supported = false;

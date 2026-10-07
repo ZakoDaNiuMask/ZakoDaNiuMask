@@ -8,15 +8,12 @@
 #include <asm/cacheflush.h>
 #include "infra/symbol_resolver.h"
 #include "../patch_memory.h"
+#include "../kprobe_patch_compat.h"
 #include "arch.h"
 #include "klog.h" // IWYU pragma: keep
 
 sys_call_ptr_t *ksu_syscall_table = NULL;
 int ksu_dispatcher_nr = -1;
-
-#ifndef __NR_syscalls
-#define __NR_syscalls (__NR_syscall_max + 1)
-#endif
 
 // Hook registration table — read with READ_ONCE from tracepoint/dispatcher
 // context, written with WRITE_ONCE from init/exit context.
@@ -303,6 +300,15 @@ void __init __nocfi ksu_syscall_hook_init(void)
 
     if (!ksu_syscall_table)
         return;
+
+    if (ksu_kprobe_text_patch_unsafe()) {
+        // See hook/arm64/syscall_hook.c: the dispatcher's tracepoint
+        // registration is the unsafe part on Samsung RKP/KDP/DEFEX boots;
+        // leave ksu_dispatcher_nr unset for the direct kprobe fallback.
+        pr_info(
+            "kprobe-based syscall dispatch unsafe on this boot; leaving ksu_dispatcher_nr unset for the direct fallback\n");
+        return;
+    }
 
 #ifdef CONFIG_KSU_X86_PATCH_SYSCALL_DISPATCHER
     patch_abs_jump("x64_sys_call", &x64_sys_call_patch_addr, my_x64_sys_call, x64_sys_call_patch_orig_insn);

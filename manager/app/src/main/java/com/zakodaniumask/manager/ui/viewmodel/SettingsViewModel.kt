@@ -16,6 +16,7 @@ import com.zakodaniumask.manager.domain.usecase.LoadSettingsPlatformUseCase
 import com.zakodaniumask.manager.domain.usecase.SetDefaultUmountModulesUseCase
 import com.zakodaniumask.manager.domain.usecase.SetKernelUmountEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetMountHideEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.SetSamsungCompatEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSuEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.UpdateAppearanceUseCase
@@ -99,6 +100,8 @@ data class SettingsUiState(
     val isSelinuxHideEnabled: Boolean = false,
     val mountHideStatus: String = "",
     val isMountHideEnabled: Boolean = false,
+    val samsungCompatStatus: String = "",
+    val isSamsungCompatEnabled: Boolean = false,
     val defaultUmountModules: Boolean = false,
     val useBuiltinMonoFont: Boolean = false,
     val useSoftReboot: Boolean = false,
@@ -144,6 +147,7 @@ sealed interface SettingsUiAction {
     data class SetAutoJailbreak(val enabled: Boolean) : SettingsUiAction
     data class SetSelinuxHide(val enabled: Boolean) : SettingsUiAction
     data class SetMountHide(val enabled: Boolean) : SettingsUiAction
+    data class SetSamsungCompat(val enabled: Boolean) : SettingsUiAction
     data class SetAdbRoot(val enabled: Boolean) : SettingsUiAction
     data class SetSuLog(val enabled: Boolean) : SettingsUiAction
     data class SetDefaultUmountModules(val enabled: Boolean) : SettingsUiAction
@@ -173,6 +177,7 @@ class SettingsViewModel(
     private val setSuLogEnabled: ConfigureSuLogUseCase,
     private val setSelinuxHideEnabled: SetSelinuxHideEnabledUseCase,
     private val setMountHideEnabled: SetMountHideEnabledUseCase,
+    private val setSamsungCompatEnabled: SetSamsungCompatEnabledUseCase,
     private val setDefaultUmountModules: SetDefaultUmountModulesUseCase,
 ) : ViewModel() {
     private val mutableState = MutableStateFlow(SettingsUiState())
@@ -215,6 +220,8 @@ fun initialize() {
                     isSelinuxHideEnabled = features.selinuxHideEnabled,
                     mountHideStatus = platform.mountHideStatus,
                     isMountHideEnabled = features.mountHideEnabled,
+                    samsungCompatStatus = platform.samsungCompatStatus,
+                    isSamsungCompatEnabled = features.samsungCompatEnabled,
                     defaultUmountModules = features.defaultUmountModules,
                 )
             }
@@ -431,6 +438,22 @@ fun initialize() {
         }
     }
 
+    fun handleSamsungCompatChange(checked: Boolean) {
+        viewModelScope.launch {
+            val status = setSamsungCompatEnabled(checked)
+            mutableState.update { it.copy(isSamsungCompatEnabled = checked) }
+            when (status) {
+                0 -> mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_samsung_compat_applied)
+                )
+
+                else -> mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_mount_hide_failed, status)
+                )
+            }
+        }
+    }
+
     fun handleDefaultUmountModulesChange(checked: Boolean) {
         viewModelScope.launch {
             if (setDefaultUmountModules(checked)) {
@@ -482,6 +505,7 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetAutoJailbreak -> handleAutoJailbreakChange(action.enabled)
             is SettingsUiAction.SetSelinuxHide -> handleSelinuxHideChange(action.enabled)
             is SettingsUiAction.SetMountHide -> handleMountHideChange(action.enabled)
+            is SettingsUiAction.SetSamsungCompat -> handleSamsungCompatChange(action.enabled)
             is SettingsUiAction.SetAdbRoot -> handleAdbRootChange(action.enabled)
             is SettingsUiAction.SetSuLog -> handleSuLogChange(action.enabled)
             is SettingsUiAction.SetDefaultUmountModules ->

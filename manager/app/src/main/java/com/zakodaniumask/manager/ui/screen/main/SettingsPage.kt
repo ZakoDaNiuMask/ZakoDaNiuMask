@@ -40,6 +40,7 @@ import androidx.compose.material.icons.twotone.FolderDelete
 import androidx.compose.material.icons.twotone.FolderOff
 import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material.icons.twotone.Memory
+import androidx.compose.material.icons.twotone.PhonelinkLock
 import androidx.compose.material.icons.twotone.Policy
 import androidx.compose.material.icons.twotone.RemoveCircle
 import androidx.compose.material.icons.twotone.RemoveModerator
@@ -371,6 +372,28 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { checked ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetMountHide(
+                                                checked
+                                            )
+                                        )
+                                    },
+                                )
+                            }
+
+                            item {
+                                val samsungCompatSummary = when (uiState.samsungCompatStatus) {
+                                    "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                    "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                    else -> stringResource(id = R.string.settings_samsung_compat_summary)
+                                }
+                                SettingsSwitchWidget(
+                                    icon = Icons.TwoTone.PhonelinkLock,
+                                    title = stringResource(id = R.string.settings_samsung_compat),
+                                    description = samsungCompatSummary,
+                                    enabled = uiState.samsungCompatStatus == "supported",
+                                    checked = uiState.isSamsungCompatEnabled,
+                                    onCheckedChange = { checked ->
+                                        settingsViewModel.dispatch(
+                                            SettingsUiAction.SetSamsungCompat(
                                                 checked
                                             )
                                         )

@@ -27,6 +27,7 @@ pub enum FeatureId {
     AdbRoot = 3,
     SelinuxHide = 4,
     MountHide = 16,
+    SamsungCompat = 17,
 }
 
 impl FeatureId {
@@ -38,6 +39,7 @@ impl FeatureId {
             3 => Some(Self::AdbRoot),
             4 => Some(Self::SelinuxHide),
             16 => Some(Self::MountHide),
+            17 => Some(Self::SamsungCompat),
             _ => None,
         }
     }
@@ -50,6 +52,7 @@ impl FeatureId {
             Self::AdbRoot => "adb_root",
             Self::SelinuxHide => "selinux_hide",
             Self::MountHide => "mount_hide",
+            Self::SamsungCompat => "samsung_compat",
         }
     }
 
@@ -71,6 +74,9 @@ impl FeatureId {
             Self::MountHide => {
                 "Mount Hide - filter module mounts from /proc mount views of isolated and app processes"
             }
+            Self::SamsungCompat => {
+                "Samsung Compat - RKP/KDP credential path and DEFEX neutralization (side-channel; enable only on affected Samsung devices)"
+            }
         }
     }
 }
@@ -83,6 +89,7 @@ fn parse_feature_id(name: &str) -> Result<FeatureId> {
         "adb_root" | "3" => Ok(FeatureId::AdbRoot),
         "selinux_hide" | "4" => Ok(FeatureId::SelinuxHide),
         "mount_hide" | "16" => Ok(FeatureId::MountHide),
+        "samsung_compat" | "17" => Ok(FeatureId::SamsungCompat),
         _ => bail!("Unknown feature: {name}"),
     }
 }
@@ -330,6 +337,7 @@ pub fn list_features() {
         FeatureId::AdbRoot,
         FeatureId::SelinuxHide,
         FeatureId::MountHide,
+        FeatureId::SamsungCompat,
     ];
 
     for feature_id in &all_features {
@@ -394,6 +402,7 @@ pub fn save_config() -> Result<()> {
         FeatureId::AdbRoot,
         FeatureId::SelinuxHide,
         FeatureId::MountHide,
+        FeatureId::SamsungCompat,
     ];
 
     for feature_id in &all_features {

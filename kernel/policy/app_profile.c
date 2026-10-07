@@ -31,6 +31,7 @@
 #include "klog.h" // IWYU pragma: keep
 #include "selinux/selinux.h"
 #include "infra/su_mount_ns.h"
+#include "infra/cred_compat.h"
 #ifdef CONFIG_KSU_TRACEPOINT_HOOK
 #include "hook/tp_marker.h"
 #endif
@@ -244,7 +245,7 @@ int escape_with_root_profile(void)
     setup_groups(profile, cred);
     setup_selinux(profile->selinux_domain, cred);
 
-    commit_creds(cred);
+    ksu_commit_creds(cred);
 
     disable_seccomp();
 
@@ -278,7 +279,7 @@ void escape_to_root_for_init(void)
     }
 
     setup_selinux(KERNEL_SU_CONTEXT, cred);
-    commit_creds(cred);
+    ksu_commit_creds(cred);
 }
 
 void __init ksu_app_profile_init(void)
