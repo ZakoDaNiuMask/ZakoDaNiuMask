@@ -7,12 +7,19 @@ import com.zakodaniumask.manager.data.agent.AgentAuditEntry
 import com.zakodaniumask.manager.data.agent.AgentMode
 import com.zakodaniumask.manager.data.agent.AgentSettings
 import com.zakodaniumask.manager.data.agent.AgentMcpPolicyRepository
+import com.zakodaniumask.manager.data.agent.AgentSessionMeta
+import com.zakodaniumask.manager.data.agent.AgentSessionStore
 import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
+import com.zakodaniumask.manager.data.agent.InterruptedTailShape
+import com.zakodaniumask.manager.data.agent.InterruptedTailDetector
+import com.zakodaniumask.manager.data.agent.LoopVerdict
+import com.zakodaniumask.manager.data.agent.ToolLoopDetector
 import com.zakodaniumask.manager.data.agent.AgentToolRouter
 import com.zakodaniumask.manager.data.agent.llm.LlmHttpConfig
 import com.zakodaniumask.manager.data.agent.llm.LlmMessage
 import com.zakodaniumask.manager.data.agent.llm.LlmTool
 import com.zakodaniumask.manager.data.agent.llm.LlmToolCall
+import com.zakodaniumask.manager.data.agent.llm.ToolCallRepair
 import com.zakodaniumask.manager.data.agent.llm.providerFor
 import com.zakodaniumask.manager.data.agent.mcp.AgentTool
 import com.zakodaniumask.manager.data.agent.mcp.ToolTier
@@ -85,6 +92,7 @@ class AgentViewModel(
     private val router: AgentToolRouter,
     private val settingsRepository: AgentSettingsRepository,
     private val policyRepository: AgentMcpPolicyRepository,
+    private val sessionStore: AgentSessionStore,
 ) : ViewModel() {
     private val ids = AtomicLong(0)
     private val mutableState = MutableStateFlow(AgentUiState())
@@ -96,6 +104,8 @@ class AgentViewModel(
 
     private val llmMessages = mutableListOf<LlmMessage>()
     private var cachedTools: List<AgentTool> = emptyList()
+    private val loopDetector = ToolLoopDetector()
+    private var currentSessionId: String? = null
 
     fun settings(): AgentSettings = settingsRepository.load()
 
@@ -178,9 +188,56 @@ class AgentViewModel(
     }
 
     fun clearConversation() {
+        currentSessionId = null
         llmMessages.clear()
         mutableState.update { it.copy(items = emptyList(), error = null) }
     }
+
+    suspend fun listSessions(): List<AgentSessionMeta> = sessionStore.list()
+
+    suspend fun deleteSession(id: String) {
+        sessionStore.delete(id)
+        if (currentSessionId == id) {
+            currentSessionId = null
+            llmMessages.clear()
+            mutableState.update { it.copy(items = emptyList(), error = null) }
+        }
+    }
+
+    suspend fun openSession(id: String) {
+        currentSessionId = id
+        llmMessages.clear()
+        llmMessages += sessionStore.loadMessages(id)
+        mutableState.update { it.copy(items = rebuildItems(), error = null) }
+    }
+
+    private suspend fun ensureSession(firstInput: String) {
+        if (currentSessionId != null) return
+        val meta = sessionStore.create(firstInput.take(40).ifBlank { "New chat" })
+        currentSessionId = meta.id
+    }
+
+    private suspend fun persist() {
+        currentSessionId?.let { sessionStore.saveMessages(it, llmMessages) }
+    }
+
+    private fun rebuildItems(): List<AgentChatItem> = buildList {
+        llmMessages.forEach { message ->
+            when (message.role) {
+                "user" -> if (message.content.isNotBlank()) {
+                    add(AgentChatItem.User(nextId(), message.content))
+                }
+
+                "assistant" -> if (message.content.isNotBlank()) {
+                    add(AgentChatItem.Assistant(nextId(), message.content))
+                }
+            }
+        }
+    }
+
+    /** Whether the last conversation turn looks like it stopped early. */
+    fun interruptedTail(): InterruptedTailShape =
+        InterruptedTailDetector.classify(llmMessages.lastOrNull())
 
     fun resolveConfirm(approved: Boolean) {
         confirmDeferred?.complete(approved)
@@ -197,10 +254,12 @@ class AgentViewModel(
         viewModelScope.launch {
             mutableState.update { it.copy(isRunning = true, error = null) }
             try {
+                ensureSession(input)
                 runLoop()
             } catch (t: Throwable) {
                 mutableState.update { it.copy(error = t.message ?: t.javaClass.simpleName) }
             } finally {
+                persist()
                 mutableState.update { it.copy(isRunning = false) }
             }
         }
@@ -219,6 +278,7 @@ class AgentViewModel(
         }
 
         withContext(Dispatchers.IO) { ensureTools() }
+        loopDetector.reset()
         val provider = providerFor(settings.provider)
         val system = settings.systemPrompt.ifBlank { DEFAULT_SYSTEM_PROMPT }
         val tools = cachedTools
@@ -292,6 +352,56 @@ class AgentViewModel(
         val tool = cachedTools.firstOrNull { it.name == call.name }
         val arguments = runCatching { JSONObject(call.arguments) }.getOrElse { JSONObject() }
         val itemId = nextId()
+
+        if (tool != null) {
+            val repairs = runCatching {
+                ToolCallRepair.repair(
+                    call.name,
+                    arguments,
+                    null,
+                    cachedTools.map { LlmTool(it.name, it.description, it.inputSchema) },
+                )
+            }.getOrDefault(emptyList())
+            if (repairs.isNotEmpty()) {
+                append(
+                    AgentChatItem.Info(nextId(), "repaired tool arguments: ${repairs.joinToString()}")
+                )
+            }
+            when (loopDetector.check(call.name, arguments.toString())) {
+                LoopVerdict.CIRCUIT_BREAK -> {
+                    append(
+                        AgentChatItem.ToolCall(
+                            itemId, tool.name, arguments.toString(),
+                            AgentToolStatus.DENIED, "circuit breaker: too many tool calls",
+                        )
+                    )
+                    llmMessages += LlmMessage(
+                        "tool",
+                        "A circuit breaker stopped this tool call (too many calls). Summarize and stop.",
+                        toolCallId = call.id,
+                    )
+                    return
+                }
+
+                LoopVerdict.REPEAT -> {
+                    append(
+                        AgentChatItem.ToolCall(
+                            itemId, tool.name, arguments.toString(),
+                            AgentToolStatus.DENIED, "repeated identical call",
+                        )
+                    )
+                    llmMessages += LlmMessage(
+                        "tool",
+                        "This exact ${tool.name} call was already repeated; it is being blocked. " +
+                            "Change the approach or stop.",
+                        toolCallId = call.id,
+                    )
+                    return
+                }
+
+                LoopVerdict.OK -> Unit
+            }
+        }
 
         if (tool == null) {
             append(

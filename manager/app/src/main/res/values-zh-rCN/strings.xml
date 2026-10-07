@@ -156,6 +156,10 @@
     <string name="agent_max_iterations">最大工具轮数</string>
     <string name="agent_system_prompt">系统提示词（可选）</string>
     <string name="agent_audit_empty">暂无工具调用记录。</string>
+    <string name="agent_running">助手正在处理…</string>
+    <string name="agent_sessions">对话</string>
+    <string name="agent_new_chat">新建对话</string>
+    <string name="agent_sessions_empty">暂无已保存的对话。</string>
     <string name="navigation_layout">导航栏</string>
     <string name="navigation_layout_summary">选择底部导航显示的页面及其顺序</string>
     <string name="reboot_to_apply">重启生效</string>

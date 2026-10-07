@@ -100,6 +100,11 @@ private val PORTED_COMPONENTS = listOf(
         website = "https://github.com/JingMatrix/KernelSU",
     ),
     PortedComponent(
+        name = "OpenMinis",
+        licenseName = "GPL-3.0",
+        website = "https://github.com/OpenMinis/OpenMinis",
+    ),
+    PortedComponent(
         name = "FolkPatch",
         licenseName = "GPL-3.0",
         website = "https://github.com/LyraVoid/FolkPatch",

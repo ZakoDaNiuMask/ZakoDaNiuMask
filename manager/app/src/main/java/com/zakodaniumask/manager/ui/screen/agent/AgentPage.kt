@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.Send
 import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.History
+import androidx.compose.material.icons.twotone.Forum
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,16 +45,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.agent.AgentRunService
+import com.zakodaniumask.manager.data.agent.AgentSessionMeta
 import com.zakodaniumask.manager.data.agent.mcp.ToolTier
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Route
@@ -64,6 +70,7 @@ import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.viewmodel.AgentChatItem
 import com.zakodaniumask.manager.ui.viewmodel.AgentToolStatus
 import com.zakodaniumask.manager.ui.viewmodel.AgentViewModel
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -78,6 +85,17 @@ fun AgentPage(bottomPadding: Dp = 0.dp) {
     val cardConfig: CardConfig = koinInject()
     val listState = rememberLazyListState()
     var input by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var showSessions by remember { mutableStateOf(false) }
+    var sessions by remember { mutableStateOf<List<AgentSessionMeta>>(emptyList()) }
+
+    LaunchedEffect(state.isRunning) {
+        if (state.isRunning) AgentRunService.start(context) else AgentRunService.stop(context)
+    }
+    LaunchedEffect(showSessions) {
+        if (showSessions) sessions = viewModel.listSessions()
+    }
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -126,6 +144,44 @@ fun AgentPage(bottomPadding: Dp = 0.dp) {
         )
     }
 
+    if (showSessions) {
+        AlertDialog(
+            onDismissRequest = { showSessions = false },
+            title = { Text(stringResource(R.string.agent_sessions)) },
+            text = {
+                Column {
+                    TextButton(onClick = {
+                        viewModel.clearConversation()
+                        showSessions = false
+                    }) { Text(stringResource(R.string.agent_new_chat)) }
+                    if (sessions.isEmpty()) {
+                        Text(stringResource(R.string.agent_sessions_empty))
+                    } else {
+                        sessions.forEach { meta ->
+                            Text(
+                                text = meta.title.ifBlank { meta.id },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        scope.launch {
+                                            viewModel.openSession(meta.id)
+                                            showSessions = false
+                                        }
+                                    }
+                                    .padding(vertical = 12.dp),
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showSessions = false }) {
+                    Text(stringResource(R.string.agent_confirm_deny))
+                }
+            },
+        )
+    }
+
     Scaffold(
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
         modifier = Modifier
@@ -138,6 +194,9 @@ fun AgentPage(bottomPadding: Dp = 0.dp) {
                 modifier = Modifier.blurEffect(),
                 title = { Text(stringResource(R.string.agent)) },
                 actions = {
+                    IconButton(onClick = { showSessions = true }) {
+                        Icon(Icons.TwoTone.Forum, contentDescription = null)
+                    }
                     IconButton(onClick = { navigator.push(Route.AgentAudit) }) {
                         Icon(Icons.TwoTone.History, contentDescription = null)
                     }
