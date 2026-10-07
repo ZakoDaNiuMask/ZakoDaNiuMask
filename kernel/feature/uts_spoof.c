@@ -5,8 +5,8 @@
 #include "infra/symbol_resolver.h"
 #include "klog.h"
 
-static void do_spoof_version(struct rw_semaphore *sem, struct uts_namespace *ns,
-                             const char *release, const char *version)
+static void do_spoof_version(struct rw_semaphore *sem, struct uts_namespace *ns, const char *release,
+                             const char *version)
 {
     if (sem) {
         down_write(sem);

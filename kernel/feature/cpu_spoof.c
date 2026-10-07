@@ -119,7 +119,8 @@ int ksu_set_spoof_cpu(const struct ksu_set_spoof_cpu_cmd *cmd)
                 part != QCOM_CPU_PART_KRYO_4XX_GOLD) {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0)
                 /* Resolve 'vdso_time_data' or 'vdso_data' double pointer and align clock mode */
-                struct vdso_time_data **vdso_time_data_ptr = (struct vdso_time_data **)find_kernel_symbol_exact("vdso_time_data");
+                struct vdso_time_data **vdso_time_data_ptr =
+                    (struct vdso_time_data **)find_kernel_symbol_exact("vdso_time_data");
                 if (!vdso_time_data_ptr) {
                     vdso_time_data_ptr = (struct vdso_time_data **)find_kernel_symbol_exact("_vdso_time_data");
                 }

@@ -112,7 +112,7 @@ class SpoofRepository(
             if (hwcapHex.isNotBlank()) append(" --hwcap ${shellQuote(hwcapHex)}")
             if (hwcap2Hex.isNotBlank()) append(" --hwcap2 ${shellQuote(hwcap2Hex)}")
         }
-        ShellUtils.fastCmdResult(ksuCliRepository.getRootShell(), cmd).isSuccess
+        ShellUtils.fastCmdResult(ksuCliRepository.getRootShell(), cmd)
     }
 
     suspend fun spoofKernelUname(release: String, version: String): Boolean =
@@ -122,7 +122,7 @@ class SpoofRepository(
                 if (release.isNotBlank()) append(" --release ${shellQuote(release)}")
                 if (version.isNotBlank()) append(" --version ${shellQuote(version)}")
             }
-            ShellUtils.fastCmdResult(ksuCliRepository.getRootShell(), cmd).isSuccess
+            ShellUtils.fastCmdResult(ksuCliRepository.getRootShell(), cmd)
         }
 
     suspend fun isSelinuxPermissive(): Boolean = withContext(Dispatchers.IO) {
