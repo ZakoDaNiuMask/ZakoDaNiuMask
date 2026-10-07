@@ -82,27 +82,23 @@ pub fn run(
         } else {
             String::new()
         };
-        if let Some(release) = spoof_release {
-            if !release.is_empty() {
-                if !params.is_empty() {
-                    params.push(' ');
-                }
-                params.push_str(&format!(
-                    "spoof_release=\"{}\"",
-                    escape_module_param(release)
-                ));
+        if let Some(release) = spoof_release.filter(|r| !r.is_empty()) {
+            if !params.is_empty() {
+                params.push(' ');
             }
+            params.push_str(&format!(
+                "spoof_release=\"{}\"",
+                escape_module_param(release)
+            ));
         }
-        if let Some(version) = spoof_version {
-            if !version.is_empty() {
-                if !params.is_empty() {
-                    params.push(' ');
-                }
-                params.push_str(&format!(
-                    "spoof_version=\"{}\"",
-                    escape_module_param(version)
-                ));
+        if let Some(version) = spoof_version.filter(|v| !v.is_empty()) {
+            if !params.is_empty() {
+                params.push(' ');
             }
+            params.push_str(&format!(
+                "spoof_version=\"{}\"",
+                escape_module_param(version)
+            ));
         }
         let params = std::ffi::CString::new(params)?;
         ksuinit::load_module(&ko_data, &params).context("Failed to load kernelsu.ko")?;
