@@ -85,6 +85,7 @@ class OpenAiCompatibleProvider : LlmProvider {
         config: LlmHttpConfig,
         request: LlmRequest,
         onDelta: (String) -> Unit,
+        onThinking: (String) -> Unit,
     ): LlmResponse = withContext(Dispatchers.IO) {
         val base = config.endpoint.ifBlank { "https://api.openai.com/v1" }.trimEnd('/')
         val url = resolveUrl(base, config.apiPath, "/chat/completions")
@@ -125,6 +126,9 @@ class OpenAiCompatibleProvider : LlmProvider {
                         text.append(content)
                         onDelta(content)
                     }
+                    val reasoning = delta.optString("reasoning_content", "")
+                        .ifEmpty { delta.optString("reasoning", "") }
+                    if (reasoning.isNotEmpty()) onThinking(reasoning)
                     val toolCalls = delta.optJSONArray("tool_calls") ?: continue
                     for (i in 0 until toolCalls.length()) {
                         val tc = toolCalls.optJSONObject(i) ?: continue
@@ -238,6 +242,7 @@ class AnthropicProvider : LlmProvider {
         config: LlmHttpConfig,
         request: LlmRequest,
         onDelta: (String) -> Unit,
+        onThinking: (String) -> Unit,
     ): LlmResponse = withContext(Dispatchers.IO) {
         val base = config.endpoint.ifBlank { "https://api.anthropic.com" }.trimEnd('/')
         val url = resolveUrl(base, config.apiPath, "/v1/messages")
@@ -293,6 +298,11 @@ class AnthropicProvider : LlmProvider {
                                         text.append(chunk)
                                         onDelta(chunk)
                                     }
+                                }
+
+                                "thinking_delta" -> {
+                                    val chunk = delta.optString("thinking", "")
+                                    if (chunk.isNotEmpty()) onThinking(chunk)
                                 }
 
                                 "input_json_delta" -> {
@@ -426,6 +436,7 @@ class GeminiProvider : LlmProvider {
         config: LlmHttpConfig,
         request: LlmRequest,
         onDelta: (String) -> Unit,
+        onThinking: (String) -> Unit,
     ): LlmResponse = withContext(Dispatchers.IO) {
         val base = config.endpoint.ifBlank { "https://generativelanguage.googleapis.com" }.trimEnd('/')
         val defaultPath = "/v1beta/models/${config.model}:generateContent"
@@ -515,7 +526,9 @@ class GeminiProvider : LlmProvider {
         for (i in 0 until parts.length()) {
             val part = parts.optJSONObject(i) ?: continue
             val chunk = part.optString("text", "")
-            if (chunk.isNotEmpty()) text.append(chunk)
+            if (chunk.isNotEmpty()) {
+                if (part.optBoolean("thought", false)) onThinking(chunk) else text.append(chunk)
+            }
             val call = part.optJSONObject("functionCall")
             if (call != null) {
                 toolCalls.add(

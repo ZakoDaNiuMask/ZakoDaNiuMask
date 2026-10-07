@@ -108,6 +108,7 @@
     <string name="agent_audit">工具呼叫記錄</string>
     <string name="agent_empty">讓助手檢查或管理本機。</string>
     <string name="agent_thinking">處理中…</string>
+    <string name="agent_thinking_stream">思考過程</string>
     <string name="agent_input_hint">向助手傳送訊息</string>
     <string name="agent_confirm_title">確認工具呼叫</string>
     <string name="agent_confirm_message">執行 %1$s（%2$s）？</string>

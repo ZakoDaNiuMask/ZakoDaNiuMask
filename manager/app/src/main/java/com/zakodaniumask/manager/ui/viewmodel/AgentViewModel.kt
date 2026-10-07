@@ -44,6 +44,7 @@ sealed interface AgentChatItem {
     data class User(override val id: Long, val text: String) : AgentChatItem
     data class Assistant(override val id: Long, val text: String) : AgentChatItem
     data class Info(override val id: Long, val text: String) : AgentChatItem
+    data class Thinking(override val id: Long, val text: String) : AgentChatItem
     data class ToolCall(
         override val id: Long,
         val tool: String,
@@ -290,6 +291,8 @@ class AgentViewModel(
         while (iteration++ < settings.maxIterations) {
             var assistantId: Long? = null
             val streamed = StringBuilder()
+            var thinkingId: Long? = null
+            val thinking = StringBuilder()
             val httpConfig = LlmHttpConfig(
                 endpoint = settings.endpoint,
                 apiKey = settings.apiKey,
@@ -318,6 +321,17 @@ class AgentViewModel(
                             append(AgentChatItem.Assistant(id, streamed.toString()))
                         } else {
                             updateAssistantText(current, streamed.toString())
+                        }
+                    },
+                    onThinking = { chunk ->
+                        thinking.append(chunk)
+                        val current = thinkingId
+                        if (current == null) {
+                            val id = nextId()
+                            thinkingId = id
+                            append(AgentChatItem.Thinking(id, thinking.toString()))
+                        } else {
+                            updateThinking(current, thinking.toString())
                         }
                     },
                 )
@@ -534,6 +548,20 @@ class AgentViewModel(
             current.copy(
                 items = current.items.map { item ->
                     if (item is AgentChatItem.Assistant && item.id == id) {
+                        item.copy(text = text)
+                    } else {
+                        item
+                    }
+                }
+            )
+        }
+    }
+
+    private fun updateThinking(id: Long, text: String) {
+        mutableState.update { current ->
+            current.copy(
+                items = current.items.map { item ->
+                    if (item is AgentChatItem.Thinking && item.id == id) {
                         item.copy(text = text)
                     } else {
                         item

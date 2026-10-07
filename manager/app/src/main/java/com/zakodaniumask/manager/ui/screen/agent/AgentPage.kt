@@ -325,6 +325,8 @@ private fun AgentItemRow(item: AgentChatItem) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
+        is AgentChatItem.Thinking -> ThinkingBubble(item.text)
+
         is AgentChatItem.ToolCall -> {
             val color = when (item.status) {
                 AgentToolStatus.ERROR, AgentToolStatus.DENIED -> MaterialTheme.colorScheme.errorContainer
@@ -355,6 +357,36 @@ private fun AgentItemRow(item: AgentChatItem) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+@Composable
+private fun ThinkingBubble(text: String) {
+    var expanded by rememberSaveable { mutableStateOf(true) }
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded },
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = (if (expanded) "\u25be " else "\u25b8 ") +
+                    stringResource(R.string.agent_thinking_stream),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (expanded) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }

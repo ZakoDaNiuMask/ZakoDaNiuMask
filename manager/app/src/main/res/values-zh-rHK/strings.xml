@@ -499,6 +499,7 @@
     <string name="agent_audit">工具調用記錄</string>
     <string name="agent_empty">讓助手檢查或管理本機。</string>
     <string name="agent_thinking">處理中…</string>
+    <string name="agent_thinking_stream">思考過程</string>
     <string name="agent_input_hint">向助手發送消息</string>
     <string name="agent_confirm_title">確認工具調用</string>
     <string name="agent_confirm_message">執行 %1$s（%2$s）？</string>

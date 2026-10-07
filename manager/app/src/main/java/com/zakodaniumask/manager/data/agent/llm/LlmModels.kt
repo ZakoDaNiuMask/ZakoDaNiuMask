@@ -84,5 +84,6 @@ interface LlmProvider {
         config: LlmHttpConfig,
         request: LlmRequest,
         onDelta: (String) -> Unit,
+        onThinking: (String) -> Unit = {},
     ): LlmResponse
 }
