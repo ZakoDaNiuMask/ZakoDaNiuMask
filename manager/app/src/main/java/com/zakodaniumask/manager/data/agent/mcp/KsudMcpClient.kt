@@ -40,38 +40,92 @@ class KsudMcpProcess(
     val isRunning: Boolean
         get() = process?.isAlive == true
 
-    /** Start the server; returns false if the root shell or ksud cannot start. */
+    /** Start the server; returns false if no root entry point worked. */
     fun start(): Boolean {
         if (isRunning) return true
         val ksud = ksuCliRepository.getKsuDaemonPath()
+        // Preferred: the ksud-provided root shell shebang (`ksud debug su`),
+        // then exec ksud mcp so it replaces the shell. Fallbacks cover images
+        // where the manager's root entry point differs.
+        val launches = listOf(
+            Launch(
+                command = listOf(ksud, "debug", "su"),
+                prelude = listOf("echo $READY_MARKER", "exec ${shellQuote(ksud)} mcp"),
+                expectMarker = true,
+            ),
+            Launch(
+                command = listOf("su", "-c", "exec ${shellQuote(ksud)} mcp"),
+                prelude = emptyList(),
+                expectMarker = false,
+            ),
+            Launch(
+                command = listOf("su", "0", "exec ${shellQuote(ksud)} mcp"),
+                prelude = emptyList(),
+                expectMarker = false,
+            ),
+        )
+        for (launch in launches) {
+            if (tryLaunch(launch)) return true
+        }
+        return false
+    }
+
+    private fun tryLaunch(launch: Launch): Boolean {
         val proc = try {
-            ProcessBuilder(ksud, "debug", "su")
+            ProcessBuilder(launch.command)
                 .redirectErrorStream(false)
                 .start()
-        } catch (t: Throwable) {
+        } catch (_: Throwable) {
             return false
         }
         process = proc
         val out = BufferedWriter(OutputStreamWriter(proc.outputStream))
         val input = BufferedReader(InputStreamReader(proc.inputStream))
-        out.write("echo $READY_MARKER\n")
-        out.write("exec ${shellQuote(ksud)} mcp\n")
-        out.flush()
-
-        // Skip shell noise until the marker, then hand the stream to the client.
-        val deadline = System.currentTimeMillis() + 5_000
-        while (System.currentTimeMillis() < deadline) {
-            val line = try {
-                input.readLine()
-            } catch (t: Throwable) {
-                null
-            } ?: return false
-            if (line.contains(READY_MARKER)) break
+        try {
+            launch.prelude.forEach {
+                out.write(it)
+                out.write("\n")
+            }
+            if (launch.prelude.isNotEmpty()) out.flush()
+        } catch (_: Throwable) {
+            proc.destroy()
+            process = null
+            return false
+        }
+        if (launch.expectMarker) {
+            val deadline = System.currentTimeMillis() + 5_000
+            var found = false
+            while (System.currentTimeMillis() < deadline) {
+                val line = try {
+                    input.readLine()
+                } catch (_: Throwable) {
+                    null
+                } ?: break
+                if (line.contains(READY_MARKER)) {
+                    found = true
+                    break
+                }
+            }
+            if (!found) {
+                proc.destroy()
+                process = null
+                return false
+            }
+        }
+        if (!proc.isAlive) {
+            process = null
+            return false
         }
         reader = input
         writer = out
         return true
     }
+
+    private data class Launch(
+        val command: List<String>,
+        val prelude: List<String>,
+        val expectMarker: Boolean,
+    )
 
     fun stop() {
         try {

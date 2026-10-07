@@ -8,6 +8,7 @@ import com.zakodaniumask.manager.data.agent.AgentMode
 import com.zakodaniumask.manager.data.agent.AgentSettings
 import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.agent.AgentToolRouter
+import com.zakodaniumask.manager.data.agent.llm.LlmHttpConfig
 import com.zakodaniumask.manager.data.agent.llm.LlmMessage
 import com.zakodaniumask.manager.data.agent.llm.LlmTool
 import com.zakodaniumask.manager.data.agent.llm.LlmToolCall
@@ -126,8 +127,11 @@ class AgentViewModel(
         if (settings.model.isBlank()) {
             error("No model configured. Open agent settings to set endpoint, key and model.")
         }
-        if (settings.endpoint.isBlank() && settings.provider.id == "openai") {
-            error("No endpoint configured for the OpenAI-compatible provider.")
+        val hasUrl = settings.endpoint.isNotBlank() ||
+            settings.apiPath.startsWith("http://") ||
+            settings.apiPath.startsWith("https://")
+        if (!hasUrl) {
+            error("No endpoint configured. Open agent settings to set a base URL or a full API URL.")
         }
 
         withContext(Dispatchers.IO) { ensureTools() }
@@ -139,13 +143,19 @@ class AgentViewModel(
         while (iteration++ < settings.maxIterations) {
             var assistantId: Long? = null
             val streamed = StringBuilder()
+            val httpConfig = LlmHttpConfig(
+                endpoint = settings.endpoint,
+                apiKey = settings.apiKey,
+                model = settings.model,
+                temperature = settings.temperature,
+                maxTokens = settings.maxTokens,
+                apiPath = settings.apiPath,
+                userAgent = settings.userAgent,
+                extraHeaders = settings.extraHeaders,
+            )
             val response = withContext(Dispatchers.IO) {
                 provider.chat(
-                    endpoint = settings.endpoint,
-                    apiKey = settings.apiKey,
-                    model = settings.model,
-                    temperature = settings.temperature,
-                    maxTokens = settings.maxTokens,
+                    config = httpConfig,
                     request = com.zakodaniumask.manager.data.agent.llm.LlmRequest(
                         system = system,
                         messages = llmMessages.toList(),

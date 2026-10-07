@@ -29,6 +29,22 @@ data class LlmRequest(
     val tools: List<LlmTool>,
 )
 
+/**
+ * HTTP-level configuration shared by every provider. [apiPath] overrides the
+ * provider's default request path, or may be a full URL; [userAgent] and
+ * [extraHeaders] are applied to the request.
+ */
+data class LlmHttpConfig(
+    val endpoint: String = "",
+    val apiKey: String = "",
+    val model: String = "",
+    val temperature: Double = 0.3,
+    val maxTokens: Int = 2048,
+    val apiPath: String = "",
+    val userAgent: String = "",
+    val extraHeaders: String = "",
+)
+
 data class LlmResponse(
     val text: String,
     val toolCalls: List<LlmToolCall>,
@@ -50,11 +66,7 @@ interface LlmProvider {
     val type: LlmProviderType
 
     suspend fun chat(
-        endpoint: String,
-        apiKey: String,
-        model: String,
-        temperature: Double,
-        maxTokens: Int,
+        config: LlmHttpConfig,
         request: LlmRequest,
         onDelta: (String) -> Unit,
     ): LlmResponse

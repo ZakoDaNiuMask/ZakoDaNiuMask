@@ -69,6 +69,9 @@ fun AgentSettingsScreen() {
     var endpoint by remember { mutableStateOf(initial.endpoint) }
     var apiKey by remember { mutableStateOf(initial.apiKey) }
     var model by remember { mutableStateOf(initial.model) }
+    var apiPath by remember { mutableStateOf(initial.apiPath) }
+    var userAgent by remember { mutableStateOf(initial.userAgent) }
+    var extraHeaders by remember { mutableStateOf(initial.extraHeaders) }
     var temperature by remember { mutableStateOf(initial.temperature.toString()) }
     var maxTokens by remember { mutableStateOf(initial.maxTokens.toString()) }
     var maxIterations by remember { mutableStateOf(initial.maxIterations.toString()) }
@@ -156,6 +159,28 @@ fun AgentSettingsScreen() {
                     }
                     item {
                         TextFieldRow(
+                            label = stringResource(R.string.agent_api_path),
+                            value = apiPath,
+                            onValueChange = { apiPath = it },
+                        )
+                    }
+                    item {
+                        TextFieldRow(
+                            label = stringResource(R.string.agent_user_agent),
+                            value = userAgent,
+                            onValueChange = { userAgent = it },
+                        )
+                    }
+                    item {
+                        TextFieldRow(
+                            label = stringResource(R.string.agent_extra_headers),
+                            value = extraHeaders,
+                            onValueChange = { extraHeaders = it },
+                            singleLine = false,
+                        )
+                    }
+                    item {
+                        TextFieldRow(
                             label = stringResource(R.string.agent_temperature),
                             value = temperature,
                             onValueChange = { temperature = it },
@@ -192,6 +217,9 @@ fun AgentSettingsScreen() {
                                         endpoint = endpoint.trim(),
                                         apiKey = apiKey.trim(),
                                         model = model.trim(),
+                                        apiPath = apiPath.trim(),
+                                        userAgent = userAgent.trim(),
+                                        extraHeaders = extraHeaders.trim(),
                                         temperature = temperature.toDoubleOrNull() ?: 0.3,
                                         maxTokens = maxTokens.toIntOrNull() ?: 2048,
                                         maxIterations = maxIterations.toIntOrNull() ?: 8,

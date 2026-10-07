@@ -42,6 +42,31 @@ private fun Response.requireBody(): okhttp3.ResponseBody {
 private fun okhttp3.ResponseBody.isEventStream(): Boolean =
     contentType()?.let { it.type == "text" && it.subtype == "event-stream" } ?: false
 
+/** Resolve the request URL from the endpoint, an optional path override and the provider default. */
+private fun resolveUrl(base: String, apiPath: String, defaultPath: String): String {
+    val path = apiPath.trim()
+    if (path.startsWith("http://") || path.startsWith("https://")) return path
+    val suffix = when {
+        path.isEmpty() -> defaultPath
+        path.startsWith("/") -> path
+        else -> "/$path"
+    }
+    return base + suffix
+}
+
+/** Apply the user-configured User-Agent and extra headers. */
+private fun MutableMap<String, String>.applyCommon(config: LlmHttpConfig) {
+    if (config.userAgent.isNotBlank()) this["User-Agent"] = config.userAgent
+    config.extraHeaders.lineSequence().forEach { line ->
+        val idx = line.indexOf(':')
+        if (idx > 0) {
+            val key = line.substring(0, idx).trim()
+            val value = line.substring(idx + 1).trim()
+            if (key.isNotEmpty()) this[key] = value
+        }
+    }
+}
+
 /**
  * OpenAI-compatible `/chat/completions` provider with SSE streaming. Works with
  * OpenAI and any compatible endpoint (e.g. a local Ollama/LM Studio server).
@@ -50,20 +75,18 @@ class OpenAiCompatibleProvider : LlmProvider {
     override val type = LlmProviderType.OPENAI
 
     override suspend fun chat(
-        endpoint: String,
-        apiKey: String,
-        model: String,
-        temperature: Double,
-        maxTokens: Int,
+        config: LlmHttpConfig,
         request: LlmRequest,
         onDelta: (String) -> Unit,
     ): LlmResponse = withContext(Dispatchers.IO) {
-        val base = endpoint.ifBlank { "https://api.openai.com/v1" }.trimEnd('/')
-        val body = buildBody(model, temperature, maxTokens, request)
+        val base = config.endpoint.ifBlank { "https://api.openai.com/v1" }.trimEnd('/')
+        val url = resolveUrl(base, config.apiPath, "/chat/completions")
+        val body = buildBody(config.model, config.temperature, config.maxTokens, request)
         val headers = mutableMapOf<String, String>()
-        if (apiKey.isNotBlank()) headers["Authorization"] = "Bearer $apiKey"
+        if (config.apiKey.isNotBlank()) headers["Authorization"] = "Bearer ${config.apiKey}"
+        headers.applyCommon(config)
 
-        httpClient.newCall(buildRequest("$base/chat/completions", headers, body)).execute().use { response ->
+        httpClient.newCall(buildRequest(url, headers, body)).execute().use { response ->
             val responseBody = response.requireBody()
             if (!responseBody.isEventStream()) {
                 return@use parseNonStream(JSONObject(responseBody.string()), onDelta)
@@ -202,20 +225,18 @@ class AnthropicProvider : LlmProvider {
     override val type = LlmProviderType.ANTHROPIC
 
     override suspend fun chat(
-        endpoint: String,
-        apiKey: String,
-        model: String,
-        temperature: Double,
-        maxTokens: Int,
+        config: LlmHttpConfig,
         request: LlmRequest,
         onDelta: (String) -> Unit,
     ): LlmResponse = withContext(Dispatchers.IO) {
-        val base = endpoint.ifBlank { "https://api.anthropic.com" }.trimEnd('/')
-        val body = buildBody(model, temperature, maxTokens, request)
+        val base = config.endpoint.ifBlank { "https://api.anthropic.com" }.trimEnd('/')
+        val url = resolveUrl(base, config.apiPath, "/v1/messages")
+        val body = buildBody(config.model, config.temperature, config.maxTokens, request)
         val headers = mutableMapOf("anthropic-version" to "2023-06-01")
-        if (apiKey.isNotBlank()) headers["x-api-key"] = apiKey
+        if (config.apiKey.isNotBlank()) headers["x-api-key"] = config.apiKey
+        headers.applyCommon(config)
 
-        httpClient.newCall(buildRequest("$base/v1/messages", headers, body)).execute().use { response ->
+        httpClient.newCall(buildRequest(url, headers, body)).execute().use { response ->
             val responseBody = response.requireBody()
             if (!responseBody.isEventStream()) {
                 return@use parseNonStream(JSONObject(responseBody.string()), onDelta)

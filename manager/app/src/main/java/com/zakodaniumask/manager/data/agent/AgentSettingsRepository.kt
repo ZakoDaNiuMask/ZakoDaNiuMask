@@ -27,6 +27,9 @@ data class AgentSettings(
     val endpoint: String = "",
     val apiKey: String = "",
     val model: String = "",
+    val apiPath: String = "",
+    val userAgent: String = "",
+    val extraHeaders: String = "",
     val temperature: Double = 0.3,
     val maxTokens: Int = 2048,
     val maxIterations: Int = 8,
@@ -52,6 +55,9 @@ class AgentSettingsRepository(
         endpoint = settings.getString("agent_endpoint", ""),
         apiKey = settings.getString("agent_api_key", ""),
         model = settings.getString("agent_model", ""),
+        apiPath = settings.getString("agent_api_path", ""),
+        userAgent = settings.getString("agent_user_agent", ""),
+        extraHeaders = settings.getString("agent_extra_headers", ""),
         temperature = settings.getFloat("agent_temperature", 0.3f).toDouble(),
         maxTokens = settings.getInt("agent_max_tokens", 2048),
         maxIterations = settings.getInt("agent_max_iterations", 8),
@@ -64,6 +70,9 @@ class AgentSettingsRepository(
         settings.putString("agent_endpoint", value.endpoint)
         settings.putString("agent_api_key", value.apiKey)
         settings.putString("agent_model", value.model)
+        settings.putString("agent_api_path", value.apiPath)
+        settings.putString("agent_user_agent", value.userAgent)
+        settings.putString("agent_extra_headers", value.extraHeaders)
         settings.putFloat("agent_temperature", value.temperature.toFloat())
         settings.putInt("agent_max_tokens", value.maxTokens)
         settings.putInt("agent_max_iterations", value.maxIterations)
