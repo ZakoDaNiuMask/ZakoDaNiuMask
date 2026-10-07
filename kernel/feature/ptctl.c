@@ -1224,6 +1224,8 @@ static long hwbp_release_held(void)
     return 0;
 }
 
+static bool ksu_ptctl_enabled(void);
+
 int ksu_ptctl(struct ksu_ptctl_cmd *c)
 {
     /* Runtime gate: the whole framework stays unreachable (and its handlers

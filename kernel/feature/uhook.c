@@ -1135,6 +1135,8 @@ static int uh_list_status(struct ksu_uhook_cmd *cmd, u32 *active)
     return (int)n;
 }
 
+static bool ksu_uhook_enabled(void);
+
 int ksu_uhook(struct ksu_uhook_cmd *cmd)
 {
     int ret = 0, i;
