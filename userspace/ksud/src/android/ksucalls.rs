@@ -505,6 +505,15 @@ pub fn set_spoof_cpu(
     Ok(())
 }
 
+pub fn set_spoof_mem(total_ram_bytes: u64, cma_total_bytes: u64) -> anyhow::Result<()> {
+    let mut cmd = uapi::ksu_set_spoof_mem_cmd {
+        total_ram_bytes,
+        cma_total_bytes,
+    };
+    ksuctl(uapi::KSU_IOCTL_SET_SPOOF_MEM_RUST, &raw mut cmd)?;
+    Ok(())
+}
+
 /// List all mount points in umount list
 pub fn umount_list_list() -> anyhow::Result<Vec<MountInfo>> {
     const FLAGS_SIZE: usize = std::mem::size_of::<u32>();

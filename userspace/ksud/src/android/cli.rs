@@ -805,6 +805,15 @@ enum Kernel {
         #[arg(long)]
         hwcap2: Option<String>,
     },
+    /// Spoof total memory capacity (0 to disable)
+    SpoofMem {
+        /// target total memory size in bytes, e.g. 8589934592 for 8GB, 0 to disable
+        #[arg(long)]
+        total_ram_bytes: u64,
+        /// target total CMA size in bytes, 0 to restore default
+        #[arg(long, default_value = "0")]
+        cma_bytes: u64,
+    },
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -1464,6 +1473,14 @@ pub fn run() -> Result<()> {
                     ksucalls::set_spoof_cpu(cpu as u32, midr, bogomips, hwcap, hwcap2)?;
                 }
                 println!("kernel spoof-cpu done");
+                Ok(())
+            }
+            Kernel::SpoofMem {
+                total_ram_bytes,
+                cma_bytes,
+            } => {
+                ksucalls::set_spoof_mem(total_ram_bytes, cma_bytes)?;
+                println!("kernel spoof-mem done");
                 Ok(())
             }
         },

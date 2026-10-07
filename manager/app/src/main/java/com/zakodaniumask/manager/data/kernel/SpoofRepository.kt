@@ -125,6 +125,29 @@ class SpoofRepository(
             ShellUtils.fastCmdResult(ksuCliRepository.getRootShell(), cmd)
         }
 
+    suspend fun readCurrentMemTotalBytes(): Long = withContext(Dispatchers.IO) {
+        runCatching {
+            val memInfo = java.io.File("/proc/meminfo").readLines()
+                .firstOrNull { it.startsWith("MemTotal:") }
+                ?.substringAfter(":")
+                ?.trim()
+                ?.substringBefore(" kB")
+                ?.trim()
+                ?.toLongOrNull() ?: 0L
+            memInfo * 1024L
+        }.getOrDefault(0L)
+    }
+
+    suspend fun spoofMem(totalRamBytes: Long, cmaBytes: Long): Boolean =
+        withContext(Dispatchers.IO) {
+            val cmd = buildString {
+                append("${ksuCliRepository.getKsuDaemonPath()} kernel spoof-mem")
+                append(" --total-ram-bytes $totalRamBytes")
+                append(" --cma-bytes $cmaBytes")
+            }
+            ShellUtils.fastCmdResult(ksuCliRepository.getRootShell(), cmd)
+        }
+
     suspend fun isSelinuxPermissive(): Boolean = withContext(Dispatchers.IO) {
         val output = ShellUtils.fastCmd(ksuCliRepository.getRootShell(), "getenforce")
             .trim()

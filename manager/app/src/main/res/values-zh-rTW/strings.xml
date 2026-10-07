@@ -686,6 +686,16 @@
     <string name="kernel_spoof_apply_success">核心版本偽裝套用成功</string>
     <string name="kernel_spoof_apply_failed">核心版本偽裝套用失敗</string>
     <string name="kernel_spoof_warning">影響所有處理程序看到的 uname 資訊。留空欄位表示保持目前值。</string>
+    <string name="mem_spoof_title">記憶體容量偽裝</string>
+    <string name="mem_spoof_summary">偽裝報告給應用的總記憶體大小</string>
+    <string name="spoof_mem_total_gb">總記憶體（GB）</string>
+    <string name="spoof_mem_cma_mb">CMA 大小（MB，可選）</string>
+    <string name="spoof_mem_apply_success">記憶體偽裝套用成功</string>
+    <string name="spoof_mem_apply_failed">記憶體偽裝套用失敗</string>
+    <string name="spoof_mem_disable">恢復預設</string>
+    <string name="spoof_mem_disabled">記憶體偽裝已關閉</string>
+    <string name="spoof_mem_warning">影響所有後續處理程序看到的記憶體大小。總記憶體留空並使用「恢復預設」可關閉偽裝。</string>
+    <string name="spoof_mem_invalid_input">總記憶體必須為正整數（GB）</string>
     <string name="user_ko_settings_summary">匯入並載入核心模組（.ko）</string>
     <string name="module_shortcut_copy_scheme">複製 URL Scheme</string>
     <string name="module_shortcut_scheme_copied">已複製 URL Scheme</string>

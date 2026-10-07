@@ -240,6 +240,11 @@ struct ksu_set_spoof_cpu_cmd {
     __u64 hwcap2;     /* Auxiliary ELF Hardware Capabilities mask */
 };
 
+struct ksu_set_spoof_mem_cmd {
+    __u64 total_ram_bytes; /* Target total memory size in bytes (0 to disable) */
+    __u64 cma_total_bytes; /* Target total CMA size in bytes, can be 0 */
+};
+
 /* IOCTL command definitions */
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GRANT_ROOT, _IOC(_IOC_NONE, 'K', 1, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_INFO, _IOR('K', 2, struct ksu_get_info_cmd))
@@ -279,6 +284,7 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_MANAGERS, _IOC(_IOC_READ | _IOC_WRITE
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_KERNEL_PATCH_IMPLEMENT, _IOC(_IOC_READ, 'K', 106, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_SPOOF_VERSION, _IOC(_IOC_WRITE, 'K', 104, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_SPOOF_CPU, _IOC(_IOC_WRITE, 'K', 107, 0))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_SPOOF_MEM, _IOC(_IOC_WRITE, 'K', 108, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_KPM, _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0))
 #undef DEFINE_KSU_UAPI_CONST
 #endif

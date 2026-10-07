@@ -604,6 +604,17 @@ fun SettingsPage(bottomPadding: Dp) {
 
                         item(visible = homeState.systemStatus.isRootAvailable) {
                             SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Memory,
+                                title = stringResource(R.string.mem_spoof_title),
+                                description = stringResource(R.string.mem_spoof_summary),
+                                onClick = {
+                                    navigator.push(Route.MemSpoof)
+                                }
+                            )
+                        }
+
+                        item(visible = homeState.systemStatus.isRootAvailable) {
+                            SettingsJumpPageWidget(
                                 icon = Icons.TwoTone.Extension,
                                 title = stringResource(R.string.user_ko_title),
                                 description = stringResource(R.string.user_ko_settings_summary),

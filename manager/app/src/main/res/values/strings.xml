@@ -704,6 +704,16 @@
     <string name="kernel_spoof_apply_success">Kernel version spoofing applied successfully</string>
     <string name="kernel_spoof_apply_failed">Failed to apply kernel version spoofing</string>
     <string name="kernel_spoof_warning">Affects uname output for all processes. Leave a field empty to keep its current value.</string>
+    <string name="mem_spoof_title">Memory Capacity Spoofing</string>
+    <string name="mem_spoof_summary">Spoof total RAM reported to apps</string>
+    <string name="spoof_mem_total_gb">Total memory (GB)</string>
+    <string name="spoof_mem_cma_mb">CMA size (MB, optional)</string>
+    <string name="spoof_mem_apply_success">Memory spoofing applied successfully</string>
+    <string name="spoof_mem_apply_failed">Failed to apply memory spoofing</string>
+    <string name="spoof_mem_disable">Restore default</string>
+    <string name="spoof_mem_disabled">Memory spoofing disabled</string>
+    <string name="spoof_mem_warning">Affects the memory size reported to all subsequent processes. Leave total memory empty and use Restore default to disable.</string>
+    <string name="spoof_mem_invalid_input">Total memory must be a positive integer (GB)</string>
     <string name="user_ko_root_required">Root is required to manage kernel drivers</string>
     <string name="user_ko_warning">Kernel drivers (.ko) must match the running kernel. Loading a mismatched module can fail or cause a kernel panic — proceed with caution.</string>
     <string name="user_ko_stage">Load stage</string>

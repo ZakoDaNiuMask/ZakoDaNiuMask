@@ -202,6 +202,7 @@ import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
 import com.zakodaniumask.manager.ui.viewmodel.UserKoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.CpuSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.UtsSpoofViewModel
+import com.zakodaniumask.manager.ui.viewmodel.MemSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.OnlinePluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.PluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
@@ -508,6 +509,7 @@ val viewModelModule = module {
     viewModelOf(::UserKoViewModel)
     viewModelOf(::CpuSpoofViewModel)
     viewModelOf(::UtsSpoofViewModel)
+    viewModelOf(::MemSpoofViewModel)
     viewModelOf(::PluginViewModel)
 
     viewModelOf(::OnlinePluginViewModel)
