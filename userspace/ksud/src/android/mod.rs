@@ -8,6 +8,7 @@ mod init_event;
 mod kpm;
 mod ksucalls;
 mod late_load;
+pub mod mcp;
 mod module;
 mod plugin;
 mod plugin_lua;

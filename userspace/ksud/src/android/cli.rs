@@ -201,6 +201,9 @@ enum Commands {
         #[command(subcommand)]
         command: Initrc,
     },
+
+    /// Run a Model Context Protocol (MCP) server over stdio
+    Mcp,
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -1487,6 +1490,7 @@ pub fn run() -> Result<()> {
         Commands::Initrc { command } => match command {
             Initrc::Refresh => regenerate_preinit_rc(),
         },
+        Commands::Mcp => crate::android::mcp::run(),
     };
 
     if let Err(e) = &result {
