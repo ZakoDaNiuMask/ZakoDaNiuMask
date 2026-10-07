@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.BugReport
 import androidx.compose.material.icons.twotone.CheckCircle
 import androidx.compose.material.icons.twotone.Code
 import androidx.compose.material.icons.twotone.Computer
@@ -555,7 +554,6 @@ private fun actionTitle(kind: DetectorActionKind): Int = when (kind) {
     DetectorActionKind.DEFAULT_UMOUNT_MODULES -> R.string.detector_action_default_umount
     DetectorActionKind.SU_ENABLED -> R.string.detector_action_su_enabled
     DetectorActionKind.SUSFS_ENABLED -> R.string.detector_action_susfs_enabled
-    DetectorActionKind.SUSFS_AVC_LOG_SPOOFING -> R.string.detector_action_susfs_avc_log_spoofing
     DetectorActionKind.SUSFS_HIDE_SUS_MNTS -> R.string.detector_action_susfs_hide_sus_mnts
     DetectorActionKind.SUSFS_UNAME_SPOOF -> R.string.detector_action_susfs_uname_spoof
 }
@@ -566,7 +564,6 @@ private fun actionDescription(kind: DetectorActionKind): Int = when (kind) {
     DetectorActionKind.DEFAULT_UMOUNT_MODULES -> R.string.detector_action_default_umount_desc
     DetectorActionKind.SU_ENABLED -> R.string.detector_action_su_enabled_desc
     DetectorActionKind.SUSFS_ENABLED -> R.string.detector_action_susfs_enabled_desc
-    DetectorActionKind.SUSFS_AVC_LOG_SPOOFING -> R.string.detector_action_susfs_avc_log_spoofing_desc
     DetectorActionKind.SUSFS_HIDE_SUS_MNTS -> R.string.detector_action_susfs_hide_sus_mnts_desc
     DetectorActionKind.SUSFS_UNAME_SPOOF -> R.string.detector_action_susfs_uname_spoof_desc
 }
@@ -577,7 +574,6 @@ private fun actionIcon(kind: DetectorActionKind): ImageVector = when (kind) {
     DetectorActionKind.DEFAULT_UMOUNT_MODULES -> Icons.TwoTone.Code
     DetectorActionKind.SU_ENABLED -> Icons.TwoTone.Security
     DetectorActionKind.SUSFS_ENABLED -> Icons.TwoTone.VisibilityOff
-    DetectorActionKind.SUSFS_AVC_LOG_SPOOFING -> Icons.TwoTone.BugReport
     DetectorActionKind.SUSFS_HIDE_SUS_MNTS -> Icons.TwoTone.VisibilityOff
     DetectorActionKind.SUSFS_UNAME_SPOOF -> Icons.TwoTone.Computer
 }

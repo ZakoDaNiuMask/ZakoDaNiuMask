@@ -127,8 +127,88 @@ class DetectorViewModel(
             result.getOrPut(section) { mutableListOf() }.add(action)
         }
 
+        val kernel = states.kernelActionsAvailable
+        val susfs = states.susfsAvailable
+
+        // SU: root artifacts found -> offer the switches that hide a rooted system.
+        if (state.su?.let { DetectorState.suStatus(it) } == DetectorStatus.DANGER) {
+            if (kernel) {
+                add(
+                    DetectorSection.SU,
+                    DetectorAction(
+                        DetectorActionKind.SU_ENABLED,
+                        supported = true,
+                        enabled = states.suEnabled,
+                    ),
+                )
+                add(
+                    DetectorSection.SU,
+                    DetectorAction(
+                        DetectorActionKind.KERNEL_UMOUNT,
+                        supported = true,
+                        enabled = states.kernelUmountEnabled,
+                    ),
+                )
+                add(
+                    DetectorSection.SU,
+                    DetectorAction(
+                        DetectorActionKind.DEFAULT_UMOUNT_MODULES,
+                        supported = true,
+                        enabled = states.defaultUmountModules,
+                    ),
+                )
+            }
+            if (susfs) {
+                add(
+                    DetectorSection.SU,
+                    DetectorAction(
+                        DetectorActionKind.SUSFS_ENABLED,
+                        supported = true,
+                        enabled = states.susfsEnabled,
+                    ),
+                )
+                add(
+                    DetectorSection.SU,
+                    DetectorAction(
+                        DetectorActionKind.SUSFS_HIDE_SUS_MNTS,
+                        supported = true,
+                        enabled = states.susfsHideSusMnts,
+                    ),
+                )
+            }
+        }
+
+        // Kernel check: hard kptr/uname/proc indicators -> spoofing switches.
+        if (state.kernelCheck?.hasHardIndicators == true) {
+            if (susfs) {
+                add(
+                    DetectorSection.KERNEL_CHECK,
+                    DetectorAction(
+                        DetectorActionKind.SUSFS_ENABLED,
+                        supported = true,
+                        enabled = states.susfsEnabled,
+                    ),
+                )
+                add(
+                    DetectorSection.KERNEL_CHECK,
+                    DetectorAction(DetectorActionKind.SUSFS_UNAME_SPOOF, supported = true),
+                )
+            }
+            if (kernel) {
+                add(
+                    DetectorSection.KERNEL_CHECK,
+                    DetectorAction(
+                        DetectorActionKind.KERNEL_UMOUNT,
+                        supported = true,
+                        enabled = states.kernelUmountEnabled,
+                    ),
+                )
+            }
+        }
+
+        // SELinux: denials/paradox -> hide SELinux and enable SuSFS.
         if (state.selinux?.status == DetectorStatus.DANGER) {
-            if (states.kernelActionsAvailable) {
+            if (kernel) {
                 add(
                     DetectorSection.SELINUX,
                     DetectorAction(
@@ -138,44 +218,16 @@ class DetectorViewModel(
                     ),
                 )
             }
-            if (states.susfsAvailable) {
+            if (susfs) {
                 add(
                     DetectorSection.SELINUX,
                     DetectorAction(
-                        DetectorActionKind.SUSFS_AVC_LOG_SPOOFING,
+                        DetectorActionKind.SUSFS_ENABLED,
                         supported = true,
-                        enabled = states.susfsAvcLogSpoofing,
+                        enabled = states.susfsEnabled,
                     ),
                 )
             }
-        }
-
-        if (state.kernelCheck?.hasHardIndicators == true && states.susfsAvailable) {
-            add(
-                DetectorSection.KERNEL_CHECK,
-                DetectorAction(
-                    DetectorActionKind.SUSFS_ENABLED,
-                    supported = true,
-                    enabled = states.susfsEnabled,
-                ),
-            )
-            add(
-                DetectorSection.KERNEL_CHECK,
-                DetectorAction(DetectorActionKind.SUSFS_UNAME_SPOOF, supported = true),
-            )
-        }
-
-        if (state.su?.let { DetectorState.suStatus(it) } == DetectorStatus.DANGER &&
-            states.susfsAvailable
-        ) {
-            add(
-                DetectorSection.SU,
-                DetectorAction(
-                    DetectorActionKind.SUSFS_ENABLED,
-                    supported = true,
-                    enabled = states.susfsEnabled,
-                ),
-            )
         }
 
         return result

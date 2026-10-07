@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.zakodaniumask.manager.ui.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.agent.AgentAuditEntry
 import com.zakodaniumask.manager.data.agent.AgentMode
 import com.zakodaniumask.manager.data.agent.AgentSettings
@@ -94,6 +96,7 @@ class AgentViewModel(
     private val settingsRepository: AgentSettingsRepository,
     private val policyRepository: AgentMcpPolicyRepository,
     private val sessionStore: AgentSessionStore,
+    private val context: Context,
 ) : ViewModel() {
     private val ids = AtomicLong(0)
     private val mutableState = MutableStateFlow(AgentUiState())
@@ -215,7 +218,9 @@ class AgentViewModel(
 
     private suspend fun ensureSession(firstInput: String) {
         if (currentSessionId != null) return
-        val meta = sessionStore.create(firstInput.take(40).ifBlank { "New chat" })
+        val meta = sessionStore.create(
+            firstInput.take(40).ifBlank { context.getString(R.string.agent_new_chat) },
+        )
         currentSessionId = meta.id
     }
 
@@ -270,13 +275,13 @@ class AgentViewModel(
     private suspend fun runLoop() {
         val settings = settingsRepository.load()
         if (settings.model.isBlank()) {
-            error("No model configured. Open agent settings to set endpoint, key and model.")
+            error(context.getString(R.string.agent_error_no_model))
         }
         val hasUrl = settings.endpoint.isNotBlank() ||
             settings.apiPath.startsWith("http://") ||
             settings.apiPath.startsWith("https://")
         if (!hasUrl) {
-            error("No endpoint configured. Open agent settings to set a base URL or a full API URL.")
+            error(context.getString(R.string.agent_error_no_endpoint))
         }
 
         withContext(Dispatchers.IO) { ensureTools() }
@@ -359,7 +364,7 @@ class AgentViewModel(
         append(
             AgentChatItem.Info(
                 nextId(),
-                "Reached the maximum of ${settings.maxIterations} tool iterations.",
+                context.getString(R.string.agent_info_max_iterations, settings.maxIterations),
             )
         )
     }
@@ -380,7 +385,10 @@ class AgentViewModel(
             }.getOrDefault(emptyList())
             if (repairs.isNotEmpty()) {
                 append(
-                    AgentChatItem.Info(nextId(), "repaired tool arguments: ${repairs.joinToString()}")
+                    AgentChatItem.Info(
+                        nextId(),
+                        context.getString(R.string.agent_info_repaired, repairs.joinToString()),
+                    )
                 )
             }
             when (loopDetector.check(call.name, arguments.toString())) {
@@ -388,7 +396,8 @@ class AgentViewModel(
                     append(
                         AgentChatItem.ToolCall(
                             itemId, tool.name, arguments.toString(),
-                            AgentToolStatus.DENIED, "circuit breaker: too many tool calls",
+                            AgentToolStatus.DENIED,
+                            context.getString(R.string.agent_denied_circuit_breaker),
                         )
                     )
                     llmMessages += LlmMessage(
@@ -403,7 +412,8 @@ class AgentViewModel(
                     append(
                         AgentChatItem.ToolCall(
                             itemId, tool.name, arguments.toString(),
-                            AgentToolStatus.DENIED, "repeated identical call",
+                            AgentToolStatus.DENIED,
+                            context.getString(R.string.agent_denied_repeat),
                         )
                     )
                     llmMessages += LlmMessage(
@@ -421,7 +431,13 @@ class AgentViewModel(
 
         if (tool == null) {
             append(
-                AgentChatItem.ToolCall(itemId, call.name, call.arguments, AgentToolStatus.ERROR, "unknown tool")
+                AgentChatItem.ToolCall(
+                    itemId,
+                    call.name,
+                    call.arguments,
+                    AgentToolStatus.ERROR,
+                    context.getString(R.string.agent_error_unknown_tool, call.name),
+                )
             )
             llmMessages += LlmMessage("tool", "unknown tool: ${call.name}", toolCallId = call.id)
             return
@@ -434,7 +450,7 @@ class AgentViewModel(
                     tool.name,
                     arguments.toString(),
                     AgentToolStatus.DENIED,
-                    "tool domain '${tool.domain}' is disabled",
+                    context.getString(R.string.agent_denied_domain, tool.domain),
                 )
             )
             llmMessages += LlmMessage(
@@ -453,7 +469,10 @@ class AgentViewModel(
                     tool.name,
                     arguments.toString(),
                     AgentToolStatus.DENIED,
-                    "denied by ${settingsRepository.load().mode.id} mode",
+                    context.getString(
+                        R.string.agent_denied_mode,
+                        settingsRepository.load().mode.id,
+                    ),
                 )
             )
             settingsRepository.appendAudit(

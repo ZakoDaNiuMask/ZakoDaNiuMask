@@ -35,7 +35,6 @@ class GetDetectorActionStatesUseCase(
             defaultUmountModules = features?.defaultUmountModules ?: false,
             susfsAvailable = config != null,
             susfsEnabled = config?.enabled ?: false,
-            susfsAvcLogSpoofing = config?.avc_log_spoofing ?: false,
             susfsHideSusMnts = config?.hide_sus_mnts_for_non_su_procs ?: false,
         )
     }
@@ -61,11 +60,6 @@ class ApplyDetectorActionUseCase(
             DetectorActionKind.SU_ENABLED -> setSuEnabled(enabled)
             DetectorActionKind.SUSFS_ENABLED -> {
                 suSFSConfigUseCase.setConfigEnabled(enabled)
-                true
-            }
-
-            DetectorActionKind.SUSFS_AVC_LOG_SPOOFING -> {
-                suSFSConfigUseCase.enableAvcLogSpoofing(enabled)
                 true
             }
 

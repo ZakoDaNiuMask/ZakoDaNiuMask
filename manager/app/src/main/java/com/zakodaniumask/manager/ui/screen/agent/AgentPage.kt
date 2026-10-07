@@ -336,6 +336,17 @@ private fun AgentItemRow(item: AgentChatItem) {
     }
 }
 
+@Composable
+private fun toolStatusLabel(status: AgentToolStatus): String = stringResource(
+    when (status) {
+        AgentToolStatus.PENDING -> R.string.agent_status_pending
+        AgentToolStatus.RUNNING -> R.string.agent_status_running
+        AgentToolStatus.DONE -> R.string.agent_status_done
+        AgentToolStatus.ERROR -> R.string.agent_status_error
+        AgentToolStatus.DENIED -> R.string.agent_status_denied
+    },
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ToolCallBubble(item: AgentChatItem.ToolCall) {
@@ -355,7 +366,7 @@ private fun ToolCallBubble(item: AgentChatItem.ToolCall) {
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = "${item.tool} · ${item.status.name.lowercase()}",
+                text = "${item.tool} · ${toolStatusLabel(item.status)}",
                 style = MaterialTheme.typography.labelMedium,
             )
             if (item.arguments.isNotBlank() && item.arguments != "{}") {
@@ -386,7 +397,7 @@ private fun ToolCallBubble(item: AgentChatItem.ToolCall) {
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    text = item.status.name.lowercase(),
+                    text = toolStatusLabel(item.status),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

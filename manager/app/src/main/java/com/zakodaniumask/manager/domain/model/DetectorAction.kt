@@ -21,7 +21,6 @@ enum class DetectorActionKind {
     DEFAULT_UMOUNT_MODULES,
     SU_ENABLED,
     SUSFS_ENABLED,
-    SUSFS_AVC_LOG_SPOOFING,
     SUSFS_HIDE_SUS_MNTS,
     SUSFS_UNAME_SPOOF,
 }
@@ -41,6 +40,5 @@ data class DetectorActionStates(
     val defaultUmountModules: Boolean = false,
     val susfsAvailable: Boolean = false,
     val susfsEnabled: Boolean = false,
-    val susfsAvcLogSpoofing: Boolean = false,
     val susfsHideSusMnts: Boolean = false,
 )
