@@ -67,10 +67,12 @@ private fun tierOf(name: String): ToolTier = when {
         name == "ksu.install" ||
         name == "ksu.uninstall" ||
         name == "ksu.unload" ||
+        name == "module.install" ||
+        name.startsWith("dynamic_manager.set") ||
+        name == "dynamic_manager.clear" ||
         name.startsWith("kernel.nuke") -> ToolTier.DANGER
 
-    name.startsWith("module.") && !name.endsWith(".list") && !name.endsWith(".info") ||
-        name.startsWith("feature.set") ||
+    name.startsWith("feature.set") ||
         name.startsWith("feature.save") ||
         name.startsWith("sepolicy.apply") ||
         name.startsWith("sepolicy.patch") ||
@@ -79,6 +81,19 @@ private fun tierOf(name: String): ToolTier = when {
         name.startsWith("umount_config.add") ||
         name.startsWith("umount_config.del") ||
         name.startsWith("umount_config.clear") ||
+        name == "prop.delete" ||
+        name.startsWith("kernel.umount.add") ||
+        name.startsWith("kernel.umount.del") ||
+        name.startsWith("kernel.umount.wipe") ||
+        name.startsWith("module.enable") ||
+        name.startsWith("module.disable") ||
+        name.startsWith("module.uninstall") ||
+        name.startsWith("module.undo") ||
+        name.startsWith("module.action") ||
+        name.startsWith("module.config.set") ||
+        name.startsWith("module.config.delete") ||
+        name.startsWith("module.config.clear") ||
+        name.startsWith("initrc.") ||
         name.startsWith("kpm.load") ||
         name.startsWith("kpm.unload") ||
         name.startsWith("kpm.control") ||

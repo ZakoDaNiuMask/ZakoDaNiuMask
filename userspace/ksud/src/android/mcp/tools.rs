@@ -168,6 +168,26 @@ schema_fn!(
     sch_resetprop,
     [s("name", "property name"), s("value", "property value")]
 );
+schema_fn!(sch_prop_name, [s("name", "property name")]);
+schema_fn!(sch_module_install, [s("zip", "module zip path on device")]);
+schema_fn!(
+    sch_module_config_get,
+    [s("key", "config key"), so("internal", "internal module name")]
+);
+schema_fn!(
+    sch_module_config_set,
+    [
+        s("key", "config key"),
+        s("value", "config value"),
+        so("internal", "internal module name")
+    ]
+);
+schema_fn!(
+    sch_module_config_key,
+    [s("key", "config key"), so("internal", "internal module name")]
+);
+schema_fn!(sch_module_config_internal, [so("internal", "internal module name")]);
+schema_fn!(sch_dynamic_manager_apk, [s("apk", "apk path")]);
 schema_fn!(
     sch_flash_image,
     [
@@ -304,6 +324,41 @@ pub const TOOLS: &[Tool] = &[
         schema: sch_empty,
         argv: &["kernel", "umount", "list"],
     },
+    Tool {
+        name: "prop.get",
+        description: "Read a system property value.",
+        tier: R,
+        schema: sch_prop_name,
+        argv: &["resetprop", "%name"],
+    },
+    Tool {
+        name: "prop.list",
+        description: "List all system properties.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["resetprop"],
+    },
+    Tool {
+        name: "module.config.get",
+        description: "Get a module config value.",
+        tier: R,
+        schema: sch_module_config_get,
+        argv: &["module", "config", "@internal=%internal", "get", "%key"],
+    },
+    Tool {
+        name: "module.config.list",
+        description: "List module config entries.",
+        tier: R,
+        schema: sch_module_config_internal,
+        argv: &["module", "config", "@internal=%internal", "list"],
+    },
+    Tool {
+        name: "dynamic_manager.get",
+        description: "Get the current dynamic manager signature.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["kernel", "dynamic-manager", "get"],
+    },
     // ---- read: modules / features / profiles / susfs / kpm / plugins ----
     Tool {
         name: "module.list",
@@ -362,18 +417,39 @@ pub const TOOLS: &[Tool] = &[
         argv: &["profile", "get-sepolicy", "%package"],
     },
     Tool {
-        name: "susfs.status",
-        description: "Show SuSFS status.",
-        tier: R,
-        schema: sch_empty,
-        argv: &["susfs", "status"],
-    },
-    Tool {
         name: "susfs.version",
         description: "Show the SuSFS version.",
         tier: R,
         schema: sch_empty,
-        argv: &["susfs", "version"],
+        argv: &["susfs", "show", "version"],
+    },
+    Tool {
+        name: "susfs.enabled_features",
+        description: "Show the SuSFS enabled features.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["susfs", "show", "enabled_features"],
+    },
+    Tool {
+        name: "susfs.variant",
+        description: "Show the SuSFS variant.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["susfs", "show", "variant"],
+    },
+    Tool {
+        name: "susfs.config",
+        description: "Print the persisted SuSFS configuration as JSON.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["susfs", "config", "list_all"],
+    },
+    Tool {
+        name: "susfs.slot_info",
+        description: "Read boot slot kernel uname and build-time.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["susfs", "slot_info"],
     },
     Tool {
         name: "umount_config.list",
@@ -538,6 +614,69 @@ pub const TOOLS: &[Tool] = &[
         argv: &["umount-config", "clear"],
     },
     Tool {
+        name: "prop.delete",
+        description: "Delete a system property.",
+        tier: W,
+        schema: sch_prop_name,
+        argv: &["resetprop", "--delete", "%name"],
+    },
+    Tool {
+        name: "kernel.umount.add",
+        description: "Add a mount point to the kernel umount list.",
+        tier: W,
+        schema: sch_umount_add,
+        argv: &["kernel", "umount", "add", "%mnt", "@flags=%flags"],
+    },
+    Tool {
+        name: "kernel.umount.del",
+        description: "Remove a mount point from the kernel umount list.",
+        tier: W,
+        schema: sch_umount_del,
+        argv: &["kernel", "umount", "del", "%mnt"],
+    },
+    Tool {
+        name: "kernel.umount.wipe",
+        description: "Wipe the kernel umount list.",
+        tier: W,
+        schema: sch_empty,
+        argv: &["kernel", "umount", "wipe"],
+    },
+    Tool {
+        name: "module.config.set",
+        description: "Set a module config value.",
+        tier: W,
+        schema: sch_module_config_set,
+        argv: &[
+            "module",
+            "config",
+            "@internal=%internal",
+            "set",
+            "%key",
+            "%value",
+        ],
+    },
+    Tool {
+        name: "module.config.delete",
+        description: "Delete a module config entry.",
+        tier: W,
+        schema: sch_module_config_key,
+        argv: &["module", "config", "@internal=%internal", "delete", "%key"],
+    },
+    Tool {
+        name: "module.config.clear",
+        description: "Clear module config entries.",
+        tier: W,
+        schema: sch_module_config_internal,
+        argv: &["module", "config", "@internal=%internal", "clear"],
+    },
+    Tool {
+        name: "initrc.refresh",
+        description: "Regenerate the preinit rc file.",
+        tier: W,
+        schema: sch_empty,
+        argv: &["initrc", "refresh"],
+    },
+    Tool {
         name: "kpm.load",
         description: "Load a KPM module.",
         tier: W,
@@ -681,6 +820,27 @@ pub const TOOLS: &[Tool] = &[
         tier: D,
         schema: sch_ak3,
         argv: &["anykernel3", "%zip"],
+    },
+    Tool {
+        name: "module.install",
+        description: "Install a KernelSU module from a zip path on the device.",
+        tier: D,
+        schema: sch_module_install,
+        argv: &["module", "install", "%zip"],
+    },
+    Tool {
+        name: "dynamic_manager.set_apk",
+        description: "Set the dynamic manager signature from an apk.",
+        tier: D,
+        schema: sch_dynamic_manager_apk,
+        argv: &["kernel", "dynamic-manager", "set-apk", "%apk"],
+    },
+    Tool {
+        name: "dynamic_manager.clear",
+        description: "Clear the dynamic manager signature.",
+        tier: D,
+        schema: sch_empty,
+        argv: &["kernel", "dynamic-manager", "clear"],
     },
     Tool {
         name: "kernel.nuke_ext4_sysfs",
