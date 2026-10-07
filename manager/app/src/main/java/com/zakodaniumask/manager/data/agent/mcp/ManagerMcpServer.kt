@@ -5,6 +5,7 @@ import android.util.Base64
 import com.zakodaniumask.manager.BuildConfig
 import com.zakodaniumask.manager.Natives
 import com.zakodaniumask.manager.data.agent.ShellExecutor
+import com.zakodaniumask.manager.data.agent.web.WebSearchRepository
 import com.zakodaniumask.manager.data.detection.DetectorRepository
 import com.zakodaniumask.manager.data.packageinfo.SuperUserRepository
 import com.zakodaniumask.manager.data.profile.ProfileRepository
@@ -26,6 +27,7 @@ class ManagerMcpServer(
     private val shellExecutor: ShellExecutor,
     private val profileRepository: ProfileRepository,
     private val superUserRepository: SuperUserRepository,
+    private val webSearchRepository: WebSearchRepository,
 ) {
 
     fun listTools(): List<AgentTool> = TOOLS.map { spec ->
@@ -145,6 +147,31 @@ class ManagerMcpServer(
                         if (ok == null) "unknown feature '$feature'" else "$feature=$enabled",
                         ok == null,
                     )
+                }
+
+                "web.search" -> {
+                    val query = arguments.req("query")
+                    val max = arguments.optInt("max_results", 0)
+                    val results = webSearchRepository.search(query, max)
+                    val array = JSONArray()
+                    results.forEach { r ->
+                        array.put(
+                            JSONObject()
+                                .put("title", r.title)
+                                .put("url", r.url)
+                                .put("snippet", r.snippet)
+                        )
+                    }
+                    AgentToolResult(
+                        JSONObject().put("count", results.size).put("results", array).toString(2),
+                        false,
+                    )
+                }
+
+                "web.fetch" -> {
+                    val url = arguments.req("url")
+                    val maxChars = arguments.optInt("max_chars", 0)
+                    AgentToolResult(webSearchRepository.fetch(url, maxChars), false)
                 }
 
                 "appprofile.get_sepolicy" -> {
@@ -437,6 +464,26 @@ class ManagerMcpServer(
                     listOf("feature", "enabled"),
                     "feature" to str("feature id"),
                     "enabled" to bool("enable or disable"),
+                ),
+            ),
+            ToolSpec(
+                "web.search",
+                "Search the web (DuckDuckGo/SearXNG/Tavily/Brave/Serper). Returns title, url and snippet.",
+                ToolTier.READ,
+                schema(
+                    listOf("query"),
+                    "query" to str("search query"),
+                    "max_results" to int("max results (optional)"),
+                ),
+            ),
+            ToolSpec(
+                "web.fetch",
+                "Fetch a web page and return it as text (Jina reader or local parser).",
+                ToolTier.READ,
+                schema(
+                    listOf("url"),
+                    "url" to str("http(s) url"),
+                    "max_chars" to int("max characters (optional)"),
                 ),
             ),
             ToolSpec(

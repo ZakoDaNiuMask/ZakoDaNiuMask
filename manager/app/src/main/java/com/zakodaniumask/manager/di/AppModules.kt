@@ -18,6 +18,7 @@ import com.zakodaniumask.manager.data.agent.AgentProviderStore
 import com.zakodaniumask.manager.data.agent.AgentSessionStore
 import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.agent.AgentToolRouter
+import com.zakodaniumask.manager.data.agent.web.WebSearchRepository
 import com.zakodaniumask.manager.data.agent.ShellExecutor
 import com.zakodaniumask.manager.data.detection.DetectorRepository
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpClient
@@ -348,6 +349,7 @@ val repositoryModule = module {
     single { AgentSettingsRepository(get()) }
     single { AgentSessionStore(androidApplication()) }
     single { AgentProviderStore(androidApplication()) }
+    single { WebSearchRepository(get()) }
     single { AgentMcpPolicyRepository(get()) }
     single { DetectorRepository(get(), get(), get(), get(), get(), get()) }
     single { ShellExecutor(get(), get()) }

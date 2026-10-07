@@ -206,6 +206,8 @@ dependencies {
     implementation(libs.koin.compose.viewmodel)
 
     implementation(libs.gson)
+    implementation(libs.org.jsoup.jsoup)
+    implementation(libs.com.squareup.okhttp3.okhttp)
     implementation(libs.commons.compress)
     implementation(libs.xz)
     implementation(libs.bouncycastle)

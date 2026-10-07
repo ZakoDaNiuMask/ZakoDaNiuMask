@@ -2,6 +2,8 @@
 accompanist-drawablepainter = "0.37.3"
 agp = "9.4.1"
 gson = "2.14.0"
+jsoup = "1.18.3"
+okhttp = "4.12.0"
 kotlin = "2.4.20"
 materialKolor = "5.0.1"
 monetCompat = "0.4.1"
@@ -92,6 +94,8 @@ com-github-topjohnwu-libsu-io = { group = "com.github.topjohnwu.libsu", name = "
 dev-rikka-rikkax-parcelablelist = { module = "dev.rikka.rikkax.parcelablelist:parcelablelist", version.ref = "parcelablelist" }
 
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+org-jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+com-squareup-okhttp3-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 io-coil-kt-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }
 ucrop = { module = "com.github.yalantis:ucrop", version.ref = "ucrop" }

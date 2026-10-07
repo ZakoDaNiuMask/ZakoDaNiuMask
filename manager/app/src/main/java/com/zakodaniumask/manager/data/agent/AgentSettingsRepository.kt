@@ -3,6 +3,8 @@ package com.zakodaniumask.manager.data.agent
 
 import com.zakodaniumask.manager.data.AppSettingsRepository
 import com.zakodaniumask.manager.data.agent.llm.LlmProviderType
+import com.zakodaniumask.manager.data.agent.web.WebFetchReader
+import com.zakodaniumask.manager.data.agent.web.WebSearchBackend
 import com.zakodaniumask.manager.data.agent.llm.ThinkingLevel
 import org.json.JSONArray
 import org.json.JSONObject
@@ -42,6 +44,15 @@ data class AgentSettings(
     val allowRootShell: Boolean = false,
     /** Reasoning effort, applied per provider only when not OFF. */
     val thinking: ThinkingLevel = ThinkingLevel.OFF,
+    /** Web search / fetch configuration. */
+    val webSearchEnabled: Boolean = false,
+    val webSearchBackend: WebSearchBackend = WebSearchBackend.DUCKDUCKGO,
+    val webSearchEndpoint: String = "",
+    val webSearchApiKey: String = "",
+    val webSearchMaxResults: Int = 5,
+    val webFetchReader: WebFetchReader = WebFetchReader.AUTO,
+    val webFetchApiKey: String = "",
+    val webFetchAllowLocal: Boolean = false,
 )
 
 data class AgentAuditEntry(
@@ -73,6 +84,18 @@ class AgentSettingsRepository(
         disabledDomains = settings.getStringSet("agent_disabled_domains", emptySet()),
         allowRootShell = settings.getBoolean("agent_allow_root_shell", false),
         thinking = ThinkingLevel.fromId(settings.getString("agent_thinking", "off").orEmpty()),
+        webSearchEnabled = settings.getBoolean("agent_web_enabled", false),
+        webSearchBackend = WebSearchBackend.fromId(
+            settings.getString("agent_web_backend", "duckduckgo").orEmpty()
+        ),
+        webSearchEndpoint = settings.getString("agent_web_endpoint", "").orEmpty(),
+        webSearchApiKey = settings.getString("agent_web_api_key", "").orEmpty(),
+        webSearchMaxResults = settings.getInt("agent_web_max_results", 5),
+        webFetchReader = WebFetchReader.fromId(
+            settings.getString("agent_web_fetch_reader", "auto").orEmpty()
+        ),
+        webFetchApiKey = settings.getString("agent_web_fetch_api_key", "").orEmpty(),
+        webFetchAllowLocal = settings.getBoolean("agent_web_fetch_allow_local", false),
     )
 
     fun save(value: AgentSettings) {
@@ -91,6 +114,14 @@ class AgentSettingsRepository(
         settings.putStringSet("agent_disabled_domains", value.disabledDomains)
         settings.putBoolean("agent_allow_root_shell", value.allowRootShell)
         settings.putString("agent_thinking", value.thinking.id)
+        settings.putBoolean("agent_web_enabled", value.webSearchEnabled)
+        settings.putString("agent_web_backend", value.webSearchBackend.id)
+        settings.putString("agent_web_endpoint", value.webSearchEndpoint)
+        settings.putString("agent_web_api_key", value.webSearchApiKey)
+        settings.putInt("agent_web_max_results", value.webSearchMaxResults)
+        settings.putString("agent_web_fetch_reader", value.webFetchReader.id)
+        settings.putString("agent_web_fetch_api_key", value.webFetchApiKey)
+        settings.putBoolean("agent_web_fetch_allow_local", value.webFetchAllowLocal)
     }
 
     fun loadAudit(): List<AgentAuditEntry> {
