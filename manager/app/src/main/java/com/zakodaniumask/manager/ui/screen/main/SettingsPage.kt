@@ -50,6 +50,7 @@ import androidx.compose.material.icons.twotone.Security
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Share
 import androidx.compose.material.icons.twotone.Storage
+import androidx.compose.material.icons.twotone.Visibility
 import androidx.compose.material.icons.twotone.Update
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -472,6 +473,31 @@ fun SettingsPage(bottomPadding: Dp) {
                                 onCheckedChange = { enabled ->
                                     settingsViewModel.dispatch(SettingsUiAction.SetIgnoreUapi(enabled))
                                     homeViewModel.refreshData(true)
+                                },
+                            )
+                        }
+
+                        item {
+                            SettingsSwitchWidget(
+                                icon = Icons.TwoTone.Visibility,
+                                title = stringResource(R.string.settings_show_full_status),
+                                description = stringResource(R.string.settings_show_full_status_summary),
+                                checked = uiState.showFullStatus,
+                                onCheckedChange = { enabled ->
+                                    settingsViewModel.dispatch(SettingsUiAction.SetShowFullStatus(enabled))
+                                    homeViewModel.refreshData(true)
+                                },
+                            )
+                        }
+
+                        item {
+                            SettingsSwitchWidget(
+                                icon = Icons.TwoTone.Code,
+                                title = stringResource(R.string.settings_enable_web_debugging),
+                                description = stringResource(R.string.settings_enable_web_debugging_summary),
+                                checked = uiState.enableWebDebugging,
+                                onCheckedChange = { enabled ->
+                                    settingsViewModel.dispatch(SettingsUiAction.SetWebDebugging(enabled))
                                 },
                             )
                         }

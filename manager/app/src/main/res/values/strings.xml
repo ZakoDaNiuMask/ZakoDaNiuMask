@@ -727,6 +727,13 @@
     <string name="ghostlock_fallback_none">None</string>
     <string name="settings_ignore_uapi">Ignore UAPI compatibility</string>
     <string name="settings_ignore_uapi_summary">Treat the manager as usable even when the kernel UAPI version does not match; also lets plugins run at boot.</string>
+    <string name="settings_show_full_status">Show full status</string>
+    <string name="settings_show_full_status_summary">Show fingerprint, full kernel version and kernel warnings on the home card</string>
+    <string name="settings_module_description_max_lines">Module description lines</string>
+    <string name="settings_module_description_max_lines_summary">Maximum number of collapsed description lines shown on module cards</string>
+    <string name="settings_module_description_max_lines_value">%d lines</string>
+    <string name="settings_enable_web_debugging">WebView debugging</string>
+    <string name="settings_enable_web_debugging_summary">Allow debugging module WebUIs with chrome://inspect</string>
     <string name="no_any_umount_path">No existing umount paths</string>
     <string name="add_umount_path">Add Umount Path</string>
     <string name="mount_path">Mount Path</string>

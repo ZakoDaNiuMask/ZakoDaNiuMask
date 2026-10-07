@@ -238,6 +238,9 @@ class HomeViewModel(
         homeStateRepository.update {
             it.copy(
                 isSimpleMode = getBooleanPreference(PREF_SIMPLE_MODE),
+                showFullStatus = getBooleanPreference(
+                    PREF_SHOW_FINGERPRINT,
+                ),
                 showNavigationBarBadge = getBooleanPreference(
                     PREF_SHOW_NAVIGATION_BAR_BADGE,
                     true,
@@ -262,6 +265,7 @@ class HomeViewModel(
         const val PREF_CHECK_UPDATE = "check_update"
         const val PREF_CHECK_BETA_UPDATE = "check_beta_update"
         const val PREF_SIMPLE_MODE = "is_simple_mode"
+        const val PREF_SHOW_FINGERPRINT = "show_fingerprint"
         const val PREF_SHOW_NAVIGATION_BAR_BADGE = "show_navigation_bar_badge"
         const val PREF_SHOW_HOME_CARD_ICONS = "show_home_card_icons"
     }

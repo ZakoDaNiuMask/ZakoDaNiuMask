@@ -428,6 +428,13 @@
     <string name="axeron_shell_run">執行</string>
     <string name="settings_ignore_uapi">忽略 UAPI 相容性</string>
     <string name="settings_ignore_uapi_summary">即使核心 UAPI 版本不相符，也將管理器視為可用。進階選項：部分功能可能異常；同時允許外掛在開機時執行。</string>
+    <string name="settings_show_full_status">顯示完整狀態</string>
+    <string name="settings_show_full_status_summary">在首頁卡片上顯示指紋、完整內核版本和內核警告</string>
+    <string name="settings_module_description_max_lines">模組描述行數</string>
+    <string name="settings_module_description_max_lines_summary">模組卡片上摺疊描述的最大行數</string>
+    <string name="settings_module_description_max_lines_value">%d 行</string>
+    <string name="settings_enable_web_debugging">WebView 偵錯</string>
+    <string name="settings_enable_web_debugging_summary">允許透過 chrome://inspect 偵錯模組 WebUI</string>
     <string name="no_any_umount_path">冇現有嘅卸載路徑</string>
     <string name="add_umount_path">添加 Umount 路徑</string>
     <string name="mount_path">掛載路徑</string>

@@ -162,6 +162,7 @@ import com.zakodaniumask.manager.ui.viewmodel.ModuleUiAction
 import com.zakodaniumask.manager.ui.viewmodel.ModuleUiEvent
 import com.zakodaniumask.manager.ui.viewmodel.ModuleUiState
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
+import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import com.zakodaniumask.manager.ui.webui.WebUIActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -193,6 +194,7 @@ fun ModulePage(bottomPadding: Dp) {
     val viewModel = koinViewModel<ModuleViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val homeState by koinViewModel<HomeViewModel>().uiState.collectAsStateWithLifecycle()
+    val settingsState by koinViewModel<SettingsViewModel>().uiState.collectAsStateWithLifecycle()
     val snackBarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
     var lastClickTime by remember { mutableStateOf(0L) }
@@ -949,6 +951,7 @@ private fun ModuleList(
                     module = module,
                     moduleSizes = uiState.moduleSizes,
                     updateUrl = module.moduleUpdate?.zipUrl.orEmpty(),
+                    descriptionMaxLines = settingsState.moduleDescriptionMaxLines,
                     onUninstallClicked = {
                         scope.launch {
                             withContext(Dispatchers.IO) {
@@ -1202,6 +1205,7 @@ fun ModuleItem(
     onClick: (InstalledModule) -> Unit,
     onModuleAddShortcut: (InstalledModule, ShortcutType) -> Unit,
     showMoreModuleInfo: Boolean,
+    descriptionMaxLines: Int = 4,
 ) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
@@ -1391,7 +1395,7 @@ fun ModuleItem(
                 lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                 fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 4,
+                maxLines = descriptionMaxLines,
                 textDecoration = textDecoration,
             )
 
