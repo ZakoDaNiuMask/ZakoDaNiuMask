@@ -54,6 +54,13 @@ private fun resolveUrl(base: String, apiPath: String, defaultPath: String): Stri
     return base + suffix
 }
 
+/** One-shot JSON POST (used by non-streaming providers such as Gemini). */
+private fun postJson(url: String, headers: Map<String, String>, body: JSONObject): JSONObject {
+    httpClient.newCall(buildRequest(url, headers, body)).execute().use { response ->
+        return JSONObject(response.requireBody().string())
+    }
+}
+
 /** Apply the user-configured User-Agent and extra headers. */
 private fun MutableMap<String, String>.applyCommon(config: LlmHttpConfig) {
     if (config.userAgent.isNotBlank()) this["User-Agent"] = config.userAgent
