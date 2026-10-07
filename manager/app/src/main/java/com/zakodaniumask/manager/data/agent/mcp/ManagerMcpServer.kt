@@ -3,31 +3,60 @@ package com.zakodaniumask.manager.data.agent.mcp
 
 import com.zakodaniumask.manager.BuildConfig
 import com.zakodaniumask.manager.Natives
+import com.zakodaniumask.manager.data.agent.ShellExecutor
+import com.zakodaniumask.manager.data.detection.DetectorRepository
 import org.json.JSONArray
 import org.json.JSONObject
 
 /**
  * In-process MCP tool source for capabilities that only exist on the manager
- * side (JNI / Natives), which the Rust ksud MCP server cannot reach. Tools are
- * described with the same MCP shape as the ksud server.
+ * side (JNI / Natives, Android detectors) which the Rust ksud MCP server cannot
+ * reach. Tools are described with the same MCP shape as the ksud server.
  */
-class ManagerMcpServer {
+class ManagerMcpServer(
+    private val detectorRepository: DetectorRepository,
+    private val shellExecutor: ShellExecutor,
+) {
 
-    fun listTools(): List<AgentTool> = TOOLS.map { (name, description, schema) ->
+    fun listTools(): List<AgentTool> = TOOLS.map { spec ->
         AgentTool(
-            name = name,
-            description = description,
-            inputSchema = schema,
-            tier = ToolTier.READ,
+            name = spec.name,
+            description = spec.description,
+            inputSchema = spec.schema,
+            tier = spec.tier,
             source = "manager",
         )
     }
 
-    fun callTool(name: String, arguments: JSONObject): AgentToolResult {
+    suspend fun callTool(name: String, arguments: JSONObject): AgentToolResult {
         return try {
             when (name) {
                 "manager.status" -> AgentToolResult(statusJson().toString(2), false)
                 "manager.managers" -> AgentToolResult(managersJson().toString(2), false)
+                "detector.scan" -> AgentToolResult(detectorRepository.scan(), false)
+                "shell.exec" -> {
+                    val command = arguments.optString("command")
+                    if (command.isBlank()) {
+                        AgentToolResult("missing required argument 'command'", true)
+                    } else {
+                        val timeout = arguments.optLong("timeout_ms", 30_000L)
+                            .coerceIn(1_000L, 600_000L)
+                        val result = shellExecutor.exec(command, timeout)
+                        val text = buildString {
+                            append("mode=${result.mode} exit=${result.exitCode}")
+                            if (result.stdout.isNotBlank()) {
+                                append("\n")
+                                append(result.stdout)
+                            }
+                            if (result.stderr.isNotBlank()) {
+                                append("\n[stderr]\n")
+                                append(result.stderr)
+                            }
+                        }
+                        AgentToolResult(text, result.exitCode != 0)
+                    }
+                }
+
                 else -> AgentToolResult("unknown manager tool: $name", true)
             }
         } catch (t: Throwable) {
@@ -74,18 +103,62 @@ class ManagerMcpServer {
         return JSONObject().put("managers", array)
     }
 
+    private data class ToolSpec(
+        val name: String,
+        val description: String,
+        val tier: ToolTier,
+        val schema: JSONObject,
+    )
+
     private companion object {
-        val TOOLS: List<Triple<String, String, JSONObject>> = listOf(
-            Triple(
+        private fun emptySchema(): JSONObject =
+            JSONObject().put("type", "object").put("properties", JSONObject())
+
+        val TOOLS: List<ToolSpec> = listOf(
+            ToolSpec(
                 "manager.status",
                 "Manager-side status: manager/kernel versions, hook type, kernel patch " +
                     "implementation and the live feature states read through JNI.",
-                JSONObject().put("type", "object").put("properties", JSONObject()),
+                ToolTier.READ,
+                emptySchema(),
             ),
-            Triple(
+            ToolSpec(
                 "manager.managers",
                 "List the registered managers (uid + signature index).",
-                JSONObject().put("type", "object").put("properties", JSONObject()),
+                ToolTier.READ,
+                emptySchema(),
+            ),
+            ToolSpec(
+                "detector.scan",
+                "Run the root-detection suite (SU, bootloader, TEE, system properties, " +
+                    "kernel checks, SELinux) and return the text report.",
+                ToolTier.READ,
+                emptySchema(),
+            ),
+            ToolSpec(
+                "shell.exec",
+                "Run a shell command. Runs as root when the agent's root-shell option is " +
+                    "enabled, otherwise as a uid 1000 shell; with no root it runs directly.",
+                ToolTier.WRITE,
+                JSONObject()
+                    .put("type", "object")
+                    .put(
+                        "properties",
+                        JSONObject()
+                            .put(
+                                "command",
+                                JSONObject()
+                                    .put("type", "string")
+                                    .put("description", "shell command to run"),
+                            )
+                            .put(
+                                "timeout_ms",
+                                JSONObject()
+                                    .put("type", "integer")
+                                    .put("description", "timeout in ms (direct mode only)"),
+                            ),
+                    )
+                    .put("required", JSONArray().put("command")),
             ),
         )
     }

@@ -16,6 +16,8 @@ import com.zakodaniumask.manager.data.kernel.SpoofRepository
 import com.zakodaniumask.manager.data.agent.AgentMcpPolicyRepository
 import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.agent.AgentToolRouter
+import com.zakodaniumask.manager.data.agent.ShellExecutor
+import com.zakodaniumask.manager.data.detection.DetectorRepository
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpClient
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpProcess
 import com.zakodaniumask.manager.data.agent.mcp.ManagerMcpServer
@@ -343,6 +345,8 @@ val repositoryModule = module {
     single { AgentToolRouter(get(), get()) }
     single { AgentSettingsRepository(get()) }
     single { AgentMcpPolicyRepository(get()) }
+    single { DetectorRepository(get(), get(), get(), get(), get(), get()) }
+    single { ShellExecutor(get(), get()) }
     singleOf(::ModuleCatalogRepository)
     singleOf(::ModuleRepository)
     singleOf(::ModulePreferencesRepository)

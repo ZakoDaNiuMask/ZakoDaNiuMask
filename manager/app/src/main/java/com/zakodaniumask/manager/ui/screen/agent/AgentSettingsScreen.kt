@@ -67,7 +67,7 @@ import org.koin.compose.viewmodel.koinViewModel
 private val KNOWN_DOMAINS = listOf(
     "ksu", "flash", "module", "feature", "sepolicy", "profile", "susfs",
     "umount_config", "kpm", "plugin", "debug", "kernel", "manager",
-    "insmod", "resetprop", "soft_reboot", "anykernel3",
+    "detector", "shell", "insmod", "resetprop", "soft_reboot", "anykernel3",
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -95,6 +95,7 @@ fun AgentSettingsScreen() {
     var mode by remember { mutableStateOf(initial.mode) }
     var systemPrompt by remember { mutableStateOf(initial.systemPrompt) }
     var disabledDomains by remember { mutableStateOf(initial.disabledDomains) }
+    var allowRootShell by remember { mutableStateOf(initial.allowRootShell) }
 
     var policy by remember {
         mutableStateOf(AgentMcpPolicyRepository.McpPolicy())
@@ -119,6 +120,7 @@ fun AgentSettingsScreen() {
         mode = mode,
         systemPrompt = systemPrompt,
         disabledDomains = disabledDomains,
+        allowRootShell = allowRootShell,
     )
 
     val scrollBehavior =
@@ -267,6 +269,35 @@ fun AgentSettingsScreen() {
                         ) {
                             Text(stringResource(R.string.agent_save))
                         }
+                    }
+                }
+            }
+
+            // --- Shell ---
+            item {
+                SectionCard {
+                    Text(
+                        text = stringResource(R.string.agent_shell_title),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.agent_allow_root_shell_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.agent_allow_root_shell),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Switch(
+                            checked = allowRootShell,
+                            onCheckedChange = { allowRootShell = it },
+                        )
                     }
                 }
             }

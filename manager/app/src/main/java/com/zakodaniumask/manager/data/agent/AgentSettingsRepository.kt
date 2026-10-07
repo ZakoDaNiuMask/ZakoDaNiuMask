@@ -37,6 +37,8 @@ data class AgentSettings(
     val systemPrompt: String = "",
     /** Tool domains the agent must not use (empty = every domain). */
     val disabledDomains: Set<String> = emptySet(),
+    /** Run shell tools as root; when false they run as uid 1000. */
+    val allowRootShell: Boolean = false,
 )
 
 data class AgentAuditEntry(
@@ -66,6 +68,7 @@ class AgentSettingsRepository(
         mode = AgentMode.fromId(settings.getString("agent_mode", "read_only").orEmpty()),
         systemPrompt = settings.getString("agent_system_prompt", "").orEmpty(),
         disabledDomains = settings.getStringSet("agent_disabled_domains", emptySet()),
+        allowRootShell = settings.getBoolean("agent_allow_root_shell", false),
     )
 
     fun save(value: AgentSettings) {
@@ -82,6 +85,7 @@ class AgentSettingsRepository(
         settings.putString("agent_mode", value.mode.id)
         settings.putString("agent_system_prompt", value.systemPrompt)
         settings.putStringSet("agent_disabled_domains", value.disabledDomains)
+        settings.putBoolean("agent_allow_root_shell", value.allowRootShell)
     }
 
     fun loadAudit(): List<AgentAuditEntry> {

@@ -125,6 +125,9 @@
     <string name="agent_test_tools_fail">Tools: failed — %1$s</string>
     <string name="agent_domains_title">Tool domains</string>
     <string name="agent_domains_summary">Disable domains the agent must not use; disabled tools are hidden from the model and refused.</string>
+    <string name="agent_shell_title">Shell</string>
+    <string name="agent_allow_root_shell">Run shell tools as root</string>
+    <string name="agent_allow_root_shell_summary">Off: shell tools run as a uid 1000 shell (falls back to root if that fails). On: they run as root. With no root they run directly.</string>
     <string name="agent_policy_title">Kernel MCP policy</string>
     <string name="agent_policy_summary">The kernel-side ceiling written to .mcp_policy.json. Write tools run only when both this and the permission mode allow them.</string>
     <string name="agent_policy_max_tier">Max tier</string>

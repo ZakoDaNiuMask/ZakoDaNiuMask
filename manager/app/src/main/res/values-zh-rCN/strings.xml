@@ -126,6 +126,9 @@
     <string name="agent_test_tools_fail">工具：失败 — %1$s</string>
     <string name="agent_domains_title">工具域</string>
     <string name="agent_domains_summary">关闭不希望助手使用的域；被禁用的工具不会发给模型，调用也会被拒绝。</string>
+    <string name="agent_shell_title">Shell</string>
+    <string name="agent_allow_root_shell">以 root 运行 Shell 工具</string>
+    <string name="agent_allow_root_shell_summary">关闭：Shell 工具以 UID 1000 运行（失败则回退为 root）。开启：以 root 运行。无 root 时直接运行。</string>
     <string name="agent_policy_title">内核 MCP 策略</string>
     <string name="agent_policy_summary">写入 .mcp_policy.json 的内核侧上限。写工具需要此上限与权限模式同时允许。</string>
     <string name="agent_policy_max_tier">最高层级</string>
