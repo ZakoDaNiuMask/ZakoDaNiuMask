@@ -137,6 +137,8 @@ class AgentViewModel(
 
         var iteration = 0
         while (iteration++ < settings.maxIterations) {
+            var assistantId: Long? = null
+            val streamed = StringBuilder()
             val response = withContext(Dispatchers.IO) {
                 provider.chat(
                     endpoint = settings.endpoint,
@@ -149,18 +151,31 @@ class AgentViewModel(
                         messages = llmMessages.toList(),
                         tools = tools,
                     ),
+                    onDelta = { chunk ->
+                        streamed.append(chunk)
+                        val current = assistantId
+                        if (current == null) {
+                            val id = nextId()
+                            assistantId = id
+                            append(AgentChatItem.Assistant(id, streamed.toString()))
+                        } else {
+                            updateAssistantText(current, streamed.toString())
+                        }
+                    },
                 )
             }
 
             if (response.toolCalls.isEmpty()) {
                 if (response.text.isNotBlank()) {
-                    append(AgentChatItem.Assistant(nextId(), response.text))
+                    if (assistantId == null) {
+                        append(AgentChatItem.Assistant(nextId(), response.text))
+                    }
                     llmMessages += LlmMessage("assistant", response.text)
                 }
                 return
             }
 
-            if (response.text.isNotBlank()) {
+            if (response.text.isNotBlank() && assistantId == null) {
                 append(AgentChatItem.Assistant(nextId(), response.text))
             }
             llmMessages += LlmMessage("assistant", response.text, response.toolCalls)
@@ -286,6 +301,20 @@ class AgentViewModel(
 
     private fun append(item: AgentChatItem) {
         mutableState.update { it.copy(items = it.items + item) }
+    }
+
+    private fun updateAssistantText(id: Long, text: String) {
+        mutableState.update { current ->
+            current.copy(
+                items = current.items.map { item ->
+                    if (item is AgentChatItem.Assistant && item.id == id) {
+                        item.copy(text = text)
+                    } else {
+                        item
+                    }
+                }
+            )
+        }
     }
 
     private fun updateToolCall(id: Long, status: AgentToolStatus, result: String) {

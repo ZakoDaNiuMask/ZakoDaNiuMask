@@ -8,6 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -16,30 +17,34 @@ private val JSON = "application/json; charset=utf-8".toMediaType()
 private val httpClient: OkHttpClient by lazy {
     OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(180, TimeUnit.SECONDS)
+        .readTimeout(0, TimeUnit.SECONDS) // streaming
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 }
 
-private fun postJson(url: String, headers: Map<String, String>, body: JSONObject): JSONObject {
-    val request = Request.Builder()
-        .url(url)
-        .post(body.toString().toRequestBody(JSON))
-        .apply { headers.forEach { (k, v) -> addHeader(k, v) } }
-        .build()
-    httpClient.newCall(request).execute().use { response ->
-        val text = response.body?.string().orEmpty()
-        if (!response.isSuccessful) {
-            throw RuntimeException("HTTP ${response.code}: ${text.take(500)}")
-        }
-        return JSONObject(text)
+private fun buildRequest(
+    url: String,
+    headers: Map<String, String>,
+    body: JSONObject,
+): Request = Request.Builder()
+    .url(url)
+    .post(body.toString().toRequestBody(JSON))
+    .apply { headers.forEach { (k, v) -> addHeader(k, v) } }
+    .build()
+
+private fun Response.requireBody(): okhttp3.ResponseBody {
+    if (!isSuccessful) {
+        throw RuntimeException("HTTP $code: ${body?.string().orEmpty().take(500)}")
     }
+    return body ?: throw RuntimeException("empty response body")
 }
 
+private fun okhttp3.ResponseBody.isEventStream(): Boolean =
+    contentType()?.let { it.type == "text" && it.subtype == "event-stream" } ?: false
+
 /**
- * OpenAI-compatible `/chat/completions` provider. Works with OpenAI, and with
- * any compatible endpoint (e.g. a local Ollama/LM Studio server) by pointing
- * the endpoint at it.
+ * OpenAI-compatible `/chat/completions` provider with SSE streaming. Works with
+ * OpenAI and any compatible endpoint (e.g. a local Ollama/LM Studio server).
  */
 class OpenAiCompatibleProvider : LlmProvider {
     override val type = LlmProviderType.OPENAI
@@ -51,8 +56,64 @@ class OpenAiCompatibleProvider : LlmProvider {
         temperature: Double,
         maxTokens: Int,
         request: LlmRequest,
+        onDelta: (String) -> Unit,
     ): LlmResponse = withContext(Dispatchers.IO) {
         val base = endpoint.ifBlank { "https://api.openai.com/v1" }.trimEnd('/')
+        val body = buildBody(model, temperature, maxTokens, request)
+        val headers = mutableMapOf<String, String>()
+        if (apiKey.isNotBlank()) headers["Authorization"] = "Bearer $apiKey"
+
+        httpClient.newCall(buildRequest("$base/chat/completions", headers, body)).execute().use { response ->
+            val responseBody = response.requireBody()
+            if (!responseBody.isEventStream()) {
+                return@use parseNonStream(JSONObject(responseBody.string()), onDelta)
+            }
+            responseBody.source().use { source ->
+                val text = StringBuilder()
+                val calls = LinkedHashMap<Int, ToolCallAccumulator>()
+                var finishReason = ""
+                while (true) {
+                    val line = source.readUtf8Line() ?: break
+                    if (!line.startsWith("data:")) continue
+                    val payload = line.removePrefix("data:").trim()
+                    if (payload == "[DONE]") break
+                    val chunk = try {
+                        JSONObject(payload)
+                    } catch (_: Throwable) {
+                        continue
+                    }
+                    val choice = chunk.optJSONArray("choices")?.optJSONObject(0) ?: continue
+                    if (choice.optString("finish_reason").isNotEmpty()) {
+                        finishReason = choice.optString("finish_reason")
+                    }
+                    val delta = choice.optJSONObject("delta") ?: continue
+                    val content = delta.optString("content", "")
+                    if (content.isNotEmpty()) {
+                        text.append(content)
+                        onDelta(content)
+                    }
+                    val toolCalls = delta.optJSONArray("tool_calls") ?: continue
+                    for (i in 0 until toolCalls.length()) {
+                        val tc = toolCalls.optJSONObject(i) ?: continue
+                        val index = tc.optInt("index", i)
+                        val acc = calls.getOrPut(index) { ToolCallAccumulator() }
+                        tc.optString("id").takeIf { it.isNotEmpty() }?.let { acc.id = it }
+                        val fn = tc.optJSONObject("function") ?: continue
+                        fn.optString("name").takeIf { it.isNotEmpty() }?.let { acc.name = it }
+                        acc.arguments.append(fn.optString("arguments", ""))
+                    }
+                }
+                LlmResponse(text.toString(), calls.values.map { it.toCall() }, finishReason)
+            }
+        }
+    }
+
+    private fun buildBody(
+        model: String,
+        temperature: Double,
+        maxTokens: Int,
+        request: LlmRequest,
+    ): JSONObject {
         val messages = JSONArray()
         if (request.system.isNotBlank()) {
             messages.put(JSONObject().put("role", "system").put("content", request.system))
@@ -86,13 +147,12 @@ class OpenAiCompatibleProvider : LlmProvider {
             }
             messages.put(entry)
         }
-
         val body = JSONObject()
             .put("model", model)
             .put("messages", messages)
             .put("temperature", temperature)
             .put("max_tokens", maxTokens)
-
+            .put("stream", true)
         if (request.tools.isNotEmpty()) {
             val tools = JSONArray()
             request.tools.forEach { tool ->
@@ -110,15 +170,15 @@ class OpenAiCompatibleProvider : LlmProvider {
             }
             body.put("tools", tools)
         }
+        return body
+    }
 
-        val headers = mutableMapOf<String, String>()
-        if (apiKey.isNotBlank()) headers["Authorization"] = "Bearer $apiKey"
-
-        val json = postJson("$base/chat/completions", headers, body)
+    private fun parseNonStream(json: JSONObject, onDelta: (String) -> Unit): LlmResponse {
         val choice = json.optJSONArray("choices")?.optJSONObject(0)
             ?: throw RuntimeException("no choices in response")
         val message = choice.optJSONObject("message") ?: JSONObject()
         val text = message.optString("content", "")
+        if (text.isNotEmpty()) onDelta(text)
         val toolCalls = buildList {
             val calls = message.optJSONArray("tool_calls") ?: JSONArray()
             for (i in 0 until calls.length()) {
@@ -133,15 +193,11 @@ class OpenAiCompatibleProvider : LlmProvider {
                 )
             }
         }
-        LlmResponse(
-            text = text,
-            toolCalls = toolCalls,
-            finishReason = choice.optString("finish_reason", ""),
-        )
+        return LlmResponse(text, toolCalls, choice.optString("finish_reason", ""))
     }
 }
 
-/** Anthropic Messages API provider. */
+/** Anthropic Messages API provider with SSE streaming. */
 class AnthropicProvider : LlmProvider {
     override val type = LlmProviderType.ANTHROPIC
 
@@ -152,8 +208,80 @@ class AnthropicProvider : LlmProvider {
         temperature: Double,
         maxTokens: Int,
         request: LlmRequest,
+        onDelta: (String) -> Unit,
     ): LlmResponse = withContext(Dispatchers.IO) {
         val base = endpoint.ifBlank { "https://api.anthropic.com" }.trimEnd('/')
+        val body = buildBody(model, temperature, maxTokens, request)
+        val headers = mutableMapOf("anthropic-version" to "2023-06-01")
+        if (apiKey.isNotBlank()) headers["x-api-key"] = apiKey
+
+        httpClient.newCall(buildRequest("$base/v1/messages", headers, body)).execute().use { response ->
+            val responseBody = response.requireBody()
+            if (!responseBody.isEventStream()) {
+                return@use parseNonStream(JSONObject(responseBody.string()), onDelta)
+            }
+            responseBody.source().use { source ->
+                val text = StringBuilder()
+                val calls = LinkedHashMap<Int, ToolCallAccumulator>()
+                var stopReason = ""
+                while (true) {
+                    val line = source.readUtf8Line() ?: break
+                    if (!line.startsWith("data:")) continue
+                    val payload = line.removePrefix("data:").trim()
+                    if (payload.isEmpty()) continue
+                    val event = try {
+                        JSONObject(payload)
+                    } catch (_: Throwable) {
+                        continue
+                    }
+                    when (event.optString("type")) {
+                        "content_block_start" -> {
+                            val index = event.optInt("index", 0)
+                            val block = event.optJSONObject("content_block") ?: continue
+                            if (block.optString("type") == "tool_use") {
+                                val acc = calls.getOrPut(index) { ToolCallAccumulator() }
+                                acc.id = block.optString("id")
+                                acc.name = block.optString("name")
+                            }
+                        }
+
+                        "content_block_delta" -> {
+                            val index = event.optInt("index", 0)
+                            val delta = event.optJSONObject("delta") ?: continue
+                            when (delta.optString("type")) {
+                                "text_delta" -> {
+                                    val chunk = delta.optString("text")
+                                    if (chunk.isNotEmpty()) {
+                                        text.append(chunk)
+                                        onDelta(chunk)
+                                    }
+                                }
+
+                                "input_json_delta" -> {
+                                    calls.getOrPut(index) { ToolCallAccumulator() }
+                                        .arguments.append(delta.optString("partial_json"))
+                                }
+                            }
+                        }
+
+                        "message_delta" -> {
+                            stopReason = event.optJSONObject("delta")
+                                ?.optString("stop_reason")
+                                ?: stopReason
+                        }
+                    }
+                }
+                LlmResponse(text.toString(), calls.values.map { it.toCall() }, stopReason)
+            }
+        }
+    }
+
+    private fun buildBody(
+        model: String,
+        temperature: Double,
+        maxTokens: Int,
+        request: LlmRequest,
+    ): JSONObject {
         val messages = JSONArray()
         request.messages.forEach { message ->
             when (message.role) {
@@ -187,21 +315,17 @@ class AnthropicProvider : LlmProvider {
                     messages.put(JSONObject().put("role", "user").put("content", JSONArray().put(block)))
                 }
 
-                else -> {
-                    messages.put(
-                        JSONObject()
-                            .put("role", "user")
-                            .put("content", message.content)
-                    )
-                }
+                else -> messages.put(
+                    JSONObject().put("role", "user").put("content", message.content)
+                )
             }
         }
-
         val body = JSONObject()
             .put("model", model)
             .put("max_tokens", maxTokens)
             .put("temperature", temperature)
             .put("messages", messages)
+            .put("stream", true)
         if (request.system.isNotBlank()) body.put("system", request.system)
         if (request.tools.isNotEmpty()) {
             val tools = JSONArray()
@@ -215,20 +339,22 @@ class AnthropicProvider : LlmProvider {
             }
             body.put("tools", tools)
         }
+        return body
+    }
 
-        val headers = mutableMapOf(
-            "anthropic-version" to "2023-06-01",
-        )
-        if (apiKey.isNotBlank()) headers["x-api-key"] = apiKey
-
-        val json = postJson("$base/v1/messages", headers, body)
+    private fun parseNonStream(json: JSONObject, onDelta: (String) -> Unit): LlmResponse {
         val content = json.optJSONArray("content") ?: JSONArray()
         val text = StringBuilder()
         val toolCalls = mutableListOf<LlmToolCall>()
         for (i in 0 until content.length()) {
             val block = content.optJSONObject(i) ?: continue
             when (block.optString("type")) {
-                "text" -> text.append(block.optString("text"))
+                "text" -> {
+                    val chunk = block.optString("text")
+                    text.append(chunk)
+                    if (chunk.isNotEmpty()) onDelta(chunk)
+                }
+
                 "tool_use" -> toolCalls.add(
                     LlmToolCall(
                         id = block.optString("id"),
@@ -238,12 +364,20 @@ class AnthropicProvider : LlmProvider {
                 )
             }
         }
-        LlmResponse(
-            text = text.toString(),
-            toolCalls = toolCalls,
-            finishReason = json.optString("stop_reason", ""),
-        )
+        return LlmResponse(text.toString(), toolCalls, json.optString("stop_reason", ""))
     }
+}
+
+private class ToolCallAccumulator {
+    var id: String = ""
+    var name: String = ""
+    val arguments = StringBuilder()
+
+    fun toCall(): LlmToolCall = LlmToolCall(
+        id = id.ifBlank { "call_${name.ifBlank { "tool" }}_${hashCode()}" },
+        name = name,
+        arguments = arguments.toString().ifBlank { "{}" },
+    )
 }
 
 fun providerFor(type: LlmProviderType): LlmProvider = when (type) {

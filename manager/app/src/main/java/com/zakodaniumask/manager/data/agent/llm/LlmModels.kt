@@ -56,5 +56,6 @@ interface LlmProvider {
         temperature: Double,
         maxTokens: Int,
         request: LlmRequest,
+        onDelta: (String) -> Unit,
     ): LlmResponse
 }
