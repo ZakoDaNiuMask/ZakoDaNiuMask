@@ -3,6 +3,8 @@ package com.zakodaniumask.manager.ui.screen.agent
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
@@ -20,25 +22,33 @@ import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.agent.AgentMcpPolicyRepository
 import com.zakodaniumask.manager.data.agent.AgentMode
+import com.zakodaniumask.manager.data.agent.AgentSettings
 import com.zakodaniumask.manager.data.agent.llm.LlmProviderType
+import com.zakodaniumask.manager.data.agent.mcp.AgentTool
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
@@ -54,10 +64,17 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
+private val KNOWN_DOMAINS = listOf(
+    "ksu", "flash", "module", "feature", "sepolicy", "profile", "susfs",
+    "umount_config", "kpm", "plugin", "debug", "kernel", "manager",
+    "insmod", "resetprop", "soft_reboot", "anykernel3",
+)
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AgentSettingsScreen() {
     val viewModel: AgentViewModel = koinViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
@@ -77,6 +94,32 @@ fun AgentSettingsScreen() {
     var maxIterations by remember { mutableStateOf(initial.maxIterations.toString()) }
     var mode by remember { mutableStateOf(initial.mode) }
     var systemPrompt by remember { mutableStateOf(initial.systemPrompt) }
+    var disabledDomains by remember { mutableStateOf(initial.disabledDomains) }
+
+    var policy by remember {
+        mutableStateOf(AgentMcpPolicyRepository.McpPolicy())
+    }
+    var tools by remember { mutableStateOf<List<AgentTool>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        policy = viewModel.loadPolicy()
+    }
+
+    fun currentSettings(): AgentSettings = initial.copy(
+        provider = provider,
+        endpoint = endpoint.trim(),
+        apiKey = apiKey.trim(),
+        model = model.trim(),
+        apiPath = apiPath.trim(),
+        userAgent = userAgent.trim(),
+        extraHeaders = extraHeaders.trim(),
+        temperature = temperature.toDoubleOrNull() ?: 0.3,
+        maxTokens = maxTokens.toIntOrNull() ?: 2048,
+        maxIterations = maxIterations.toIntOrNull() ?: 8,
+        mode = mode,
+        systemPrompt = systemPrompt,
+        disabledDomains = disabledDomains,
+    )
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -86,6 +129,12 @@ fun AgentSettingsScreen() {
         stringResource(R.string.agent_mode_write),
         stringResource(R.string.agent_mode_full_auto),
     )
+    val tierLabels = listOf(
+        stringResource(R.string.agent_tier_read),
+        stringResource(R.string.agent_tier_write),
+        stringResource(R.string.agent_tier_danger),
+    )
+    val tierIds = listOf("read", "write", "danger")
 
     Scaffold(
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
@@ -211,22 +260,7 @@ fun AgentSettingsScreen() {
                     item {
                         Button(
                             onClick = {
-                                viewModel.saveSettings(
-                                    initial.copy(
-                                        provider = provider,
-                                        endpoint = endpoint.trim(),
-                                        apiKey = apiKey.trim(),
-                                        model = model.trim(),
-                                        apiPath = apiPath.trim(),
-                                        userAgent = userAgent.trim(),
-                                        extraHeaders = extraHeaders.trim(),
-                                        temperature = temperature.toDoubleOrNull() ?: 0.3,
-                                        maxTokens = maxTokens.toIntOrNull() ?: 2048,
-                                        maxIterations = maxIterations.toIntOrNull() ?: 8,
-                                        mode = mode,
-                                        systemPrompt = systemPrompt,
-                                    )
-                                )
+                                viewModel.saveSettings(currentSettings())
                                 scope.launch { snackbar.showReplacingSnackbar(savedMessage) }
                             },
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -236,7 +270,212 @@ fun AgentSettingsScreen() {
                     }
                 }
             }
+
+            // --- Test connection ---
+            item {
+                SectionCard {
+                    Text(
+                        text = stringResource(R.string.agent_test),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Button(
+                        onClick = { viewModel.testConnection(currentSettings()) },
+                        enabled = !state.isTesting,
+                    ) {
+                        Text(
+                            if (state.isTesting) stringResource(R.string.agent_testing)
+                            else stringResource(R.string.agent_test)
+                        )
+                    }
+                    state.testResult?.let { result ->
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = if (result.llmOk) {
+                                stringResource(R.string.agent_test_llm_ok)
+                            } else {
+                                stringResource(
+                                    R.string.agent_test_llm_fail,
+                                    result.llmError ?: "",
+                                )
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        Text(
+                            text = if (result.toolError == null) {
+                                stringResource(R.string.agent_test_tools_ok, result.toolCount)
+                            } else {
+                                stringResource(R.string.agent_test_tools_fail, result.toolError)
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+            }
+
+            // --- Tool domains ---
+            item {
+                SectionCard {
+                    Text(
+                        text = stringResource(R.string.agent_domains_title),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.agent_domains_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    KNOWN_DOMAINS.forEach { domain ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(
+                                text = domain,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Switch(
+                                checked = domain !in disabledDomains,
+                                onCheckedChange = { enabled ->
+                                    disabledDomains = if (enabled) {
+                                        disabledDomains - domain
+                                    } else {
+                                        disabledDomains + domain
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
+            // --- Kernel MCP policy ---
+            item {
+                SectionCard {
+                    Text(
+                        text = stringResource(R.string.agent_policy_title),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.agent_policy_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    val currentTier = policy.maxTier
+                    ChoiceField(
+                        label = stringResource(R.string.agent_policy_max_tier),
+                        value = tierLabels.getOrElse(tierIds.indexOf(currentTier)) { tierLabels[0] },
+                        options = tierLabels,
+                        onSelect = { index ->
+                            val tier = tierIds[index]
+                            scope.launch {
+                                viewModel.setPolicyMaxTier(tier)
+                                policy = viewModel.loadPolicy()
+                            }
+                        },
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button(onClick = {
+                            scope.launch { tools = viewModel.loadTools() }
+                        }) {
+                            Text(stringResource(R.string.agent_policy_load_tools))
+                        }
+                        Spacer(Modifier.weight(1f))
+                        TextButton(onClick = {
+                            scope.launch {
+                                viewModel.resetPolicy()
+                                policy = viewModel.loadPolicy()
+                            }
+                        }) {
+                            Text(stringResource(R.string.agent_policy_reset))
+                        }
+                    }
+                    if (tools.isNotEmpty()) {
+                        Text(
+                            text = stringResource(R.string.agent_policy_tools_count, tools.size),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        tools.forEach { tool ->
+                            val current = when (tool.name) {
+                                in policy.deny -> 2
+                                in policy.allow -> 1
+                                else -> 0
+                            }
+                            ToolPolicyRow(
+                                name = tool.name,
+                                selection = current,
+                                onSelect = { choice ->
+                                    scope.launch {
+                                        when (choice) {
+                                            1 -> viewModel.allowPolicyTool(tool.name)
+                                            2 -> viewModel.denyPolicyTool(tool.name)
+                                            else -> viewModel.clearPolicyTool(tool.name)
+                                        }
+                                        policy = viewModel.loadPolicy()
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
             item { Spacer(Modifier.height(paddingValues.calculateBottomPadding() + 24.dp)) }
+        }
+    }
+}
+
+@Composable
+private fun SectionCard(content: @Composable ColumnScope.() -> Unit) {
+    androidx.compose.material3.Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp), content = content)
+    }
+}
+
+@Composable
+private fun ToolPolicyRow(
+    name: String,
+    selection: Int,
+    onSelect: (Int) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val labels = listOf(
+        stringResource(R.string.agent_policy_default),
+        stringResource(R.string.agent_policy_allow),
+        stringResource(R.string.agent_policy_deny),
+    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+        )
+        Box {
+            TextButton(onClick = { expanded = true }) { Text(labels[selection]) }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                labels.forEachIndexed { index, label ->
+                    DropdownMenuItem(
+                        text = { Text(label) },
+                        onClick = {
+                            expanded = false
+                            onSelect(index)
+                        },
+                    )
+                }
+            }
         }
     }
 }
@@ -284,7 +523,7 @@ private fun TextFieldRow(
             modifier = Modifier.fillMaxWidth(),
             singleLine = singleLine,
             maxLines = if (singleLine) 1 else 8,
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         )
     }
 }

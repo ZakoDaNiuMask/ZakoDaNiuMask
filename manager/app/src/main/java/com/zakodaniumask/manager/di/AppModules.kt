@@ -13,6 +13,7 @@ import com.zakodaniumask.manager.data.flash.FlashRepository
 import com.zakodaniumask.manager.data.flash.RemoteBootImageSource
 import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.SpoofRepository
+import com.zakodaniumask.manager.data.agent.AgentMcpPolicyRepository
 import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.agent.AgentToolRouter
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpClient
@@ -341,6 +342,7 @@ val repositoryModule = module {
     singleOf(::ManagerMcpServer)
     single { AgentToolRouter(get(), get()) }
     single { AgentSettingsRepository(get()) }
+    single { AgentMcpPolicyRepository(get()) }
     singleOf(::ModuleCatalogRepository)
     singleOf(::ModuleRepository)
     singleOf(::ModulePreferencesRepository)

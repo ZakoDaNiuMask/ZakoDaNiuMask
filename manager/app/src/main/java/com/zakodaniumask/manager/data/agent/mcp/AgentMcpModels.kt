@@ -24,6 +24,13 @@ data class AgentTool(
     val source: String,
 )
 
+/**
+ * The domain a tool belongs to: the part of the name before the first dot.
+ * Tools without a dot (e.g. `insmod`, `soft_reboot`) are their own domain.
+ */
+val AgentTool.domain: String
+    get() = if (name.contains('.')) name.substringBefore('.') else name
+
 data class AgentToolResult(
     val text: String,
     val isError: Boolean,

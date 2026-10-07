@@ -35,6 +35,8 @@ data class AgentSettings(
     val maxIterations: Int = 8,
     val mode: AgentMode = AgentMode.READ_ONLY,
     val systemPrompt: String = "",
+    /** Tool domains the agent must not use (empty = every domain). */
+    val disabledDomains: Set<String> = emptySet(),
 )
 
 data class AgentAuditEntry(
@@ -63,6 +65,7 @@ class AgentSettingsRepository(
         maxIterations = settings.getInt("agent_max_iterations", 8),
         mode = AgentMode.fromId(settings.getString("agent_mode", "read_only")),
         systemPrompt = settings.getString("agent_system_prompt", ""),
+        disabledDomains = settings.getStringSet("agent_disabled_domains", emptySet()),
     )
 
     fun save(value: AgentSettings) {
@@ -78,6 +81,7 @@ class AgentSettingsRepository(
         settings.putInt("agent_max_iterations", value.maxIterations)
         settings.putString("agent_mode", value.mode.id)
         settings.putString("agent_system_prompt", value.systemPrompt)
+        settings.putStringSet("agent_disabled_domains", value.disabledDomains)
     }
 
     fun loadAudit(): List<AgentAuditEntry> {
