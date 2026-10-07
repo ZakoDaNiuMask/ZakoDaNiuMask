@@ -60,6 +60,7 @@ import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.agent.AgentRunService
 import com.zakodaniumask.manager.data.agent.AgentSessionMeta
 import com.zakodaniumask.manager.data.agent.mcp.ToolTier
+import com.zakodaniumask.manager.ui.markdown.MarkdownText
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.theme.CardConfig
@@ -315,6 +316,7 @@ private fun AgentItemRow(item: AgentChatItem) {
             text = item.text,
             container = MaterialTheme.colorScheme.surfaceContainerHigh,
             alignEnd = false,
+            markdown = true,
         )
 
         is AgentChatItem.Info -> Text(
@@ -359,7 +361,7 @@ private fun AgentItemRow(item: AgentChatItem) {
 }
 
 @Composable
-private fun Bubble(text: String, container: Color, alignEnd: Boolean) {
+private fun Bubble(text: String, container: Color, alignEnd: Boolean, markdown: Boolean = false) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = if (alignEnd) Alignment.CenterEnd else Alignment.CenterStart,
@@ -369,11 +371,18 @@ private fun Bubble(text: String, container: Color, alignEnd: Boolean) {
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth(0.9f),
         ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(12.dp),
-            )
+            if (markdown) {
+                MarkdownText(
+                    markdown = text,
+                    modifier = Modifier.padding(12.dp),
+                )
+            } else {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(12.dp),
+                )
+            }
         }
     }
 }
