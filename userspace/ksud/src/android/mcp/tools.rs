@@ -746,11 +746,9 @@ pub fn build_argv(tool: &Tool, args: &Map<String, Value>) -> Result<Vec<String>>
         if let Some(rest) = token.strip_prefix('@') {
             if let Some((flag, key_expr)) = rest.split_once('=') {
                 let key = key_expr.trim_start_matches('%');
-                if let Some(value) = scalar(args, key) {
-                    if !value.is_empty() {
-                        out.push(format!("--{}", flag.replace('_', "-")));
-                        out.push(value);
-                    }
+                if let Some(value) = scalar(args, key).filter(|value| !value.is_empty()) {
+                    out.push(format!("--{}", flag.replace('_', "-")));
+                    out.push(value);
                 }
             } else if args.get(rest).and_then(Value::as_bool).unwrap_or(false) {
                 out.push(format!("--{}", rest.replace('_', "-")));
@@ -760,10 +758,8 @@ pub fn build_argv(tool: &Tool, args: &Map<String, Value>) -> Result<Vec<String>>
                 .ok_or_else(|| anyhow::anyhow!("missing required argument '{key}'"))?;
             out.push(value);
         } else if let Some(key) = token.strip_prefix('?') {
-            if let Some(value) = scalar(args, key) {
-                if !value.is_empty() {
-                    out.push(value);
-                }
+            if let Some(value) = scalar(args, key).filter(|value| !value.is_empty()) {
+                out.push(value);
             }
         } else {
             out.push((*token).to_string());

@@ -60,15 +60,6 @@ pub struct RpcError {
     pub message: String,
 }
 
-/// One tool definition returned by `tools/list`.
-#[derive(Debug, Serialize)]
-pub struct ToolDescriptor {
-    pub name: &'static str,
-    pub description: &'static str,
-    #[serde(rename = "inputSchema")]
-    pub input_schema: Value,
-}
-
 /// A single content block in a `tools/call` result.
 #[derive(Debug, Serialize)]
 #[serde(tag = "type")]
