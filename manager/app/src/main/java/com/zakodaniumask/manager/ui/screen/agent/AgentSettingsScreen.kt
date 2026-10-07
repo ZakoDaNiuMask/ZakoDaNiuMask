@@ -1,30 +1,43 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.zakodaniumask.manager.ui.screen.agent
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Article
+import androidx.compose.material.icons.twotone.Autorenew
+import androidx.compose.material.icons.twotone.Badge
+import androidx.compose.material.icons.twotone.Cloud
+import androidx.compose.material.icons.twotone.CloudQueue
+import androidx.compose.material.icons.twotone.DataObject
+import androidx.compose.material.icons.twotone.DataUsage
+import androidx.compose.material.icons.twotone.Extension
+import androidx.compose.material.icons.twotone.Hub
+import androidx.compose.material.icons.twotone.Key
+import androidx.compose.material.icons.twotone.Lan
+import androidx.compose.material.icons.twotone.Link
+import androidx.compose.material.icons.twotone.Memory
+import androidx.compose.material.icons.twotone.Policy
+import androidx.compose.material.icons.twotone.Psychology
+import androidx.compose.material.icons.twotone.Public
+import androidx.compose.material.icons.twotone.Save
+import androidx.compose.material.icons.twotone.Science
+import androidx.compose.material.icons.twotone.Shield
+import androidx.compose.material.icons.twotone.Terminal
+import androidx.compose.material.icons.twotone.Thermostat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -34,13 +47,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
@@ -50,8 +60,17 @@ import com.zakodaniumask.manager.data.agent.AgentSettings
 import com.zakodaniumask.manager.data.agent.llm.LlmProviderType
 import com.zakodaniumask.manager.data.agent.llm.ThinkingLevel
 import com.zakodaniumask.manager.data.agent.mcp.AgentTool
+import com.zakodaniumask.manager.data.agent.web.WebFetchReader
+import com.zakodaniumask.manager.data.agent.web.WebSearchBackend
+import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
+import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
+import com.zakodaniumask.manager.ui.component.settings.SettingsChooseWidget
+import com.zakodaniumask.manager.ui.component.settings.SettingsJumpPageWidget
+import com.zakodaniumask.manager.ui.component.settings.SettingsSwitchWidget
+import com.zakodaniumask.manager.ui.component.settings.SettingsTextFieldWidget
+import com.zakodaniumask.manager.ui.component.settings.lazySegmentColumn
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.theme.CardConfig
@@ -66,10 +85,12 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-private val KNOWN_DOMAINS = listOf(
+/** Fallback tool domains until the live tool list is loaded. */
+private val FALLBACK_DOMAINS = listOf(
     "ksu", "flash", "module", "feature", "sepolicy", "profile", "susfs",
     "umount_config", "kpm", "plugin", "debug", "kernel", "manager",
     "detector", "shell", "insmod", "resetprop", "soft_reboot", "anykernel3",
+    "prop", "dynamic_manager", "initrc", "web", "file", "su", "appprofile",
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -84,52 +105,88 @@ fun AgentSettingsScreen() {
     val scope = rememberCoroutineScope()
 
     val initial = remember { viewModel.settings() }
-    var provider by remember { mutableStateOf(initial.provider) }
-    var endpoint by remember { mutableStateOf(initial.endpoint) }
-    var apiKey by remember { mutableStateOf(initial.apiKey) }
-    var model by remember { mutableStateOf(initial.model) }
-    var apiPath by remember { mutableStateOf(initial.apiPath) }
-    var userAgent by remember { mutableStateOf(initial.userAgent) }
-    var extraHeaders by remember { mutableStateOf(initial.extraHeaders) }
-    var temperature by remember { mutableStateOf(initial.temperature.toString()) }
-    var maxTokens by remember { mutableStateOf(initial.maxTokens.toString()) }
-    var maxIterations by remember { mutableStateOf(initial.maxIterations.toString()) }
-    var mode by remember { mutableStateOf(initial.mode) }
-    var systemPrompt by remember { mutableStateOf(initial.systemPrompt) }
-    var disabledDomains by remember { mutableStateOf(initial.disabledDomains) }
-    var allowRootShell by remember { mutableStateOf(initial.allowRootShell) }
-    var thinking by remember { mutableStateOf(initial.thinking) }
 
-    var policy by remember {
-        mutableStateOf(AgentMcpPolicyRepository.McpPolicy())
-    }
+    val endpoint = remember { TextFieldState(initial.endpoint) }
+    val apiKey = remember { TextFieldState(initial.apiKey) }
+    val model = remember { TextFieldState(initial.model) }
+    val apiPath = remember { TextFieldState(initial.apiPath) }
+    val userAgent = remember { TextFieldState(initial.userAgent) }
+    val extraHeaders = remember { TextFieldState(initial.extraHeaders) }
+    val temperature = remember { TextFieldState(initial.temperature.toString()) }
+    val maxTokens = remember { TextFieldState(initial.maxTokens.toString()) }
+    val maxIterations = remember { TextFieldState(initial.maxIterations.toString()) }
+    val systemPrompt = remember { TextFieldState(initial.systemPrompt) }
+
+    val webEndpoint = remember { TextFieldState(initial.webSearchEndpoint) }
+    val webApiKey = remember { TextFieldState(initial.webSearchApiKey) }
+    val webMaxResults = remember { TextFieldState(initial.webSearchMaxResults.toString()) }
+    val webFetchApiKey = remember { TextFieldState(initial.webFetchApiKey) }
+
+    var provider by remember { mutableStateOf(initial.provider) }
+    var mode by remember { mutableStateOf(initial.mode) }
+    var thinking by remember { mutableStateOf(initial.thinking) }
+    var allowRootShell by remember { mutableStateOf(initial.allowRootShell) }
+    var disabledDomains by remember { mutableStateOf(initial.disabledDomains) }
+    var webEnabled by remember { mutableStateOf(initial.webSearchEnabled) }
+    var webBackend by remember { mutableStateOf(initial.webSearchBackend) }
+    var webReader by remember { mutableStateOf(initial.webFetchReader) }
+    var webAllowLocal by remember { mutableStateOf(initial.webFetchAllowLocal) }
+
+    var policy by remember { mutableStateOf(AgentMcpPolicyRepository.McpPolicy()) }
     var tools by remember { mutableStateOf<List<AgentTool>>(emptyList()) }
+    var domains by remember { mutableStateOf(FALLBACK_DOMAINS) }
 
     LaunchedEffect(Unit) {
         policy = viewModel.loadPolicy()
+        val loaded = runCatching { viewModel.loadTools() }.getOrDefault(emptyList())
+        tools = loaded
+        val live = loaded.map { it.name.substringBefore('.') }
+            .filter { it.isNotBlank() }.distinct().sorted()
+        if (live.isNotEmpty()) domains = live
     }
 
     fun currentSettings(): AgentSettings = initial.copy(
         provider = provider,
-        endpoint = endpoint.trim(),
-        apiKey = apiKey.trim(),
-        model = model.trim(),
-        apiPath = apiPath.trim(),
-        userAgent = userAgent.trim(),
-        extraHeaders = extraHeaders.trim(),
-        temperature = temperature.toDoubleOrNull() ?: 0.3,
-        maxTokens = maxTokens.toIntOrNull() ?: 2048,
-        maxIterations = maxIterations.toIntOrNull() ?: 8,
+        endpoint = endpoint.text.toString().trim(),
+        apiKey = apiKey.text.toString().trim(),
+        model = model.text.toString().trim(),
+        apiPath = apiPath.text.toString().trim(),
+        userAgent = userAgent.text.toString().trim(),
+        extraHeaders = extraHeaders.text.toString().trim(),
+        temperature = temperature.text.toString().toDoubleOrNull() ?: 0.3,
+        maxTokens = maxTokens.text.toString().toIntOrNull() ?: 2048,
+        maxIterations = maxIterations.text.toString().toIntOrNull() ?: 8,
         mode = mode,
-        systemPrompt = systemPrompt,
+        systemPrompt = systemPrompt.text.toString(),
         disabledDomains = disabledDomains,
         allowRootShell = allowRootShell,
         thinking = thinking,
+        webSearchEnabled = webEnabled,
+        webSearchBackend = webBackend,
+        webSearchEndpoint = webEndpoint.text.toString().trim(),
+        webSearchApiKey = webApiKey.text.toString().trim(),
+        webSearchMaxResults = webMaxResults.text.toString().toIntOrNull() ?: 5,
+        webFetchReader = webReader,
+        webFetchApiKey = webFetchApiKey.text.toString().trim(),
+        webFetchAllowLocal = webAllowLocal,
     )
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val savedMessage = stringResource(R.string.agent_settings_saved)
+    val testDescription = state.testResult?.let { result ->
+        val llm = if (result.llmOk) {
+            stringResource(R.string.agent_test_llm_ok)
+        } else {
+            stringResource(R.string.agent_test_llm_fail, result.llmError ?: "")
+        }
+        val toolsLine = if (result.toolError == null) {
+            stringResource(R.string.agent_test_tools_ok, result.toolCount)
+        } else {
+            stringResource(R.string.agent_test_tools_fail, result.toolError)
+        }
+        "$llm\n$toolsLine"
+    }
     val modeLabels = listOf(
         stringResource(R.string.agent_mode_read_only),
         stringResource(R.string.agent_mode_write),
@@ -155,6 +212,7 @@ fun AgentSettingsScreen() {
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
+        snackbarHost = { SwipeableSnackbarHost(hostState = snackbar) },
         topBar = {
             LargeFlexibleTopAppBar(
                 modifier = Modifier.blurEffect(),
@@ -178,149 +236,143 @@ fun AgentSettingsScreen() {
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
         ) {
             item { Spacer(Modifier.height(paddingValues.calculateTopPadding())) }
+
             item {
-                SegmentedColumn {
+                SegmentedColumn(title = stringResource(R.string.agent_provider)) {
                     item {
-                        ChoiceField(
-                            label = stringResource(R.string.agent_provider),
-                            value = provider.label,
-                            options = LlmProviderType.entries.map { it.label },
-                            onSelect = { provider = LlmProviderType.entries[it] },
+                        SettingsChooseWidget(
+                            icon = Icons.TwoTone.Cloud,
+                            title = stringResource(R.string.agent_provider),
+                            items = LlmProviderType.entries.map { it.label },
+                            selectedIndex = provider.ordinal,
+                            onSelectedIndexChange = { provider = LlmProviderType.entries[it] },
                         )
                     }
                     item {
-                        Button(
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.CloudQueue,
+                            title = stringResource(R.string.agent_provider_manage),
+                            description = stringResource(R.string.agent_provider_manage_summary),
                             onClick = { navigator.push(Route.AgentProviders) },
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                        ) {
-                            Text(stringResource(R.string.agent_provider_manage))
-                        }
-                    }
-                    item {
-                        ChoiceField(
-                            label = stringResource(R.string.agent_mode),
-                            value = modeLabels[mode.ordinal],
-                            options = modeLabels,
-                            onSelect = { mode = AgentMode.entries[it] },
                         )
                     }
                     item {
-                        ChoiceField(
-                            label = stringResource(R.string.agent_reasoning_effort),
-                            value = thinkingLabels[thinking.ordinal],
-                            options = thinkingLabels,
-                            onSelect = { thinking = ThinkingLevel.entries[it] },
+                        SettingsChooseWidget(
+                            icon = Icons.TwoTone.Shield,
+                            title = stringResource(R.string.agent_mode),
+                            items = modeLabels,
+                            selectedIndex = mode.ordinal,
+                            onSelectedIndexChange = { mode = AgentMode.entries[it] },
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_endpoint),
-                            value = endpoint,
-                            onValueChange = { endpoint = it },
+                        SettingsChooseWidget(
+                            icon = Icons.TwoTone.Psychology,
+                            title = stringResource(R.string.agent_reasoning_effort),
+                            items = thinkingLabels,
+                            selectedIndex = thinking.ordinal,
+                            onSelectedIndexChange = { thinking = ThinkingLevel.entries[it] },
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_api_key),
-                            value = apiKey,
-                            onValueChange = { apiKey = it },
-                            isPassword = true,
+                        SettingsTextFieldWidget(
+                            state = endpoint,
+                            title = stringResource(R.string.agent_endpoint),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.Link) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_model),
-                            value = model,
-                            onValueChange = { model = it },
+                        SettingsTextFieldWidget(
+                            state = apiKey,
+                            title = stringResource(R.string.agent_api_key),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.Key) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_api_path),
-                            value = apiPath,
-                            onValueChange = { apiPath = it },
+                        SettingsTextFieldWidget(
+                            state = model,
+                            title = stringResource(R.string.agent_model),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.Memory) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_user_agent),
-                            value = userAgent,
-                            onValueChange = { userAgent = it },
+                        SettingsTextFieldWidget(
+                            state = apiPath,
+                            title = stringResource(R.string.agent_api_path),
+                            useLabelAsPlaceholder = true,
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_extra_headers),
-                            value = extraHeaders,
-                            onValueChange = { extraHeaders = it },
-                            singleLine = false,
+                        SettingsTextFieldWidget(
+                            state = userAgent,
+                            title = stringResource(R.string.agent_user_agent),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.Badge) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_temperature),
-                            value = temperature,
-                            onValueChange = { temperature = it },
+                        SettingsTextFieldWidget(
+                            state = extraHeaders,
+                            title = stringResource(R.string.agent_extra_headers),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.DataObject) },
+                            lineLimits = TextFieldLineLimits.FourLines,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_max_tokens),
-                            value = maxTokens,
-                            onValueChange = { maxTokens = it },
+                        SettingsTextFieldWidget(
+                            state = temperature,
+                            title = stringResource(R.string.agent_temperature),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.Thermostat) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_max_iterations),
-                            value = maxIterations,
-                            onValueChange = { maxIterations = it },
+                        SettingsTextFieldWidget(
+                            state = maxTokens,
+                            title = stringResource(R.string.agent_max_tokens),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.DataUsage) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        TextFieldRow(
-                            label = stringResource(R.string.agent_system_prompt),
-                            value = systemPrompt,
-                            onValueChange = { systemPrompt = it },
-                            singleLine = false,
+                        SettingsTextFieldWidget(
+                            state = maxIterations,
+                            title = stringResource(R.string.agent_max_iterations),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.Autorenew) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
                     }
                     item {
-                        Button(
-                            onClick = {
-                                viewModel.saveSettings(currentSettings())
-                                scope.launch { snackbar.showReplacingSnackbar(savedMessage) }
-                            },
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                        ) {
-                            Text(stringResource(R.string.agent_save))
-                        }
+                        SettingsTextFieldWidget(
+                            state = systemPrompt,
+                            title = stringResource(R.string.agent_system_prompt),
+                            useLabelAsPlaceholder = true,
+                            leadingContent = { Icon(Icons.TwoTone.Article) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                        )
                     }
                 }
             }
 
-            // --- Shell ---
             item {
-                SectionCard {
-                    Text(
-                        text = stringResource(R.string.agent_shell_title),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                    Text(
-                        text = stringResource(R.string.agent_allow_root_shell_summary),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.agent_allow_root_shell),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Switch(
+                SegmentedColumn(title = stringResource(R.string.agent_shell_title)) {
+                    item {
+                        SettingsSwitchWidget(
+                            icon = Icons.TwoTone.Terminal,
+                            title = stringResource(R.string.agent_allow_root_shell),
+                            description = stringResource(R.string.agent_allow_root_shell_summary),
                             checked = allowRootShell,
                             onCheckedChange = { allowRootShell = it },
                         )
@@ -328,155 +380,221 @@ fun AgentSettingsScreen() {
                 }
             }
 
-            // --- Test connection ---
             item {
-                SectionCard {
-                    Text(
-                        text = stringResource(R.string.agent_test),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Button(
-                        onClick = { viewModel.testConnection(currentSettings()) },
-                        enabled = !state.isTesting,
-                    ) {
-                        Text(
-                            if (state.isTesting) stringResource(R.string.agent_testing)
-                            else stringResource(R.string.agent_test)
+                SegmentedColumn(title = stringResource(R.string.agent_web_title)) {
+                    item {
+                        SettingsSwitchWidget(
+                            icon = Icons.TwoTone.Public,
+                            title = stringResource(R.string.agent_web_enable),
+                            description = stringResource(R.string.agent_web_enable_summary),
+                            checked = webEnabled,
+                            onCheckedChange = { webEnabled = it },
                         )
                     }
-                    state.testResult?.let { result ->
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = if (result.llmOk) {
-                                stringResource(R.string.agent_test_llm_ok)
-                            } else {
-                                stringResource(
-                                    R.string.agent_test_llm_fail,
-                                    result.llmError ?: "",
-                                )
-                            },
-                            style = MaterialTheme.typography.bodySmall,
+                    item {
+                        SettingsChooseWidget(
+                            icon = Icons.TwoTone.Hub,
+                            title = stringResource(R.string.agent_web_backend),
+                            items = WebSearchBackend.entries.map { it.label },
+                            selectedIndex = webBackend.ordinal,
+                            enabled = webEnabled,
+                            onSelectedIndexChange = { webBackend = WebSearchBackend.entries[it] },
                         )
-                        Text(
-                            text = if (result.toolError == null) {
-                                stringResource(R.string.agent_test_tools_ok, result.toolCount)
-                            } else {
-                                stringResource(R.string.agent_test_tools_fail, result.toolError)
-                            },
-                            style = MaterialTheme.typography.bodySmall,
+                    }
+                    item {
+                        SettingsTextFieldWidget(
+                            state = webEndpoint,
+                            title = stringResource(R.string.agent_web_endpoint),
+                            useLabelAsPlaceholder = true,
+                            enabled = webEnabled,
+                            leadingContent = { Icon(Icons.TwoTone.Link) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                        )
+                    }
+                    item {
+                        SettingsTextFieldWidget(
+                            state = webApiKey,
+                            title = stringResource(R.string.agent_web_api_key),
+                            useLabelAsPlaceholder = true,
+                            enabled = webEnabled,
+                            leadingContent = { Icon(Icons.TwoTone.Key) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                        )
+                    }
+                    item {
+                        SettingsTextFieldWidget(
+                            state = webMaxResults,
+                            title = stringResource(R.string.agent_web_max_results),
+                            useLabelAsPlaceholder = true,
+                            enabled = webEnabled,
+                            leadingContent = { Icon(Icons.TwoTone.DataUsage) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                        )
+                    }
+                    item {
+                        SettingsChooseWidget(
+                            icon = Icons.TwoTone.Article,
+                            title = stringResource(R.string.agent_web_fetch_reader),
+                            items = WebFetchReader.entries.map { it.label },
+                            selectedIndex = webReader.ordinal,
+                            enabled = webEnabled,
+                            onSelectedIndexChange = { webReader = WebFetchReader.entries[it] },
+                        )
+                    }
+                    item {
+                        SettingsTextFieldWidget(
+                            state = webFetchApiKey,
+                            title = stringResource(R.string.agent_web_fetch_api_key),
+                            useLabelAsPlaceholder = true,
+                            enabled = webEnabled,
+                            leadingContent = { Icon(Icons.TwoTone.Key) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
+                        )
+                    }
+                    item {
+                        SettingsSwitchWidget(
+                            icon = Icons.TwoTone.Lan,
+                            title = stringResource(R.string.agent_web_allow_local),
+                            description = stringResource(R.string.agent_web_allow_local_summary),
+                            checked = webAllowLocal,
+                            onCheckedChange = { webAllowLocal = it },
                         )
                     }
                 }
             }
 
-            // --- Tool domains ---
             item {
-                SectionCard {
-                    Text(
-                        text = stringResource(R.string.agent_domains_title),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                    Text(
-                        text = stringResource(R.string.agent_domains_summary),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    KNOWN_DOMAINS.forEach { domain ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(
-                                text = domain,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Switch(
-                                checked = domain !in disabledDomains,
-                                onCheckedChange = { enabled ->
-                                    disabledDomains = if (enabled) {
-                                        disabledDomains - domain
-                                    } else {
-                                        disabledDomains + domain
-                                    }
-                                },
-                            )
-                        }
+                SegmentedColumn(title = stringResource(R.string.agent_test)) {
+                    item {
+                        SettingsBaseWidget(
+                            icon = Icons.TwoTone.Science,
+                            title = if (state.isTesting) {
+                                stringResource(R.string.agent_testing)
+                            } else {
+                                stringResource(R.string.agent_test)
+                            },
+                            description = testDescription,
+                            enabled = !state.isTesting,
+                            onClick = { viewModel.testConnection(currentSettings()) },
+                        )
                     }
                 }
             }
 
-            // --- Kernel MCP policy ---
             item {
-                SectionCard {
-                    Text(
-                        text = stringResource(R.string.agent_policy_title),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                    Text(
-                        text = stringResource(R.string.agent_policy_summary),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    val currentTier = policy.maxTier
-                    ChoiceField(
-                        label = stringResource(R.string.agent_policy_max_tier),
-                        value = tierLabels.getOrElse(tierIds.indexOf(currentTier)) { tierLabels[0] },
-                        options = tierLabels,
-                        onSelect = { index ->
-                            val tier = tierIds[index]
-                            scope.launch {
-                                viewModel.setPolicyMaxTier(tier)
-                                policy = viewModel.loadPolicy()
-                            }
-                        },
-                    )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Button(onClick = {
-                            scope.launch { tools = viewModel.loadTools() }
-                        }) {
-                            Text(stringResource(R.string.agent_policy_load_tools))
-                        }
-                        Spacer(Modifier.weight(1f))
-                        TextButton(onClick = {
-                            scope.launch {
-                                viewModel.resetPolicy()
-                                policy = viewModel.loadPolicy()
-                            }
-                        }) {
-                            Text(stringResource(R.string.agent_policy_reset))
-                        }
-                    }
-                    if (tools.isNotEmpty()) {
-                        Text(
-                            text = stringResource(R.string.agent_policy_tools_count, tools.size),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                SegmentedColumn(title = stringResource(R.string.agent_policy_title)) {
+                    item {
+                        SettingsBaseWidget(
+                            icon = Icons.TwoTone.Policy,
+                            title = stringResource(R.string.agent_policy_summary),
+                            description = null,
+                            onClick = null,
                         )
-                        tools.forEach { tool ->
-                            val current = when (tool.name) {
-                                in policy.deny -> 2
-                                in policy.allow -> 1
-                                else -> 0
+                    }
+                    item {
+                        SettingsChooseWidget(
+                            icon = Icons.TwoTone.Shield,
+                            title = stringResource(R.string.agent_policy_max_tier),
+                            items = tierLabels,
+                            selectedIndex = tierIds.indexOf(policy.maxTier).coerceAtLeast(0),
+                            onSelectedIndexChange = { index ->
+                                val tier = tierIds[index]
+                                scope.launch {
+                                    viewModel.setPolicyMaxTier(tier)
+                                    policy = viewModel.loadPolicy()
+                                }
+                            },
+                        )
+                    }
+                    item {
+                        SettingsBaseWidget(
+                            icon = Icons.TwoTone.Extension,
+                            title = stringResource(R.string.agent_policy_load_tools),
+                            description = stringResource(
+                                R.string.agent_policy_tools_count,
+                                tools.size,
+                            ),
+                            onClick = { scope.launch { tools = viewModel.loadTools() } },
+                        )
+                    }
+                    item {
+                        SettingsBaseWidget(
+                            icon = Icons.TwoTone.Autorenew,
+                            title = stringResource(R.string.agent_policy_reset),
+                            onClick = {
+                                scope.launch {
+                                    viewModel.resetPolicy()
+                                    policy = viewModel.loadPolicy()
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+
+            lazySegmentColumn(
+                items = tools,
+                title = stringResource(R.string.agent_policy_title),
+                key = { _, tool -> tool.name },
+            ) { _, tool ->
+                val selection = when (tool.name) {
+                    in policy.deny -> 2
+                    in policy.allow -> 1
+                    else -> 0
+                }
+                SettingsChooseWidget(
+                    iconPlaceholder = false,
+                    title = tool.name,
+                    items = listOf(
+                        stringResource(R.string.agent_policy_default),
+                        stringResource(R.string.agent_policy_allow),
+                        stringResource(R.string.agent_policy_deny),
+                    ),
+                    selectedIndex = selection,
+                    onSelectedIndexChange = { choice ->
+                        scope.launch {
+                            when (choice) {
+                                1 -> viewModel.allowPolicyTool(tool.name)
+                                2 -> viewModel.denyPolicyTool(tool.name)
+                                else -> viewModel.clearPolicyTool(tool.name)
                             }
-                            ToolPolicyRow(
-                                name = tool.name,
-                                selection = current,
-                                onSelect = { choice ->
-                                    scope.launch {
-                                        when (choice) {
-                                            1 -> viewModel.allowPolicyTool(tool.name)
-                                            2 -> viewModel.denyPolicyTool(tool.name)
-                                            else -> viewModel.clearPolicyTool(tool.name)
-                                        }
-                                        policy = viewModel.loadPolicy()
-                                    }
-                                },
-                            )
+                            policy = viewModel.loadPolicy()
                         }
+                    },
+                )
+            }
+
+            lazySegmentColumn(
+                items = domains,
+                title = stringResource(R.string.agent_domains_title),
+                key = { _, domain -> domain },
+            ) { _, domain ->
+                SettingsSwitchWidget(
+                    icon = Icons.TwoTone.Extension,
+                    title = domain,
+                    description = stringResource(R.string.agent_domains_summary),
+                    checked = domain !in disabledDomains,
+                    onCheckedChange = { enabled ->
+                        disabledDomains = if (enabled) {
+                            disabledDomains - domain
+                        } else {
+                            disabledDomains + domain
+                        }
+                    },
+                )
+            }
+
+            item {
+                SegmentedColumn {
+                    item {
+                        SettingsBaseWidget(
+                            icon = Icons.TwoTone.Save,
+                            title = stringResource(R.string.agent_save),
+                            onClick = {
+                                viewModel.saveSettings(currentSettings())
+                                scope.launch { snackbar.showReplacingSnackbar(savedMessage) }
+                            },
+                        )
                     }
                 }
             }
@@ -487,100 +605,10 @@ fun AgentSettingsScreen() {
 }
 
 @Composable
-private fun SectionCard(content: @Composable ColumnScope.() -> Unit) {
-    androidx.compose.material3.Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-    ) {
-        Column(modifier = Modifier.padding(16.dp), content = content)
-    }
-}
-
-@Composable
-private fun ToolPolicyRow(
-    name: String,
-    selection: Int,
-    onSelect: (Int) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val labels = listOf(
-        stringResource(R.string.agent_policy_default),
-        stringResource(R.string.agent_policy_allow),
-        stringResource(R.string.agent_policy_deny),
+private fun Icon(image: androidx.compose.ui.graphics.vector.ImageVector) {
+    androidx.compose.material3.Icon(
+        imageVector = image,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f),
-        )
-        Box {
-            TextButton(onClick = { expanded = true }) { Text(labels[selection]) }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                labels.forEachIndexed { index, label ->
-                    DropdownMenuItem(
-                        text = { Text(label) },
-                        onClick = {
-                            expanded = false
-                            onSelect(index)
-                        },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ChoiceField(
-    label: String,
-    value: String,
-    options: List<String>,
-    onSelect: (Int) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    Column(modifier = Modifier.padding(vertical = 6.dp)) {
-        Text(text = label, style = MaterialTheme.typography.bodySmall)
-        Box {
-            TextButton(onClick = { expanded = true }) { Text(value) }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                options.forEachIndexed { index, option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            expanded = false
-                            onSelect(index)
-                        },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TextFieldRow(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    isPassword: Boolean = false,
-    singleLine: Boolean = true,
-) {
-    Column(modifier = Modifier.padding(vertical = 6.dp)) {
-        Text(text = label, style = MaterialTheme.typography.bodySmall)
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = singleLine,
-            maxLines = if (singleLine) 1 else 8,
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        )
-    }
 }

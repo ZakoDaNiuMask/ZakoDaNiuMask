@@ -125,6 +125,17 @@
     <string name="agent_error_unknown_tool">未知工具：%1$s</string>
     <string name="agent_denied_domain">工具域 "%1$s" 已被禁用</string>
     <string name="agent_denied_mode">被 %1$s 模式拒绝</string>
+    <string name="agent_web_title">联网搜索</string>
+    <string name="agent_web_enable">启用联网搜索</string>
+    <string name="agent_web_enable_summary">允许助手搜索网页并抓取页面。</string>
+    <string name="agent_web_backend">后端</string>
+    <string name="agent_web_endpoint">SearXNG 地址（可选）</string>
+    <string name="agent_web_api_key">API 密钥</string>
+    <string name="agent_web_max_results">最大结果数</string>
+    <string name="agent_web_fetch_reader">网页读取方式</string>
+    <string name="agent_web_fetch_api_key">读取器 API 密钥</string>
+    <string name="agent_web_allow_local">允许本地地址</string>
+    <string name="agent_web_allow_local_summary">允许抓取本地/内网地址（存在 SSRF 风险）。</string>
     <string name="agent_tool_arguments">参数</string>
     <string name="agent_tool_result">结果</string>
     <string name="agent_tool_copy_result">复制结果</string>
@@ -164,6 +175,7 @@
     <string name="agent_provider_name">名称</string>
     <string name="agent_provider_type">类型</string>
     <string name="agent_provider_delete">删除</string>
+    <string name="agent_provider_delete_confirm">删除此提供方？</string>
     <string name="agent_provider_active">当前使用</string>
     <string name="agent_provider_set_active">设为当前</string>
     <string name="agent_provider_fetch_models">获取模型</string>
@@ -191,6 +203,7 @@
     <string name="agent_max_iterations">最大工具轮数</string>
     <string name="agent_system_prompt">系统提示词（可选）</string>
     <string name="agent_audit_empty">暂无工具调用记录。</string>
+    <string name="agent_audit_clear_confirm">清空所有工具调用记录？</string>
     <string name="agent_running">助手正在处理…</string>
     <string name="agent_sessions">对话</string>
     <string name="agent_new_chat">新建对话</string>

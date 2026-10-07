@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.zakodaniumask.manager.ui.screen.agent
 
-import android.content.ClipData as AndroidClipData
-import android.content.ClipboardManager as AndroidClipboardManager
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,8 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.Send
 import androidx.compose.material.icons.twotone.Delete
@@ -36,10 +30,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -65,7 +57,7 @@ import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.data.agent.AgentRunService
 import com.zakodaniumask.manager.data.agent.AgentSessionMeta
 import com.zakodaniumask.manager.data.agent.mcp.ToolTier
-import com.zakodaniumask.manager.ui.markdown.MarkdownText
+import com.zakodaniumask.manager.ui.component.agent.AgentChatItemRow
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.theme.CardConfig
@@ -73,8 +65,6 @@ import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.zakodaniumask.manager.ui.theme.blurEffect
 import com.zakodaniumask.manager.ui.theme.blurSource
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
-import com.zakodaniumask.manager.ui.viewmodel.AgentChatItem
-import com.zakodaniumask.manager.ui.viewmodel.AgentToolStatus
 import com.zakodaniumask.manager.ui.viewmodel.AgentViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -255,7 +245,7 @@ fun AgentPage(bottomPadding: Dp = 0.dp) {
                     }
                 }
                 items(state.items, key = { it.id }) { item ->
-                    AgentItemRow(item)
+                    AgentChatItemRow(item)
                 }
                 if (state.isRunning) {
                     item {
@@ -304,194 +294,6 @@ fun AgentPage(bottomPadding: Dp = 0.dp) {
                 }
             }
             Spacer(Modifier.height(8.dp + bottomPadding))
-        }
-    }
-}
-
-@Composable
-private fun AgentItemRow(item: AgentChatItem) {
-    when (item) {
-        is AgentChatItem.User -> Bubble(
-            text = item.text,
-            container = MaterialTheme.colorScheme.primaryContainer,
-            alignEnd = true,
-        )
-
-        is AgentChatItem.Assistant -> Bubble(
-            text = item.text,
-            container = MaterialTheme.colorScheme.surfaceContainerHigh,
-            alignEnd = false,
-            markdown = true,
-        )
-
-        is AgentChatItem.Info -> Text(
-            text = item.text,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        is AgentChatItem.Thinking -> ThinkingBubble(item.text)
-
-        is AgentChatItem.ToolCall -> ToolCallBubble(item)
-    }
-}
-
-@Composable
-private fun toolStatusLabel(status: AgentToolStatus): String = stringResource(
-    when (status) {
-        AgentToolStatus.PENDING -> R.string.agent_status_pending
-        AgentToolStatus.RUNNING -> R.string.agent_status_running
-        AgentToolStatus.DONE -> R.string.agent_status_done
-        AgentToolStatus.ERROR -> R.string.agent_status_error
-        AgentToolStatus.DENIED -> R.string.agent_status_denied
-    },
-)
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ToolCallBubble(item: AgentChatItem.ToolCall) {
-    val context = LocalContext.current
-    var showDetail by remember { mutableStateOf(false) }
-    val color = when (item.status) {
-        AgentToolStatus.ERROR, AgentToolStatus.DENIED -> MaterialTheme.colorScheme.errorContainer
-        AgentToolStatus.RUNNING -> MaterialTheme.colorScheme.tertiaryContainer
-        else -> MaterialTheme.colorScheme.secondaryContainer
-    }
-    Surface(
-        color = color,
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { showDetail = true },
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = "${item.tool} · ${toolStatusLabel(item.status)}",
-                style = MaterialTheme.typography.labelMedium,
-            )
-            if (item.arguments.isNotBlank() && item.arguments != "{}") {
-                Text(
-                    text = item.arguments,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-            if (item.result.isNotBlank()) {
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = item.result.take(200),
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-    }
-    if (showDetail) {
-        ModalBottomSheet(onDismissRequest = { showDetail = false }) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 32.dp),
-            ) {
-                Text(
-                    text = item.tool,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = toolStatusLabel(item.status),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                if (item.arguments.isNotBlank() && item.arguments != "{}") {
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(R.string.agent_tool_arguments),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                    SelectionContainer {
-                        Text(item.arguments, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-                if (item.result.isNotBlank()) {
-                    Spacer(Modifier.height(12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(R.string.agent_tool_result),
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.weight(1f),
-                        )
-                        TextButton(onClick = {
-                            val cm = context.getSystemService(Context.CLIPBOARD_SERVICE)
-                                as AndroidClipboardManager
-                            cm.setPrimaryClip(AndroidClipData.newPlainText("result", item.result))
-                        }) {
-                            Text(stringResource(R.string.agent_tool_copy_result))
-                        }
-                    }
-                    SelectionContainer {
-                        Text(item.result, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ThinkingBubble(text: String) {
-    var expanded by rememberSaveable { mutableStateOf(true) }
-    Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { expanded = !expanded },
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = (if (expanded) "\u25be " else "\u25b8 ") +
-                    stringResource(R.string.agent_thinking_stream),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            if (expanded) {
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun Bubble(text: String, container: Color, alignEnd: Boolean, markdown: Boolean = false) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = if (alignEnd) Alignment.CenterEnd else Alignment.CenterStart,
-    ) {
-        Surface(
-            color = container,
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(0.9f),
-        ) {
-            if (markdown) {
-                SelectionContainer {
-                    MarkdownText(
-                        markdown = text,
-                        modifier = Modifier.padding(12.dp),
-                    )
-                }
-            } else {
-                SelectionContainer {
-                    Text(
-                        text = text,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(12.dp),
-                    )
-                }
-            }
         }
     }
 }

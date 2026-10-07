@@ -124,6 +124,17 @@
     <string name="agent_error_unknown_tool">Unknown tool: %1$s</string>
     <string name="agent_denied_domain">Tool domain "%1$s" is disabled</string>
     <string name="agent_denied_mode">Denied by %1$s mode</string>
+    <string name="agent_web_title">Web search</string>
+    <string name="agent_web_enable">Enable web search</string>
+    <string name="agent_web_enable_summary">Allow the assistant to search the web and fetch pages.</string>
+    <string name="agent_web_backend">Backend</string>
+    <string name="agent_web_endpoint">SearXNG endpoint (optional)</string>
+    <string name="agent_web_api_key">API key</string>
+    <string name="agent_web_max_results">Max results</string>
+    <string name="agent_web_fetch_reader">Page reader</string>
+    <string name="agent_web_fetch_api_key">Reader API key</string>
+    <string name="agent_web_allow_local">Allow local addresses</string>
+    <string name="agent_web_allow_local_summary">Permit fetching local/private network addresses (SSRF risk).</string>
     <string name="agent_tool_arguments">Arguments</string>
     <string name="agent_tool_result">Result</string>
     <string name="agent_tool_copy_result">Copy result</string>
@@ -163,6 +174,7 @@
     <string name="agent_provider_name">Name</string>
     <string name="agent_provider_type">Type</string>
     <string name="agent_provider_delete">Delete</string>
+    <string name="agent_provider_delete_confirm">Delete this provider?</string>
     <string name="agent_provider_active">Active</string>
     <string name="agent_provider_set_active">Set active</string>
     <string name="agent_provider_fetch_models">Fetch models</string>
@@ -190,6 +202,7 @@
     <string name="agent_max_iterations">Max tool iterations</string>
     <string name="agent_system_prompt">System prompt (optional)</string>
     <string name="agent_audit_empty">No tool calls yet.</string>
+    <string name="agent_audit_clear_confirm">Clear all tool-call history?</string>
     <string name="agent_running">Agent is working…</string>
     <string name="agent_sessions">Chats</string>
     <string name="agent_new_chat">New chat</string>
