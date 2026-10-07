@@ -721,6 +721,13 @@
     <string name="ghostlock_fallback_none">不启用</string>
     <string name="settings_ignore_uapi">忽略 UAPI 兼容性</string>
     <string name="settings_ignore_uapi_summary">即使内核 UAPI 版本不匹配，也将管理器视为可用；同时允许插件在开机时运行。</string>
+    <string name="settings_show_full_status">显示完整状态</string>
+    <string name="settings_show_full_status_summary">在主页卡片上显示指纹、完整内核版本和内核警告</string>
+    <string name="settings_module_description_max_lines">模块描述行数</string>
+    <string name="settings_module_description_max_lines_summary">模块卡片上折叠描述的最大行数</string>
+    <string name="settings_module_description_max_lines_value">%d 行</string>
+    <string name="settings_enable_web_debugging">WebView 调试</string>
+    <string name="settings_enable_web_debugging_summary">允许通过 chrome://inspect 调试模块 WebUI</string>
     <string name="no_any_umount_path">没有任何内核卸载路径</string>
     <string name="add_umount_path">添加 Umount 路径</string>
     <string name="mount_path">挂载路径</string>

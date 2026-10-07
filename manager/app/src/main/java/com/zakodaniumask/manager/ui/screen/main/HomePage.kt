@@ -375,6 +375,7 @@ fun HomePage(
                         systemStatus = uiState.systemStatus,
                         systemInfo = uiState.systemInfo,
                         isSimpleMode = uiState.isSimpleMode,
+                        showFullStatus = uiState.showFullStatus,
                         showHomeCardIcons = uiState.showHomeCardIcons,
                     )
                 }
@@ -690,6 +691,7 @@ private fun InfoCard(
     systemStatus: KernelStatus,
     systemInfo: HomeSystemInfo,
     isSimpleMode: Boolean,
+    showFullStatus: Boolean,
     showHomeCardIcons: Boolean,
 ) {
     val managersList = systemInfo.managersList
@@ -730,7 +732,7 @@ private fun InfoCard(
 
 
         item(
-            visible = systemStatus.isManager
+            visible = systemStatus.isManager && (showFullStatus || !isSimpleMode)
         ) {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Memory.takeIf { showHomeCardIcons },

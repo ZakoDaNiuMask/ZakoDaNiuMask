@@ -35,6 +35,7 @@ import androidx.compose.material.icons.twotone.Android
 import androidx.compose.material.icons.twotone.Animation
 import androidx.compose.material.icons.twotone.Badge
 import androidx.compose.material.icons.twotone.BlurOn
+import androidx.compose.material.icons.twotone.Notes
 import androidx.compose.material.icons.twotone.Brush
 import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material.icons.twotone.ColorLens
@@ -693,6 +694,53 @@ private fun AppearanceSettings(
                 )
             }
         )
+
+        item(
+            forceFlatBottom = true,
+        ) {
+            SettingsBaseWidget(
+                icon = Icons.TwoTone.Notes,
+                title = stringResource(R.string.settings_module_description_max_lines),
+                description = stringResource(R.string.settings_module_description_max_lines_summary),
+                onClick = {},
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.settings_module_description_max_lines_value,
+                        state.moduleDescriptionMaxLines,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        item(
+            topPadding = 1.dp,
+            forceFlatTop = true,
+        ) { shape ->
+            Surface(
+                modifier = Modifier
+                    .clip(shape)
+                    .renderBackgroundBlur(MaterialTheme.colorScheme.surfaceBright),
+                color = if (themeConfig.isEnableBlurExp) Color.Transparent else MaterialTheme.colorScheme.surfaceBright.copy(
+                    alpha = cardConfig.cardAlpha
+                ),
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    KeyPointSlider(
+                        value = state.moduleDescriptionMaxLines.toFloat(),
+                        onValueChange = {
+                            viewModel.dispatch(
+                                SettingsUiAction.SetModuleDescriptionMaxLines(it.toInt())
+                            )
+                        },
+                        valueRange = 1f..10f,
+                        steps = 8,
+                    )
+                }
+            }
+        }
     }
 }
 

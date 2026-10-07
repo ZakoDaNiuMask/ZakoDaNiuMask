@@ -92,6 +92,10 @@ class SettingsPlatformRepository(
             enableSwipeDismiss = settings.getBoolean("enable_swipe_dismiss", true),
             pagerInterceptionMode = settings.getInt("pager_interception_mode", 1).coerceIn(0, 2),
             ignoreUapi = settings.getBoolean("ignore_uapi", false),
+            moduleDescriptionMaxLines = settings.getInt("module_description_max_lines", 4)
+                .coerceIn(1, 10),
+            showFullStatus = settings.getBoolean("show_fingerprint", false),
+            enableWebDebugging = settings.getBoolean("enable_web_debugging", false),
         )
     }
 
@@ -209,6 +213,14 @@ class SettingsPlatformRepository(
                 settings.putInt("pager_interception_mode", setting.value.coerceIn(0, 2))
 
             is PlatformSetting.IgnoreUapi -> setIgnoreUapi(setting.enabled)
+            is PlatformSetting.ModuleDescriptionMaxLines ->
+                settings.putInt("module_description_max_lines", setting.value.coerceIn(1, 10))
+
+            is PlatformSetting.ShowFullStatus ->
+                settings.putBoolean("show_fingerprint", setting.enabled)
+
+            is PlatformSetting.WebDebugging ->
+                settings.putBoolean("enable_web_debugging", setting.enabled)
         }
         Result.success(load())
     } catch (error: CancellationException) {

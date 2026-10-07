@@ -102,6 +102,9 @@ data class SettingsUiState(
     val enableSwipeDismiss: Boolean = true,
     val pagerInterceptionMode: Int = 1,
     val ignoreUapi: Boolean = false,
+    val moduleDescriptionMaxLines: Int = 4,
+    val showFullStatus: Boolean = false,
+    val enableWebDebugging: Boolean = false,
 )
 
 sealed interface SettingsUiAction {
@@ -144,6 +147,9 @@ sealed interface SettingsUiAction {
     data class SetSwipeDismiss(val enabled: Boolean) : SettingsUiAction
     data class SetPagerInterceptionMode(val index: Int) : SettingsUiAction
     data class SetIgnoreUapi(val enabled: Boolean) : SettingsUiAction
+    data class SetModuleDescriptionMaxLines(val value: Int) : SettingsUiAction
+    data class SetShowFullStatus(val enabled: Boolean) : SettingsUiAction
+    data class SetWebDebugging(val enabled: Boolean) : SettingsUiAction
 }
 
 sealed interface SettingsUiEvent {
@@ -462,12 +468,32 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetPagerInterceptionMode ->
                 handlePagerInterceptionModeChange(action.index)
             is SettingsUiAction.SetIgnoreUapi -> handleIgnoreUapiChange(action.enabled)
+            is SettingsUiAction.SetModuleDescriptionMaxLines ->
+                handleModuleDescriptionMaxLinesChange(action.value)
+            is SettingsUiAction.SetShowFullStatus -> handleShowFullStatusChange(action.enabled)
+            is SettingsUiAction.SetWebDebugging -> handleWebDebuggingChange(action.enabled)
         }
     }
 
     fun handleIgnoreUapiChange(enabled: Boolean) {
         mutableState.update { it.copy(ignoreUapi = enabled) }
         updatePlatformAsync(PlatformSetting.IgnoreUapi(enabled))
+    }
+
+    fun handleModuleDescriptionMaxLinesChange(value: Int) {
+        val coerced = value.coerceIn(1, 10)
+        mutableState.update { it.copy(moduleDescriptionMaxLines = coerced) }
+        updatePlatformAsync(PlatformSetting.ModuleDescriptionMaxLines(coerced))
+    }
+
+    fun handleShowFullStatusChange(enabled: Boolean) {
+        mutableState.update { it.copy(showFullStatus = enabled) }
+        updatePlatformAsync(PlatformSetting.ShowFullStatus(enabled))
+    }
+
+    fun handleWebDebuggingChange(enabled: Boolean) {
+        mutableState.update { it.copy(enableWebDebugging = enabled) }
+        updatePlatformAsync(PlatformSetting.WebDebugging(enabled))
     }
 
     fun handleBuiltinMonospaceFontChange(checked: Boolean) {
@@ -533,6 +559,9 @@ fun dispatch(action: SettingsUiAction) {
                 enableSwipeDismiss = snapshot.enableSwipeDismiss,
                 pagerInterceptionMode = snapshot.pagerInterceptionMode,
                 ignoreUapi = snapshot.ignoreUapi,
+                moduleDescriptionMaxLines = snapshot.moduleDescriptionMaxLines,
+                showFullStatus = snapshot.showFullStatus,
+                enableWebDebugging = snapshot.enableWebDebugging,
             )
         }
     }
