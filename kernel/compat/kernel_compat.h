@@ -150,7 +150,7 @@ static_assert(1 == 0, "Unsupported architecture!");
 // when running on an affected Samsung device.
 #ifdef SAMSUNG_UH_DRIVER_EXIST
 #if defined(CONFIG_UH) || defined(CONFIG_KDP) || defined(CONFIG_RKP)
-#warning                                                                                                                \
+#warning                                                                                                               \
     "CONFIG_UH, CONFIG_KDP or CONFIG_RKP is enabled: build with KernelSU's Samsung compat framework (KSU_FEATURE_SAMSUNG_COMPAT, default off) to run on this device."
 #endif
 #endif

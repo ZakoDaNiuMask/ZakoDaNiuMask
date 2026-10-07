@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.calculateBottomPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,13 +47,14 @@ import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.theme.blurEffect
 import com.zakodaniumask.manager.ui.theme.blurSource
-import com.zakodaniumask.manager.ui.theme.cardConfig
-import com.zakodaniumask.manager.ui.theme.themeConfig
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
 import com.zakodaniumask.manager.ui.viewmodel.MemSpoofEvent
 import com.zakodaniumask.manager.ui.viewmodel.MemSpoofViewModel
+import com.zakodaniumask.manager.ui.theme.CardConfig
+import com.zakodaniumask.manager.ui.theme.ThemeConfig
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -63,6 +63,9 @@ fun MemSpoofScreen(viewModel: MemSpoofViewModel = koinViewModel()) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val navigator = LocalNavigator.current
     val snackBarHost = LocalSnackbarHost.current
+
+    val themeConfig: ThemeConfig = koinInject()
+    val cardConfig: CardConfig = koinInject()
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
