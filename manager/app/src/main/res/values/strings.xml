@@ -110,6 +110,9 @@
     <string name="agent_empty">Ask the assistant to inspect or manage this device.</string>
     <string name="agent_thinking">Working…</string>
     <string name="agent_thinking_stream">Reasoning</string>
+    <string name="agent_tool_arguments">Arguments</string>
+    <string name="agent_tool_result">Result</string>
+    <string name="agent_tool_copy_result">Copy result</string>
     <string name="agent_input_hint">Message the assistant</string>
     <string name="agent_confirm_title">Confirm tool call</string>
     <string name="agent_confirm_message">Run %1$s (%2$s)?</string>

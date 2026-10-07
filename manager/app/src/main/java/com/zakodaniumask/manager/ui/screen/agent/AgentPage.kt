@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.zakodaniumask.manager.ui.screen.agent
 
+import android.content.ClipData as AndroidClipData
+import android.content.ClipboardManager as AndroidClipboardManager
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +22,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.Send
 import androidx.compose.material.icons.twotone.Delete
@@ -32,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -327,34 +332,92 @@ private fun AgentItemRow(item: AgentChatItem) {
 
         is AgentChatItem.Thinking -> ThinkingBubble(item.text)
 
-        is AgentChatItem.ToolCall -> {
-            val color = when (item.status) {
-                AgentToolStatus.ERROR, AgentToolStatus.DENIED -> MaterialTheme.colorScheme.errorContainer
-                AgentToolStatus.RUNNING -> MaterialTheme.colorScheme.tertiaryContainer
-                else -> MaterialTheme.colorScheme.secondaryContainer
+        is AgentChatItem.ToolCall -> ToolCallBubble(item)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ToolCallBubble(item: AgentChatItem.ToolCall) {
+    val context = LocalContext.current
+    var showDetail by remember { mutableStateOf(false) }
+    val color = when (item.status) {
+        AgentToolStatus.ERROR, AgentToolStatus.DENIED -> MaterialTheme.colorScheme.errorContainer
+        AgentToolStatus.RUNNING -> MaterialTheme.colorScheme.tertiaryContainer
+        else -> MaterialTheme.colorScheme.secondaryContainer
+    }
+    Surface(
+        color = color,
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { showDetail = true },
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = "${item.tool} · ${item.status.name.lowercase()}",
+                style = MaterialTheme.typography.labelMedium,
+            )
+            if (item.arguments.isNotBlank() && item.arguments != "{}") {
+                Text(
+                    text = item.arguments,
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
-            Surface(
-                color = color,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth(),
+            if (item.result.isNotBlank()) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = item.result.take(200),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
+    if (showDetail) {
+        ModalBottomSheet(onDismissRequest = { showDetail = false }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 32.dp),
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = item.tool,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = item.status.name.lowercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (item.arguments.isNotBlank() && item.arguments != "{}") {
+                    Spacer(Modifier.height(12.dp))
                     Text(
-                        text = "${item.tool} · ${item.status.name.lowercase()}",
+                        text = stringResource(R.string.agent_tool_arguments),
                         style = MaterialTheme.typography.labelMedium,
                     )
-                    if (item.arguments.isNotBlank() && item.arguments != "{}") {
-                        Text(
-                            text = item.arguments,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
+                    SelectionContainer {
+                        Text(item.arguments, style = MaterialTheme.typography.bodySmall)
                     }
-                    if (item.result.isNotBlank()) {
-                        Spacer(Modifier.height(4.dp))
+                }
+                if (item.result.isNotBlank()) {
+                    Spacer(Modifier.height(12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = item.result.take(2000),
-                            style = MaterialTheme.typography.bodySmall,
+                            text = stringResource(R.string.agent_tool_result),
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.weight(1f),
                         )
+                        TextButton(onClick = {
+                            val cm = context.getSystemService(Context.CLIPBOARD_SERVICE)
+                                as AndroidClipboardManager
+                            cm.setPrimaryClip(AndroidClipData.newPlainText("result", item.result))
+                        }) {
+                            Text(stringResource(R.string.agent_tool_copy_result))
+                        }
+                    }
+                    SelectionContainer {
+                        Text(item.result, style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -362,7 +425,6 @@ private fun AgentItemRow(item: AgentChatItem) {
     }
 }
 
-@Composable
 @Composable
 private fun ThinkingBubble(text: String) {
     var expanded by rememberSaveable { mutableStateOf(true) }
@@ -404,16 +466,20 @@ private fun Bubble(text: String, container: Color, alignEnd: Boolean, markdown: 
             modifier = Modifier.fillMaxWidth(0.9f),
         ) {
             if (markdown) {
-                MarkdownText(
-                    markdown = text,
-                    modifier = Modifier.padding(12.dp),
-                )
+                SelectionContainer {
+                    MarkdownText(
+                        markdown = text,
+                        modifier = Modifier.padding(12.dp),
+                    )
+                }
             } else {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(12.dp),
-                )
+                SelectionContainer {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(12.dp),
+                    )
+                }
             }
         }
     }

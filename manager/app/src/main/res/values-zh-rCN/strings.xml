@@ -111,6 +111,9 @@
     <string name="agent_empty">让助手检查或管理本机。</string>
     <string name="agent_thinking">处理中…</string>
     <string name="agent_thinking_stream">思考过程</string>
+    <string name="agent_tool_arguments">参数</string>
+    <string name="agent_tool_result">结果</string>
+    <string name="agent_tool_copy_result">复制结果</string>
     <string name="agent_input_hint">向助手发送消息</string>
     <string name="agent_confirm_title">确认工具调用</string>
     <string name="agent_confirm_message">执行 %1$s（%2$s）？</string>
