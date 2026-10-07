@@ -4,7 +4,6 @@ use std::{process::Command, time::Instant};
 
 use anyhow::{Context, Result};
 use log::{info, warn};
-use rustix::cstr;
 
 use crate::{
     android::{
@@ -14,6 +13,10 @@ use crate::{
     },
     assets, defs,
 };
+
+fn escape_module_param(value: &str) -> String {
+    value.replace('\\', "\\\\").replace('"', "\\\"")
+}
 
 fn dump_process_info(label: &str) {
     use rustix::process::{getgid, getgroups, getpid, getuid};
@@ -44,7 +47,13 @@ fn dump_process_info(label: &str) {
     );
 }
 
-pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Result<()> {
+pub fn run(
+    package_name: &String,
+    kmi: Option<String>,
+    allow_shell: bool,
+    spoof_release: Option<&str>,
+    spoof_version: Option<&str>,
+) -> Result<()> {
     utils::daemonize(false)?;
     info!("late-load command triggered!");
     dump_process_info("late-load start");
@@ -68,14 +77,49 @@ pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Res
         // 4. Load kernelsu.ko from memory with manual relocation
         info!("Loading kernelsu.ko for KMI {kmi}...");
         // bundled flag is meaningless in jailbreak mode since we can't flash boot to update it.
-        let params = if allow_shell {
-            cstr!("allow_shell=1")
+        let mut params = if allow_shell {
+            "allow_shell=1".to_string()
         } else {
-            cstr!("")
+            String::new()
         };
-        ksuinit::load_module(&ko_data, params).context("Failed to load kernelsu.ko")?;
+        if let Some(release) = spoof_release {
+            if !release.is_empty() {
+                if !params.is_empty() {
+                    params.push(' ');
+                }
+                params.push_str(&format!(
+                    "spoof_release=\"{}\"",
+                    escape_module_param(release)
+                ));
+            }
+        }
+        if let Some(version) = spoof_version {
+            if !version.is_empty() {
+                if !params.is_empty() {
+                    params.push(' ');
+                }
+                params.push_str(&format!(
+                    "spoof_version=\"{}\"",
+                    escape_module_param(version)
+                ));
+            }
+        }
+        let params = std::ffi::CString::new(params)?;
+        ksuinit::load_module(&ko_data, &params).context("Failed to load kernelsu.ko")?;
         info!("kernelsu.ko loaded successfully!");
         dump_process_info("after load_module");
+    }
+
+    // Apply spoofing via IOCTL if KernelSU was already loaded or for built-in
+    // This ensures it works even if it wasn't loaded just now
+    if spoof_release.is_some() || spoof_version.is_some() {
+        let r = spoof_release.unwrap_or("");
+        let v = spoof_version.unwrap_or("");
+        if let Err(e) = crate::android::ksucalls::set_spoof_version(r, v) {
+            warn!("Failed to set spoof version via IOCTL: {e}");
+        } else {
+            info!("Successfully set spoofed version: release='{r}', version='{v}'");
+        }
     }
 
     // We need to reset stdin/stdout/stderr; otherwise, sending file descriptors via cmd transactions

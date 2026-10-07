@@ -35,6 +35,7 @@
 #include "feature/module_load_filter.h"
 #include "feature/sucompat.h"
 #include "feature/selinux_hide.h"
+#include "feature/uts_spoof.h"
 #include "infra/symbol_resolver.h"
 
 #ifdef CONFIG_ARM64
@@ -166,6 +167,12 @@ char ksu_block_modules[256];
 module_param_string(block_modules, ksu_block_modules, sizeof(ksu_block_modules), 0);
 MODULE_PARM_DESC(block_modules, "Comma-separated preset module names to acknowledge without loading");
 
+static char *spoof_release = NULL;
+module_param(spoof_release, charp, 0);
+
+static char *spoof_version = NULL;
+module_param(spoof_version, charp, 0);
+
 int __init kernelsu_init(void)
 {
     // clang-format off
@@ -233,6 +240,9 @@ int __init kernelsu_init(void)
     }
 
     ksu_init_symbol_resolver();
+    if (spoof_release || spoof_version) {
+        ksu_spoof_version(spoof_release, spoof_version);
+    }
     ksu_selinux_init();
     ksu_feature_init();
     ksu_sulog_init();

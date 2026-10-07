@@ -79,6 +79,14 @@ enum Commands {
         /// manager package name
         #[arg(long, default_value_t = String::from(defs::DEFAULT_PACKAGE_NAME))]
         package_name: String,
+
+        /// kernel release string to spoof
+        #[arg(long)]
+        spoof_release: Option<String>,
+
+        /// kernel version string to spoof
+        #[arg(long)]
+        spoof_version: Option<String>,
     },
 
     /// Manage auto apply user custom umount configs
@@ -770,6 +778,33 @@ enum Kernel {
     },
     /// Notify that module is mounted
     NotifyModuleMounted,
+    /// Spoof the kernel uname (release/version)
+    SpoofUname {
+        /// new uname release, empty to keep current
+        #[arg(long)]
+        release: Option<String>,
+        /// new uname version, empty to keep current
+        #[arg(long)]
+        version: Option<String>,
+    },
+    /// Spoof CPU hardware identity (MIDR/BogoMIPS/hwcap)
+    SpoofCpu {
+        /// target cpu core index, or -1 for all cores
+        #[arg(long, allow_hyphen_values = true, default_value = "-1")]
+        cpu: i32,
+        /// new MIDR value in hex, e.g. 0x411fd440
+        #[arg(long)]
+        midr: String,
+        /// new BogoMIPS value, 0 to skip
+        #[arg(long, default_value = "0")]
+        bogomips: u32,
+        /// new elf_hwcap in hex, empty to skip
+        #[arg(long)]
+        hwcap: Option<String>,
+        /// new elf_hwcap2 in hex, empty to skip
+        #[arg(long)]
+        hwcap2: Option<String>,
+    },
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -815,6 +850,28 @@ enum UmountOp {
     Wipe,
     /// List all entries from umount list
     List,
+}
+
+fn parse_hex_u32(value: &str) -> Result<u32> {
+    let trimmed = value
+        .trim()
+        .trim_start_matches("0x")
+        .trim_start_matches("0X");
+    u32::from_str_radix(trimmed, 16).with_context(|| format!("invalid hex u32: {value}"))
+}
+
+fn parse_hex_u64(value: &str) -> Result<u64> {
+    let trimmed = value
+        .trim()
+        .trim_start_matches("0x")
+        .trim_start_matches("0X");
+    u64::from_str_radix(trimmed, 16).with_context(|| format!("invalid hex u64: {value}"))
+}
+
+fn num_cpus() -> u32 {
+    std::thread::available_parallelism()
+        .map(|n| n.get() as u32)
+        .unwrap_or(1)
 }
 
 #[cfg(all(target_arch = "aarch64", target_os = "android"))]
@@ -1071,6 +1128,8 @@ pub fn run() -> Result<()> {
             post_magica,
             kmi,
             package_name,
+            spoof_release,
+            spoof_version,
         } => {
             if let Some(port) = magica {
                 return crate::android::late_load::magica::run(port, &package_name, allow_shell)
@@ -1079,7 +1138,13 @@ pub fn run() -> Result<()> {
                         e
                     });
             }
-            let result = crate::android::late_load::run(&package_name, kmi, allow_shell);
+            let result = crate::android::late_load::run(
+                &package_name,
+                kmi,
+                allow_shell,
+                spoof_release.as_deref(),
+                spoof_version.as_deref(),
+            );
             if post_magica {
                 info!("Restoring adb properties (post-magica cleanup)...");
                 if let Err(e) = crate::android::late_load::magica::disable_adb_root() {
@@ -1364,6 +1429,38 @@ pub fn run() -> Result<()> {
             },
             Kernel::NotifyModuleMounted => {
                 ksucalls::report_module_mounted();
+                Ok(())
+            }
+            Kernel::SpoofUname { release, version } => {
+                ksucalls::set_spoof_version(release.as_deref(), version.as_deref())?;
+                println!("kernel spoof-uname done");
+                Ok(())
+            }
+            Kernel::SpoofCpu {
+                cpu,
+                midr,
+                bogomips,
+                hwcap,
+                hwcap2,
+            } => {
+                let midr = parse_hex_u32(&midr)?;
+                let hwcap = match hwcap.as_deref() {
+                    Some(v) if !v.is_empty() => parse_hex_u64(v)?,
+                    _ => 0,
+                };
+                let hwcap2 = match hwcap2.as_deref() {
+                    Some(v) if !v.is_empty() => parse_hex_u64(v)?,
+                    _ => 0,
+                };
+                if cpu < 0 {
+                    let cores = num_cpus();
+                    for index in 0..cores {
+                        ksucalls::set_spoof_cpu(index, midr, bogomips, hwcap, hwcap2)?;
+                    }
+                } else {
+                    ksucalls::set_spoof_cpu(cpu as u32, midr, bogomips, hwcap, hwcap2)?;
+                }
+                println!("kernel spoof-cpu done");
                 Ok(())
             }
         },

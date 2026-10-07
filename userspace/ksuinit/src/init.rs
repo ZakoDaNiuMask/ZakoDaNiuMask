@@ -55,7 +55,32 @@ fn load_module_params() -> Result<CString> {
     }
     params.extend_from_slice(format!("block_modules={blocked_modules}").as_bytes());
 
+    if let Some(release) = read_module_param(KSU_SPOOF_RELEASE_PATH) {
+        params.extend_from_slice(
+            format!(" spoof_release=\"{}\"", escape_module_param(&release)).as_bytes(),
+        );
+    }
+    if let Some(version) = read_module_param(KSU_SPOOF_VERSION_PATH) {
+        params.extend_from_slice(
+            format!(" spoof_version=\"{}\"", escape_module_param(&version)).as_bytes(),
+        );
+    }
+
     CString::new(params).context("KernelSU module parameters contain a NUL byte")
+}
+
+const KSU_SPOOF_RELEASE_PATH: &str = "/ksu_spoof_release";
+const KSU_SPOOF_VERSION_PATH: &str = "/ksu_spoof_version";
+
+fn read_module_param(path: &str) -> Option<String> {
+    std::fs::read_to_string(path)
+        .ok()
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty())
+}
+
+fn escape_module_param(value: &str) -> String {
+    value.replace('\\', "\\\\").replace('"', "\\\"")
 }
 
 impl Drop for AutoUmount {

@@ -517,6 +517,14 @@ pub struct BootPatchArgs {
     )]
     block_modules: Option<String>,
 
+    /// Kernel release string passed to kernelsu.ko as spoof_release
+    #[arg(long, default_value = None)]
+    spoof_release: Option<String>,
+
+    /// Kernel version string passed to kernelsu.ko as spoof_version
+    #[arg(long, default_value = None)]
+    spoof_version: Option<String>,
+
     #[cfg(not(target_os = "android"))]
     #[arg(long, default_value = "aarch64")]
     arch: String,
@@ -542,6 +550,8 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             cmdline,
             no_install,
             block_modules,
+            spoof_release,
+            spoof_version,
             #[cfg(target_os = "android")]
             ota,
             #[cfg(target_os = "android")]
@@ -794,6 +804,19 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
         // remove legacy config file
         cpio.rm("allow_shell", false);
 
+        write_optional_ramdisk_config(
+            &mut cpio,
+            "ksu_spoof_release",
+            "spoof release",
+            spoof_release.as_deref(),
+        )?;
+        write_optional_ramdisk_config(
+            &mut cpio,
+            "ksu_spoof_version",
+            "spoof version",
+            spoof_version.as_deref(),
+        )?;
+
         if let Some(modules) = block_modules {
             if !modules.is_empty() {
                 println!("- Blocking modules: {modules}");
@@ -890,6 +913,26 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
         println!("- Patch Error: {e}");
     }
     result
+}
+
+fn write_optional_ramdisk_config(
+    cpio: &mut Cpio,
+    file_name: &str,
+    label: &str,
+    value: Option<&str>,
+) -> Result<()> {
+    if let Some(value) = value.map(str::trim).filter(|value| !value.is_empty()) {
+        println!("- Adding {label} config");
+        cpio.add(
+            file_name,
+            CpioEntry::regular(0o644, Box::new(value.to_owned().into_bytes())),
+        )?;
+    } else if cpio.exists(file_name) {
+        println!("- Removing {label} config");
+        cpio.rm(file_name, false);
+    }
+
+    Ok(())
 }
 
 #[derive(clap::Args, Debug)]

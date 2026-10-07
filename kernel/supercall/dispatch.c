@@ -26,6 +26,8 @@
 #include "hook/tp_marker.h"
 #endif
 #include "feature/dynamic_manager.h"
+#include "feature/cpu_spoof.h"
+#include "feature/uts_spoof.h"
 #include "policy/app_profile.h"
 #ifdef CONFIG_KPM
 #include "kpm/kpm.h"
@@ -1022,6 +1024,33 @@ static int do_get_kernel_patch_implement(void __user *arg)
     return 0;
 }
 
+static int do_set_spoof_version(void __user *arg)
+{
+    struct ksu_set_spoof_version_cmd cmd;
+
+    if (copy_from_user(&cmd, arg, sizeof(cmd))) {
+        pr_err("set_spoof_version: copy_from_user failed\n");
+        return -EFAULT;
+    }
+    cmd.release[sizeof(cmd.release) - 1] = '\0';
+    cmd.version[sizeof(cmd.version) - 1] = '\0';
+
+    return ksu_set_spoof_version(cmd.release[0] != '\0' ? cmd.release : NULL,
+                                 cmd.version[0] != '\0' ? cmd.version : NULL);
+}
+
+static int do_set_spoof_cpu(void __user *arg)
+{
+    struct ksu_set_spoof_cpu_cmd cmd;
+
+    if (copy_from_user(&cmd, arg, sizeof(cmd))) {
+        pr_err("set_spoof_cpu: copy_from_user failed\n");
+        return -EFAULT;
+    }
+
+    return ksu_set_spoof_cpu(&cmd);
+}
+
 #ifdef CONFIG_KSU_SUSFS
 int ksu_handle_susfs_cmd(unsigned int cmd, void __user **arg)
 {
@@ -1406,11 +1435,23 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .handler = do_get_managers, 
         .perm_check = manager_or_root 
     },
-    { 
-        .cmd = KSU_IOCTL_GET_KERNEL_PATCH_IMPLEMENT, 
-        .name = "GET_KERNEL_PATCH_IMPLEMENT", 
-        .handler = do_get_kernel_patch_implement, 
-        .perm_check = manager_or_root 
+    {
+        .cmd = KSU_IOCTL_GET_KERNEL_PATCH_IMPLEMENT,
+        .name = "GET_KERNEL_PATCH_IMPLEMENT",
+        .handler = do_get_kernel_patch_implement,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = KSU_IOCTL_SET_SPOOF_VERSION,
+        .name = "SET_SPOOF_VERSION",
+        .handler = do_set_spoof_version,
+        .perm_check = only_root
+    },
+    {
+        .cmd = KSU_IOCTL_SET_SPOOF_CPU,
+        .name = "SET_SPOOF_CPU",
+        .handler = do_set_spoof_cpu,
+        .perm_check = only_root
     },
 #ifdef CONFIG_KPM
     { 

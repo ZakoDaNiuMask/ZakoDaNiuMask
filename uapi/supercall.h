@@ -227,6 +227,19 @@ struct ksu_get_kernel_patch_implement {
     __u8 type; // Output: Current Kernel Patch Implement
 };
 
+struct ksu_set_spoof_version_cmd {
+    __u8 release[65]; /* Input: e.g., "5.10.115-android12-9-g00000000" */
+    __u8 version[65]; /* Input: e.g., "#1 SMP PREEMPT Thu Jan 1 00:00:00 UTC 2026" */
+};
+
+struct ksu_set_spoof_cpu_cmd {
+    __u32 cpu_index;  /* Target processor core index */
+    __u32 midr;       /* Main ID Register payload */
+    __u32 bogomips;   /* BogoMIPS performance timing metric */
+    __u64 hwcap;      /* Main ELF Hardware Capabilities mask */
+    __u64 hwcap2;     /* Auxiliary ELF Hardware Capabilities mask */
+};
+
 /* IOCTL command definitions */
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GRANT_ROOT, _IOC(_IOC_NONE, 'K', 1, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_INFO, _IOR('K', 2, struct ksu_get_info_cmd))
@@ -264,6 +277,8 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_DYNAMIC_MANAGER, _IOC(_IOC_READ | _IOC_WR
 // 104 = old get_managers, deprecated
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_MANAGERS, _IOC(_IOC_READ | _IOC_WRITE, 'K', 105, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_KERNEL_PATCH_IMPLEMENT, _IOC(_IOC_READ, 'K', 106, 0))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_SPOOF_VERSION, _IOC(_IOC_WRITE, 'K', 104, 0))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_SPOOF_CPU, _IOC(_IOC_WRITE, 'K', 107, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_KPM, _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0))
 #undef DEFINE_KSU_UAPI_CONST
 #endif

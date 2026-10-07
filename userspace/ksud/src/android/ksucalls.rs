@@ -468,6 +468,43 @@ pub fn dynamic_manager_clear() -> anyhow::Result<()> {
     Ok(())
 }
 
+pub fn set_spoof_version(release: Option<&str>, version: Option<&str>) -> anyhow::Result<()> {
+    let mut cmd = uapi::ksu_set_spoof_version_cmd {
+        release: [0u8; 65],
+        version: [0u8; 65],
+    };
+    if let Some(release) = release {
+        let bytes = release.as_bytes();
+        let len = bytes.len().min(cmd.release.len() - 1);
+        cmd.release[..len].copy_from_slice(&bytes[..len]);
+    }
+    if let Some(version) = version {
+        let bytes = version.as_bytes();
+        let len = bytes.len().min(cmd.version.len() - 1);
+        cmd.version[..len].copy_from_slice(&bytes[..len]);
+    }
+    ksuctl(uapi::KSU_IOCTL_SET_SPOOF_VERSION_RUST, &raw mut cmd)?;
+    Ok(())
+}
+
+pub fn set_spoof_cpu(
+    cpu_index: u32,
+    midr: u32,
+    bogomips: u32,
+    hwcap: u64,
+    hwcap2: u64,
+) -> anyhow::Result<()> {
+    let mut cmd = uapi::ksu_set_spoof_cpu_cmd {
+        cpu_index,
+        midr,
+        bogomips,
+        hwcap,
+        hwcap2,
+    };
+    ksuctl(uapi::KSU_IOCTL_SET_SPOOF_CPU_RUST, &raw mut cmd)?;
+    Ok(())
+}
+
 /// List all mount points in umount list
 pub fn umount_list_list() -> anyhow::Result<Vec<MountInfo>> {
     const FLAGS_SIZE: usize = std::mem::size_of::<u32>();
