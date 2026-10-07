@@ -81,6 +81,8 @@ import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockScreen
 import com.zakodaniumask.manager.ui.screen.ghostlock.GhostlockUserProfileScreen
 import com.zakodaniumask.manager.ui.screen.kernelFlash.KernelFlashScreen
 import com.zakodaniumask.manager.ui.screen.kpm.KpmPage
+import com.zakodaniumask.manager.ui.screen.spoof.CpuSpoofScreen
+import com.zakodaniumask.manager.ui.screen.spoof.UtsSpoofScreen
 import com.zakodaniumask.manager.ui.screen.userko.UserKoPage
 import com.zakodaniumask.manager.ui.screen.plugin.OnlinePluginScreen
 import com.zakodaniumask.manager.ui.screen.plugin.PluginPage
@@ -574,6 +576,28 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     UserKoPage()
+                }
+            }
+            entry<Route.CpuSpoof>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    CpuSpoofScreen()
+                }
+            }
+            entry<Route.UtsSpoof>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    UtsSpoofScreen()
                 }
             }
             entry<Route.Axeron>(swipeDismiss = swipeBackDirection) {

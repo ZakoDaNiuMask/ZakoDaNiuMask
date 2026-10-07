@@ -28,6 +28,7 @@ import androidx.compose.material.icons.automirrored.twotone.Article
 import androidx.compose.material.icons.automirrored.twotone.Undo
 import androidx.compose.material.icons.twotone.Adb
 import androidx.compose.material.icons.twotone.BugReport
+import androidx.compose.material.icons.twotone.Build
 import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.DeleteForever
 import androidx.compose.material.icons.twotone.ElectricalServices
@@ -38,6 +39,7 @@ import androidx.compose.material.icons.twotone.Code
 import androidx.compose.material.icons.twotone.FolderDelete
 import androidx.compose.material.icons.twotone.FolderOff
 import androidx.compose.material.icons.twotone.Info
+import androidx.compose.material.icons.twotone.Memory
 import androidx.compose.material.icons.twotone.Policy
 import androidx.compose.material.icons.twotone.RemoveCircle
 import androidx.compose.material.icons.twotone.RemoveModerator
@@ -548,6 +550,28 @@ fun SettingsPage(bottomPadding: Dp) {
                                 description = stringResource(R.string.kpm_summary),
                                 onClick = {
                                     navigator.push(Route.Kpm)
+                                }
+                            )
+                        }
+
+                        item(visible = homeState.systemStatus.isRootAvailable) {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Memory,
+                                title = stringResource(R.string.cpu_spoof_title),
+                                description = stringResource(R.string.cpu_spoof_summary),
+                                onClick = {
+                                    navigator.push(Route.CpuSpoof)
+                                }
+                            )
+                        }
+
+                        item(visible = homeState.systemStatus.isRootAvailable) {
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Build,
+                                title = stringResource(R.string.kernel_spoof_title),
+                                description = stringResource(R.string.kernel_spoof_summary),
+                                onClick = {
+                                    navigator.push(Route.UtsSpoof)
                                 }
                             )
                         }
