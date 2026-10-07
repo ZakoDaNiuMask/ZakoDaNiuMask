@@ -227,8 +227,7 @@ void __init ksu_supercalls_init(void)
 
 #ifdef CONFIG_KSU_TRACEPOINT_HOOK
     if (ksu_kprobe_text_patch_unsafe() && ksu_syscall_table) {
-        ksu_syscall_table_hook(__NR_reboot, (syscall_fn_t)ksu_reboot_table_replacement,
-                               &real_reboot_fn);
+        ksu_syscall_table_hook(__NR_reboot, (syscall_fn_t)ksu_reboot_table_replacement, &real_reboot_fn);
         pr_info("reboot table-hook compat installed (reboot kprobe unsafe on this kernel)\n");
         reboot_table_hooked = true;
         return;

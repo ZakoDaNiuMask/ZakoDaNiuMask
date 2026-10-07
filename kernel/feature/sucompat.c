@@ -305,9 +305,8 @@ static int ksu_defex_wear_shadow_uid(void)
  * Returns true when it has taken over the exec (*ret is the syscall result);
  * false to let the caller proceed normally (regs are left untouched then).
  */
-static bool ksu_defex_deferred_exec(const char __user **filename_user,
-                                    const char __user *const __user *argv_user, unsigned long envp,
-                                    int orig_nr, struct pt_regs *regs, long *ret)
+static bool ksu_defex_deferred_exec(const char __user **filename_user, const char __user *const __user *argv_user,
+                                    unsigned long envp, int orig_nr, struct pt_regs *regs, long *ret)
 {
     char *path;
     long orig_regs[5], r;
@@ -324,8 +323,7 @@ static bool ksu_defex_deferred_exec(const char __user **filename_user,
     path = kmalloc(PATH_MAX, GFP_KERNEL);
     if (!path)
         return false;
-    r = strncpy_from_user(path, (const char __user *)untagged_addr((unsigned long)*filename_user),
-                          PATH_MAX);
+    r = strncpy_from_user(path, (const char __user *)untagged_addr((unsigned long)*filename_user), PATH_MAX);
     if (r < 0 || r >= PATH_MAX) {
         kfree(path);
         return false;
