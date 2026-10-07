@@ -48,6 +48,7 @@ import com.zakodaniumask.manager.data.agent.AgentMcpPolicyRepository
 import com.zakodaniumask.manager.data.agent.AgentMode
 import com.zakodaniumask.manager.data.agent.AgentSettings
 import com.zakodaniumask.manager.data.agent.llm.LlmProviderType
+import com.zakodaniumask.manager.data.agent.llm.ThinkingLevel
 import com.zakodaniumask.manager.data.agent.mcp.AgentTool
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
@@ -96,6 +97,7 @@ fun AgentSettingsScreen() {
     var systemPrompt by remember { mutableStateOf(initial.systemPrompt) }
     var disabledDomains by remember { mutableStateOf(initial.disabledDomains) }
     var allowRootShell by remember { mutableStateOf(initial.allowRootShell) }
+    var thinking by remember { mutableStateOf(initial.thinking) }
 
     var policy by remember {
         mutableStateOf(AgentMcpPolicyRepository.McpPolicy())
@@ -121,6 +123,7 @@ fun AgentSettingsScreen() {
         systemPrompt = systemPrompt,
         disabledDomains = disabledDomains,
         allowRootShell = allowRootShell,
+        thinking = thinking,
     )
 
     val scrollBehavior =
@@ -137,6 +140,12 @@ fun AgentSettingsScreen() {
         stringResource(R.string.agent_tier_danger),
     )
     val tierIds = listOf("read", "write", "danger")
+    val thinkingLabels = listOf(
+        stringResource(R.string.agent_thinking_off),
+        stringResource(R.string.agent_thinking_low),
+        stringResource(R.string.agent_thinking_medium),
+        stringResource(R.string.agent_thinking_high),
+    )
 
     Scaffold(
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
@@ -184,6 +193,14 @@ fun AgentSettingsScreen() {
                             value = modeLabels[mode.ordinal],
                             options = modeLabels,
                             onSelect = { mode = AgentMode.entries[it] },
+                        )
+                    }
+                    item {
+                        ChoiceField(
+                            label = stringResource(R.string.agent_thinking),
+                            value = thinkingLabels[thinking.ordinal],
+                            options = thinkingLabels,
+                            onSelect = { thinking = ThinkingLevel.entries[it] },
                         )
                     }
                     item {

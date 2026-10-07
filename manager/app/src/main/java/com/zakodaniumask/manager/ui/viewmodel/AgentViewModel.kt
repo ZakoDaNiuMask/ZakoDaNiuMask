@@ -155,6 +155,7 @@ class AgentViewModel(
                         apiPath = candidate.apiPath,
                         userAgent = candidate.userAgent,
                         extraHeaders = candidate.extraHeaders,
+                        thinking = candidate.thinking,
                     )
                     withTimeout(30_000) {
                         provider.chat(
@@ -298,6 +299,7 @@ class AgentViewModel(
                 apiPath = settings.apiPath,
                 userAgent = settings.userAgent,
                 extraHeaders = settings.extraHeaders,
+                thinking = settings.thinking,
             )
             val response = withContext(Dispatchers.IO) {
                 provider.chat(

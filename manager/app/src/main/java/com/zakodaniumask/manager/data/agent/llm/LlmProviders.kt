@@ -82,6 +82,9 @@ class OpenAiCompatibleProvider : LlmProvider {
         val base = config.endpoint.ifBlank { "https://api.openai.com/v1" }.trimEnd('/')
         val url = resolveUrl(base, config.apiPath, "/chat/completions")
         val body = buildBody(config.model, config.temperature, config.maxTokens, request)
+        if (config.thinking != ThinkingLevel.OFF) {
+            body.put("reasoning_effort", config.thinking.id)
+        }
         val headers = mutableMapOf<String, String>()
         if (config.apiKey.isNotBlank()) headers["Authorization"] = "Bearer ${config.apiKey}"
         headers.applyCommon(config)
@@ -232,6 +235,13 @@ class AnthropicProvider : LlmProvider {
         val base = config.endpoint.ifBlank { "https://api.anthropic.com" }.trimEnd('/')
         val url = resolveUrl(base, config.apiPath, "/v1/messages")
         val body = buildBody(config.model, config.temperature, config.maxTokens, request)
+        if (config.thinking != ThinkingLevel.OFF && config.maxTokens > 1024) {
+            val budget = (config.maxTokens / 2).coerceIn(1024, 8192)
+            body.put(
+                "thinking",
+                JSONObject().put("type", "enabled").put("budget_tokens", budget),
+            )
+        }
         val headers = mutableMapOf("anthropic-version" to "2023-06-01")
         if (config.apiKey.isNotBlank()) headers["x-api-key"] = config.apiKey
         headers.applyCommon(config)
@@ -401,7 +411,122 @@ private class ToolCallAccumulator {
     )
 }
 
+/** Google Gemini (`generativelanguage.googleapis.com`), non-streaming. */
+class GeminiProvider : LlmProvider {
+    override val type = LlmProviderType.GEMINI
+
+    override suspend fun chat(
+        config: LlmHttpConfig,
+        request: LlmRequest,
+        onDelta: (String) -> Unit,
+    ): LlmResponse = withContext(Dispatchers.IO) {
+        val base = config.endpoint.ifBlank { "https://generativelanguage.googleapis.com" }.trimEnd('/')
+        val defaultPath = "/v1beta/models/${config.model}:generateContent"
+        var url = resolveUrl(base, config.apiPath, defaultPath)
+        if (config.apiKey.isNotBlank()) {
+            url += (if (url.contains('?')) "&" else "?") + "key=${config.apiKey}"
+        }
+
+        val contents = JSONArray()
+        val toolNamesById = HashMap<String, String>()
+        request.messages.forEach { message ->
+            when (message.role) {
+                "assistant" -> {
+                    val parts = JSONArray()
+                    if (message.content.isNotBlank()) {
+                        parts.put(JSONObject().put("text", message.content))
+                    }
+                    message.toolCalls.forEach { call ->
+                        toolNamesById[call.id] = call.name
+                        val args = try {
+                            JSONObject(call.arguments)
+                        } catch (_: Throwable) {
+                            JSONObject()
+                        }
+                        parts.put(
+                            JSONObject().put(
+                                "functionCall",
+                                JSONObject().put("name", call.name).put("args", args),
+                            )
+                        )
+                    }
+                    contents.put(JSONObject().put("role", "model").put("parts", parts))
+                }
+
+                "tool" -> {
+                    val name = toolNamesById[message.toolCallId] ?: "tool"
+                    val response = JSONObject().put("content", message.content)
+                    val parts = JSONArray().put(
+                        JSONObject().put(
+                            "functionResponse",
+                            JSONObject().put("name", name).put("response", response),
+                        )
+                    )
+                    contents.put(JSONObject().put("role", "user").put("parts", parts))
+                }
+
+                else -> contents.put(
+                    JSONObject().put("role", "user")
+                        .put("parts", JSONArray().put(JSONObject().put("text", message.content)))
+                )
+            }
+        }
+
+        val body = JSONObject().put("contents", contents)
+        if (request.system.isNotBlank()) {
+            body.put(
+                "systemInstruction",
+                JSONObject().put("parts", JSONArray().put(JSONObject().put("text", request.system))),
+            )
+        }
+        body.put(
+            "generationConfig",
+            JSONObject().put("temperature", config.temperature).put("maxOutputTokens", config.maxTokens),
+        )
+        if (request.tools.isNotEmpty()) {
+            val declarations = JSONArray()
+            request.tools.forEach { tool ->
+                declarations.put(
+                    JSONObject()
+                        .put("name", tool.name)
+                        .put("description", tool.description)
+                        .put("parameters", tool.parameters)
+                )
+            }
+            body.put("tools", JSONArray().put(JSONObject().put("functionDeclarations", declarations)))
+        }
+
+        val headers = mutableMapOf<String, String>()
+        headers.applyCommon(config)
+        val json = postJson(url, headers, body)
+        val candidate = json.optJSONArray("candidates")?.optJSONObject(0)
+            ?: throw RuntimeException("no candidates in response")
+        val parts = candidate.optJSONObject("content")?.optJSONArray("parts") ?: JSONArray()
+        val text = StringBuilder()
+        val toolCalls = mutableListOf<LlmToolCall>()
+        var index = 0
+        for (i in 0 until parts.length()) {
+            val part = parts.optJSONObject(i) ?: continue
+            val chunk = part.optString("text", "")
+            if (chunk.isNotEmpty()) text.append(chunk)
+            val call = part.optJSONObject("functionCall")
+            if (call != null) {
+                toolCalls.add(
+                    LlmToolCall(
+                        id = "gemini_call_${index++}",
+                        name = call.optString("name"),
+                        arguments = call.optJSONObject("args")?.toString() ?: "{}",
+                    )
+                )
+            }
+        }
+        if (text.isNotEmpty()) onDelta(text.toString())
+        LlmResponse(text.toString(), toolCalls, candidate.optString("finishReason", ""))
+    }
+}
+
 fun providerFor(type: LlmProviderType): LlmProvider = when (type) {
     LlmProviderType.OPENAI -> OpenAiCompatibleProvider()
     LlmProviderType.ANTHROPIC -> AnthropicProvider()
+    LlmProviderType.GEMINI -> GeminiProvider()
 }

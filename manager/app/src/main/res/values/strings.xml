@@ -144,6 +144,11 @@
     <string name="agent_mode_read_only">Read only</string>
     <string name="agent_mode_write">Allow writes (confirm)</string>
     <string name="agent_mode_full_auto">Full auto (confirm danger)</string>
+    <string name="agent_thinking">Reasoning effort</string>
+    <string name="agent_thinking_off">Off</string>
+    <string name="agent_thinking_low">Low</string>
+    <string name="agent_thinking_medium">Medium</string>
+    <string name="agent_thinking_high">High</string>
     <string name="agent_endpoint">Endpoint (base URL)</string>
     <string name="agent_api_key">API key</string>
     <string name="agent_model">Model</string>

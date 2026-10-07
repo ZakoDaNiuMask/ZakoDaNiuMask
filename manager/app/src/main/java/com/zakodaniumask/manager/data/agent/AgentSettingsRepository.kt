@@ -3,6 +3,7 @@ package com.zakodaniumask.manager.data.agent
 
 import com.zakodaniumask.manager.data.AppSettingsRepository
 import com.zakodaniumask.manager.data.agent.llm.LlmProviderType
+import com.zakodaniumask.manager.data.agent.llm.ThinkingLevel
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -39,6 +40,8 @@ data class AgentSettings(
     val disabledDomains: Set<String> = emptySet(),
     /** Run shell tools as root; when false they run as uid 1000. */
     val allowRootShell: Boolean = false,
+    /** Reasoning effort, applied per provider only when not OFF. */
+    val thinking: ThinkingLevel = ThinkingLevel.OFF,
 )
 
 data class AgentAuditEntry(
@@ -69,6 +72,7 @@ class AgentSettingsRepository(
         systemPrompt = settings.getString("agent_system_prompt", "").orEmpty(),
         disabledDomains = settings.getStringSet("agent_disabled_domains", emptySet()),
         allowRootShell = settings.getBoolean("agent_allow_root_shell", false),
+        thinking = ThinkingLevel.fromId(settings.getString("agent_thinking", "off").orEmpty()),
     )
 
     fun save(value: AgentSettings) {
@@ -86,6 +90,7 @@ class AgentSettingsRepository(
         settings.putString("agent_system_prompt", value.systemPrompt)
         settings.putStringSet("agent_disabled_domains", value.disabledDomains)
         settings.putBoolean("agent_allow_root_shell", value.allowRootShell)
+        settings.putString("agent_thinking", value.thinking.id)
     }
 
     fun loadAudit(): List<AgentAuditEntry> {

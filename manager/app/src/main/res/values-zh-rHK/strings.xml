@@ -534,6 +534,11 @@
     <string name="agent_mode_read_only">只讀</string>
     <string name="agent_mode_write">允許寫入（需確認）</string>
     <string name="agent_mode_full_auto">全自動（僅高危需確認）</string>
+    <string name="agent_thinking">推理強度</string>
+    <string name="agent_thinking_off">關閉</string>
+    <string name="agent_thinking_low">低</string>
+    <string name="agent_thinking_medium">中</string>
+    <string name="agent_thinking_high">高</string>
     <string name="agent_endpoint">接口地址（Base URL）</string>
     <string name="agent_api_key">API Key</string>
     <string name="agent_model">模型</string>

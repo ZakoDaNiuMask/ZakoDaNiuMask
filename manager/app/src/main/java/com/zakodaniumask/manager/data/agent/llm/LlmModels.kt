@@ -43,6 +43,7 @@ data class LlmHttpConfig(
     val apiPath: String = "",
     val userAgent: String = "",
     val extraHeaders: String = "",
+    val thinking: ThinkingLevel = ThinkingLevel.OFF,
 )
 
 data class LlmResponse(
@@ -54,11 +55,25 @@ data class LlmResponse(
 /** Provider identifiers persisted in settings. */
 enum class LlmProviderType(val id: String, val label: String) {
     OPENAI("openai", "OpenAI compatible"),
-    ANTHROPIC("anthropic", "Anthropic");
+    ANTHROPIC("anthropic", "Anthropic"),
+    GEMINI("gemini", "Gemini");
 
     companion object {
         fun fromId(id: String): LlmProviderType =
             entries.firstOrNull { it.id == id } ?: OPENAI
+    }
+}
+
+/** Reasoning effort, applied per provider only when not OFF. */
+enum class ThinkingLevel(val id: String) {
+    OFF("off"),
+    LOW("low"),
+    MEDIUM("medium"),
+    HIGH("high");
+
+    companion object {
+        fun fromId(id: String): ThinkingLevel =
+            entries.firstOrNull { it.id == id } ?: OFF
     }
 }
 
