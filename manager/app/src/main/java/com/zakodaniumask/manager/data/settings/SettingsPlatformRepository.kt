@@ -275,6 +275,12 @@ class SettingsPlatformRepository(
             samsungCompatStatus = runCatching {
                 ksuCliRepository.getFeatureStatus("samsung_compat")
             }.getOrDefault(""),
+            ptctlStatus = runCatching {
+                ksuCliRepository.getFeatureStatus("ptctl")
+            }.getOrDefault(""),
+            uhookStatus = runCatching {
+                ksuCliRepository.getFeatureStatus("uhook")
+            }.getOrDefault(""),
         )
     }
 

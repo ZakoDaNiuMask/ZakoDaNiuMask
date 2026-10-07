@@ -38,6 +38,14 @@ class SetSamsungCompatEnabledUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setSamsungCompatEnabled(enabled)
 }
 
+class SetPtctlEnabledUseCase(private val repository: KernelRepository) {
+    suspend operator fun invoke(enabled: Boolean) = repository.setPtctlEnabled(enabled)
+}
+
+class SetUhookEnabledUseCase(private val repository: KernelRepository) {
+    suspend operator fun invoke(enabled: Boolean) = repository.setUhookEnabled(enabled)
+}
+
 class SetDefaultUmountModulesUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setDefaultUmountModules(enabled)
 }

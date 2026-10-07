@@ -100,6 +100,10 @@
     <string name="settings_samsung_compat">Samsung compat (RKP/KDP/DEFEX)</string>
     <string name="settings_samsung_compat_summary">Adapt to Samsung RKP/KDP credential protection and DEFEX. Carries a side channel; enable only on affected Samsung devices. Reboot after changing.</string>
     <string name="settings_samsung_compat_applied">Samsung compat setting saved; reboot to take effect</string>
+    <string name="settings_ptctl">Process control (ptctl)</string>
+    <string name="settings_ptctl_summary">Root-only cross-process memory/register/debug primitives (KSU_IOCTL_PTCTL). Disabled by default; enabling exposes them to every uid-0 context.</string>
+    <string name="settings_uhook">Userspace hooks (uhook)</string>
+    <string name="settings_uhook_summary">Persistent uprobe-based instrumentation (KSU_IOCTL_UHOOK). Disabled by default; enabling exposes it to every uid-0 context.</string>
     <string name="reboot_to_apply">Reboot to take effect</string>
     <string name="module_magisk_conflict">Modules are unavailable due to a conflict with Magisk!</string>
     <string name="profile" translatable="false">App Profile</string>

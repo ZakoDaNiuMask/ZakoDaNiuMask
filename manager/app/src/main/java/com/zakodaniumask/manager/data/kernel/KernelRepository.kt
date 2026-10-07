@@ -73,6 +73,8 @@ class KernelRepository(
             mountHideEnabled = runCatching { Natives.isMountHideEnabled() }.getOrDefault(false),
             samsungCompatEnabled =
                 runCatching { Natives.isSamsungCompatEnabled() }.getOrDefault(false),
+            ptctlEnabled = runCatching { Natives.isPtctlEnabled() }.getOrDefault(false),
+            uhookEnabled = runCatching { Natives.isUhookEnabled() }.getOrDefault(false),
             defaultUmountModules = runCatching { Natives.isDefaultUmountModules() }.getOrDefault(
                 false
             ),
@@ -105,6 +107,18 @@ class KernelRepository(
 
     suspend fun setSamsungCompatEnabled(enabled: Boolean): Int = withContext(Dispatchers.IO) {
         Natives.setSamsungCompatEnabled(enabled).also {
+            ksuCliRepository.execKsud("feature save", true)
+        }
+    }
+
+    suspend fun setPtctlEnabled(enabled: Boolean): Int = withContext(Dispatchers.IO) {
+        Natives.setPtctlEnabled(enabled).also {
+            ksuCliRepository.execKsud("feature save", true)
+        }
+    }
+
+    suspend fun setUhookEnabled(enabled: Boolean): Int = withContext(Dispatchers.IO) {
+        Natives.setUhookEnabled(enabled).also {
             ksuCliRepository.execKsud("feature save", true)
         }
     }

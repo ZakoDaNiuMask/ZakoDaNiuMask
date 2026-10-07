@@ -30,6 +30,8 @@ import androidx.compose.material.icons.twotone.Adb
 import androidx.compose.material.icons.twotone.BugReport
 import androidx.compose.material.icons.twotone.Build
 import androidx.compose.material.icons.twotone.Delete
+import androidx.compose.material.icons.twotone.DeveloperMode
+import androidx.compose.material.icons.twotone.Anchor
 import androidx.compose.material.icons.twotone.DeleteForever
 import androidx.compose.material.icons.twotone.ElectricalServices
 import androidx.compose.material.icons.twotone.Extension
@@ -394,6 +396,50 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { checked ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetSamsungCompat(
+                                                checked
+                                            )
+                                        )
+                                    },
+                                )
+                            }
+
+                            item {
+                                val ptctlSummary = when (uiState.ptctlStatus) {
+                                    "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                    "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                    else -> stringResource(id = R.string.settings_ptctl_summary)
+                                }
+                                SettingsSwitchWidget(
+                                    icon = Icons.TwoTone.DeveloperMode,
+                                    title = stringResource(id = R.string.settings_ptctl),
+                                    description = ptctlSummary,
+                                    enabled = uiState.ptctlStatus == "supported",
+                                    checked = uiState.isPtctlEnabled,
+                                    onCheckedChange = { checked ->
+                                        settingsViewModel.dispatch(
+                                            SettingsUiAction.SetPtctl(
+                                                checked
+                                            )
+                                        )
+                                    },
+                                )
+                            }
+
+                            item {
+                                val uhookSummary = when (uiState.uhookStatus) {
+                                    "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                    "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                    else -> stringResource(id = R.string.settings_uhook_summary)
+                                }
+                                SettingsSwitchWidget(
+                                    icon = Icons.TwoTone.Anchor,
+                                    title = stringResource(id = R.string.settings_uhook),
+                                    description = uhookSummary,
+                                    enabled = uiState.uhookStatus == "supported",
+                                    checked = uiState.isUhookEnabled,
+                                    onCheckedChange = { checked ->
+                                        settingsViewModel.dispatch(
+                                            SettingsUiAction.SetUhook(
                                                 checked
                                             )
                                         )

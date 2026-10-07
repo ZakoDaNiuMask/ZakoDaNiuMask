@@ -176,6 +176,15 @@ object Natives {
     external fun isSamsungCompatEnabled(): Boolean
     external fun setSamsungCompatEnabled(enabled: Boolean): Int
 
+    /**
+     * Root-only debug primitives (ptctl/uhook). Disabled by default; enabling
+     * exposes cross-process memory/register access to any uid-0 context.
+     */
+    external fun isPtctlEnabled(): Boolean
+    external fun setPtctlEnabled(enabled: Boolean): Int
+    external fun isUhookEnabled(): Boolean
+    external fun setUhookEnabled(enabled: Boolean): Int
+
     external fun isKPMEnabled(): Boolean
     external fun getHookType(): String
 

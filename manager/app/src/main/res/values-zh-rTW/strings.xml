@@ -99,6 +99,10 @@
     <string name="settings_samsung_compat">三星相容（RKP/KDP/DEFEX）</string>
     <string name="settings_samsung_compat_summary">適配三星 RKP/KDP 憑證保護與 DEFEX。存在側信道，僅在受影響的三星裝置上開啟。變更後需重新開機。</string>
     <string name="settings_samsung_compat_applied">三星相容設定已儲存，重新開機後生效</string>
+    <string name="settings_ptctl">處理程序控制（ptctl）</string>
+    <string name="settings_ptctl_summary">僅限 root 的跨處理程序記憶體/暫存器/偵錯原語（KSU_IOCTL_PTCTL）。預設關閉；開啟後所有 uid-0 上下文均可使用。</string>
+    <string name="settings_uhook">使用者態插樁（uhook）</string>
+    <string name="settings_uhook_summary">基於 uprobe 的持久插樁（KSU_IOCTL_UHOOK）。預設關閉；開啟後所有 uid-0 上下文均可使用。</string>
     <string name="reboot_to_apply">重新啟動後生效</string>
     <string name="module_magisk_conflict">與 Magisk 發生衝突，無法使用模組功能！</string>
     <string name="profile_default">預設</string>

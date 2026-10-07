@@ -16,7 +16,9 @@ import com.zakodaniumask.manager.domain.usecase.LoadSettingsPlatformUseCase
 import com.zakodaniumask.manager.domain.usecase.SetDefaultUmountModulesUseCase
 import com.zakodaniumask.manager.domain.usecase.SetKernelUmountEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetMountHideEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.SetPtctlEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSamsungCompatEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.SetUhookEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSuEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.UpdateAppearanceUseCase
@@ -102,6 +104,10 @@ data class SettingsUiState(
     val isMountHideEnabled: Boolean = false,
     val samsungCompatStatus: String = "",
     val isSamsungCompatEnabled: Boolean = false,
+    val ptctlStatus: String = "",
+    val isPtctlEnabled: Boolean = false,
+    val uhookStatus: String = "",
+    val isUhookEnabled: Boolean = false,
     val defaultUmountModules: Boolean = false,
     val useBuiltinMonoFont: Boolean = false,
     val useSoftReboot: Boolean = false,
@@ -148,6 +154,8 @@ sealed interface SettingsUiAction {
     data class SetSelinuxHide(val enabled: Boolean) : SettingsUiAction
     data class SetMountHide(val enabled: Boolean) : SettingsUiAction
     data class SetSamsungCompat(val enabled: Boolean) : SettingsUiAction
+    data class SetPtctl(val enabled: Boolean) : SettingsUiAction
+    data class SetUhook(val enabled: Boolean) : SettingsUiAction
     data class SetAdbRoot(val enabled: Boolean) : SettingsUiAction
     data class SetSuLog(val enabled: Boolean) : SettingsUiAction
     data class SetDefaultUmountModules(val enabled: Boolean) : SettingsUiAction
@@ -178,6 +186,8 @@ class SettingsViewModel(
     private val setSelinuxHideEnabled: SetSelinuxHideEnabledUseCase,
     private val setMountHideEnabled: SetMountHideEnabledUseCase,
     private val setSamsungCompatEnabled: SetSamsungCompatEnabledUseCase,
+    private val setPtctlEnabled: SetPtctlEnabledUseCase,
+    private val setUhookEnabled: SetUhookEnabledUseCase,
     private val setDefaultUmountModules: SetDefaultUmountModulesUseCase,
 ) : ViewModel() {
     private val mutableState = MutableStateFlow(SettingsUiState())
@@ -222,6 +232,10 @@ fun initialize() {
                     isMountHideEnabled = features.mountHideEnabled,
                     samsungCompatStatus = platform.samsungCompatStatus,
                     isSamsungCompatEnabled = features.samsungCompatEnabled,
+                    ptctlStatus = platform.ptctlStatus,
+                    isPtctlEnabled = features.ptctlEnabled,
+                    uhookStatus = platform.uhookStatus,
+                    isUhookEnabled = features.uhookEnabled,
                     defaultUmountModules = features.defaultUmountModules,
                 )
             }
@@ -454,6 +468,30 @@ fun initialize() {
         }
     }
 
+    fun handlePtctlChange(checked: Boolean) {
+        viewModelScope.launch {
+            val status = setPtctlEnabled(checked)
+            mutableState.update { it.copy(isPtctlEnabled = checked) }
+            if (status != 0) {
+                mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_mount_hide_failed, status)
+                )
+            }
+        }
+    }
+
+    fun handleUhookChange(checked: Boolean) {
+        viewModelScope.launch {
+            val status = setUhookEnabled(checked)
+            mutableState.update { it.copy(isUhookEnabled = checked) }
+            if (status != 0) {
+                mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_mount_hide_failed, status)
+                )
+            }
+        }
+    }
+
     fun handleDefaultUmountModulesChange(checked: Boolean) {
         viewModelScope.launch {
             if (setDefaultUmountModules(checked)) {
@@ -506,6 +544,8 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetSelinuxHide -> handleSelinuxHideChange(action.enabled)
             is SettingsUiAction.SetMountHide -> handleMountHideChange(action.enabled)
             is SettingsUiAction.SetSamsungCompat -> handleSamsungCompatChange(action.enabled)
+            is SettingsUiAction.SetPtctl -> handlePtctlChange(action.enabled)
+            is SettingsUiAction.SetUhook -> handleUhookChange(action.enabled)
             is SettingsUiAction.SetAdbRoot -> handleAdbRootChange(action.enabled)
             is SettingsUiAction.SetSuLog -> handleSuLogChange(action.enabled)
             is SettingsUiAction.SetDefaultUmountModules ->

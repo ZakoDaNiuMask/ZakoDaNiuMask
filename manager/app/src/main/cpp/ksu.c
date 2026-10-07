@@ -297,6 +297,38 @@ bool is_samsung_compat_enabled() {
     return value != 0;
 }
 
+static bool is_flag_feature_enabled(int feature_id) {
+    uint64_t value = 0;
+    bool supported = false;
+    if (!get_feature(feature_id, &value, &supported)) {
+        return false;
+    }
+    return supported && value != 0;
+}
+
+static int set_flag_feature_enabled(int feature_id, bool enabled) {
+    if (!set_feature(feature_id, enabled ? 1 : 0)) {
+        return -errno;
+    }
+    return 0;
+}
+
+int set_ptctl_enabled(bool enabled) {
+    return set_flag_feature_enabled(KSU_FEATURE_PTCTL, enabled);
+}
+
+bool is_ptctl_enabled() {
+    return is_flag_feature_enabled(KSU_FEATURE_PTCTL);
+}
+
+int set_uhook_enabled(bool enabled) {
+    return set_flag_feature_enabled(KSU_FEATURE_UHOOK, enabled);
+}
+
+bool is_uhook_enabled() {
+    return is_flag_feature_enabled(KSU_FEATURE_UHOOK);
+}
+
 bool is_sulog_enabled() {
     uint64_t value = 0;
     bool supported = false;

@@ -42,6 +42,8 @@ data class PlatformFeatureStatus(
     val selinuxHideStatus: String = "",
     val mountHideStatus: String = "",
     val samsungCompatStatus: String = "",
+    val ptctlStatus: String = "",
+    val uhookStatus: String = "",
 )
 
 sealed interface AppearanceSetting {

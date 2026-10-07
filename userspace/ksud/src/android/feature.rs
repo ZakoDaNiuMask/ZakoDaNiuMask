@@ -28,6 +28,8 @@ pub enum FeatureId {
     SelinuxHide = 4,
     MountHide = 16,
     SamsungCompat = 17,
+    Ptctl = 18,
+    Uhook = 19,
 }
 
 impl FeatureId {
@@ -40,6 +42,8 @@ impl FeatureId {
             4 => Some(Self::SelinuxHide),
             16 => Some(Self::MountHide),
             17 => Some(Self::SamsungCompat),
+            18 => Some(Self::Ptctl),
+            19 => Some(Self::Uhook),
             _ => None,
         }
     }
@@ -53,6 +57,8 @@ impl FeatureId {
             Self::SelinuxHide => "selinux_hide",
             Self::MountHide => "mount_hide",
             Self::SamsungCompat => "samsung_compat",
+            Self::Ptctl => "ptctl",
+            Self::Uhook => "uhook",
         }
     }
 
@@ -77,6 +83,12 @@ impl FeatureId {
             Self::SamsungCompat => {
                 "Samsung Compat - RKP/KDP credential path and DEFEX neutralization (side-channel; enable only on affected Samsung devices)"
             }
+            Self::Ptctl => {
+                "Process Control - cross-process memory/register/debug primitives via KSU_IOCTL_PTCTL (root only)"
+            }
+            Self::Uhook => {
+                "Userspace Hook - persistent uprobe-based instrumentation via KSU_IOCTL_UHOOK (root only)"
+            }
         }
     }
 }
@@ -90,6 +102,8 @@ fn parse_feature_id(name: &str) -> Result<FeatureId> {
         "selinux_hide" | "4" => Ok(FeatureId::SelinuxHide),
         "mount_hide" | "16" => Ok(FeatureId::MountHide),
         "samsung_compat" | "17" => Ok(FeatureId::SamsungCompat),
+        "ptctl" | "18" => Ok(FeatureId::Ptctl),
+        "uhook" | "19" => Ok(FeatureId::Uhook),
         _ => bail!("Unknown feature: {name}"),
     }
 }
@@ -338,6 +352,8 @@ pub fn list_features() {
         FeatureId::SelinuxHide,
         FeatureId::MountHide,
         FeatureId::SamsungCompat,
+        FeatureId::Ptctl,
+        FeatureId::Uhook,
     ];
 
     for feature_id in &all_features {
@@ -403,6 +419,8 @@ pub fn save_config() -> Result<()> {
         FeatureId::SelinuxHide,
         FeatureId::MountHide,
         FeatureId::SamsungCompat,
+        FeatureId::Ptctl,
+        FeatureId::Uhook,
     ];
 
     for feature_id in &all_features {

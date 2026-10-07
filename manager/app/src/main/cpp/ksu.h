@@ -80,6 +80,12 @@ int set_samsung_compat_enabled(bool enabled);
 
 bool is_samsung_compat_enabled();
 
+// Process control / userspace hook (root-only debug primitives)
+int set_ptctl_enabled(bool enabled);
+bool is_ptctl_enabled();
+int set_uhook_enabled(bool enabled);
+bool is_uhook_enabled();
+
 bool get_managers_list(struct ksu_get_managers_cmd **out_cmd);
 bool get_allow_list(struct ksu_new_get_allow_list_cmd *);
 

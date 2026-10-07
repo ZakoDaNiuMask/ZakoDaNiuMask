@@ -542,6 +542,22 @@ NativeBridge(setSamsungCompatEnabled, jint, jboolean enabled) {
     return set_samsung_compat_enabled(enabled);
 }
 
+NativeBridgeNP(isPtctlEnabled, jboolean) {
+    return is_ptctl_enabled();
+}
+
+NativeBridge(setPtctlEnabled, jint, jboolean enabled) {
+    return set_ptctl_enabled(enabled);
+}
+
+NativeBridgeNP(isUhookEnabled, jboolean) {
+    return is_uhook_enabled();
+}
+
+NativeBridge(setUhookEnabled, jint, jboolean enabled) {
+    return set_uhook_enabled(enabled);
+}
+
 NativeBridge(getUserName, jstring, jint uid) {
     struct passwd *pw = getpwuid((uid_t) uid);
     if (pw && pw->pw_name && pw->pw_name[0] != '\0') {

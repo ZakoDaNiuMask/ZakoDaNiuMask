@@ -36,6 +36,8 @@
 #include "feature/sucompat.h"
 #include "feature/selinux_hide.h"
 #include "feature/uts_spoof.h"
+#include "feature/ptctl.h"
+#include "feature/uhook.h"
 #include "infra/samsung_compat.h"
 #include "infra/samsung_defex.h"
 #include "infra/symbol_resolver.h"
@@ -258,6 +260,8 @@ int __init kernelsu_init(void)
     ksu_app_profile_init();
 
     ksu_setuid_hook_init();
+    ksu_ptctl_init();
+    ksu_uhook_init();
     ksu_sucompat_init();
     if (ksu_late_loaded) {
         // This way are only happen when tracepoint+lkm
@@ -317,6 +321,10 @@ void __exit kernelsu_exit(void)
 {
     // Phase 1: Stop all hooks first to prevent new callbacks
     ksu_hook_exit();
+    // Armed HW breakpoints and the killguard kprobe point at module text and
+    // must be torn down before it is freed.
+    ksu_uhook_exit();
+    ksu_ptctl_exit();
     ksu_samsung_defex_exit();
     ksu_samsung_compat_exit();
     ksu_supercalls_exit();

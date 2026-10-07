@@ -95,6 +95,11 @@ private val PORTED_COMPONENTS = listOf(
         website = "https://github.com/SukiSU-Ultra/SukiSU-Ultra",
     ),
     PortedComponent(
+        name = "JingMatrix/KernelSU",
+        licenseName = "GPL-3.0",
+        website = "https://github.com/JingMatrix/KernelSU",
+    ),
+    PortedComponent(
         name = "FolkPatch",
         licenseName = "GPL-3.0",
         website = "https://github.com/LyraVoid/FolkPatch",

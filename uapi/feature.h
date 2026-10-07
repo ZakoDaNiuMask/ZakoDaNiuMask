@@ -14,6 +14,9 @@ enum ksu_feature_id {
      * manager and the on-disk .feature_config already refer to by id.
      */
     KSU_FEATURE_MOUNT_HIDE = 16,
+    KSU_FEATURE_SAMSUNG_COMPAT = 17,
+    KSU_FEATURE_PTCTL = 18,
+    KSU_FEATURE_UHOOK = 19,
 
     KSU_FEATURE_MAX
 };

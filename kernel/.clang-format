@@ -382,6 +382,7 @@ ForEachMacros:
   - 'list_for_each_prev_safe'
   - 'list_for_each_safe'
   - 'llist_for_each'
+  - 'vma_interval_tree_foreach'
   - 'llist_for_each_entry'
   - 'llist_for_each_entry_safe'
   - 'llist_for_each_safe'

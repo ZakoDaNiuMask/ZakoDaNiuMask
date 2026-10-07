@@ -29,6 +29,8 @@
 #include "feature/cpu_spoof.h"
 #include "feature/uts_spoof.h"
 #include "feature/mem_spoof.h"
+#include "feature/ptctl.h"
+#include "feature/uhook.h"
 #include "policy/app_profile.h"
 #ifdef CONFIG_KPM
 #include "kpm/kpm.h"
@@ -1064,6 +1066,34 @@ static int do_set_spoof_mem(void __user *arg)
     return ksu_set_spoof_mem(cmd.total_ram_bytes, cmd.cma_total_bytes);
 }
 
+static int do_ptctl(void __user *arg)
+{
+    struct ksu_ptctl_cmd cmd;
+    int ret;
+
+    if (copy_from_user(&cmd, arg, sizeof(cmd)))
+        return -EFAULT;
+    ret = ksu_ptctl(&cmd);
+    /* Copy back regardless of the handler result so the output fields
+     * (ret/arg1/arg2) stay readable after a failed call. */
+    if (copy_to_user(arg, &cmd, sizeof(cmd)))
+        return -EFAULT;
+    return ret;
+}
+
+static int do_uhook(void __user *arg)
+{
+    struct ksu_uhook_cmd cmd;
+    int ret;
+
+    if (copy_from_user(&cmd, arg, sizeof(cmd)))
+        return -EFAULT;
+    ret = ksu_uhook(&cmd);
+    if (copy_to_user(arg, &cmd, sizeof(cmd)))
+        return -EFAULT;
+    return ret;
+}
+
 #ifdef CONFIG_KSU_SUSFS
 int ksu_handle_susfs_cmd(unsigned int cmd, void __user **arg)
 {
@@ -1470,6 +1500,18 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .cmd = KSU_IOCTL_SET_SPOOF_MEM,
         .name = "SET_SPOOF_MEM",
         .handler = do_set_spoof_mem,
+        .perm_check = only_root
+    },
+    {
+        .cmd = KSU_IOCTL_PTCTL,
+        .name = "PTCTL",
+        .handler = do_ptctl,
+        .perm_check = only_root
+    },
+    {
+        .cmd = KSU_IOCTL_UHOOK,
+        .name = "UHOOK",
+        .handler = do_uhook,
         .perm_check = only_root
     },
 #ifdef CONFIG_KPM
