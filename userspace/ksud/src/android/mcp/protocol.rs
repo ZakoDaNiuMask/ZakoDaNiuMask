@@ -13,8 +13,6 @@ pub const SERVER_NAME: &str = "ksud-mcp";
 
 #[derive(Debug, Deserialize)]
 pub struct Request {
-    #[serde(default)]
-    pub jsonrpc: String,
     /// Absent for notifications.
     #[serde(default)]
     pub id: Option<Value>,
@@ -35,7 +33,12 @@ pub struct Response {
 
 impl Response {
     pub fn ok(id: Value, result: Value) -> Self {
-        Response { jsonrpc: "2.0", id, result: Some(result), error: None }
+        Response {
+            jsonrpc: "2.0",
+            id,
+            result: Some(result),
+            error: None,
+        }
     }
 
     pub fn err(id: Value, code: i64, message: impl Into<String>) -> Self {
@@ -43,7 +46,10 @@ impl Response {
             jsonrpc: "2.0",
             id,
             result: None,
-            error: Some(RpcError { code, message: message.into() }),
+            error: Some(RpcError {
+                code,
+                message: message.into(),
+            }),
         }
     }
 }
@@ -84,7 +90,7 @@ pub fn initialize_result() -> Value {
         "capabilities": { "tools": { "listChanged": false } },
         "serverInfo": { "name": SERVER_NAME, "version": env!("CARGO_PKG_VERSION") },
         "instructions": "ksud MCP server. Tools expose KernelSU/ksud capabilities. \
-Read-only tools are always available; write and danger tools require raising \
-`max_tier` in /data/adb/ksu/.mcp_policy.json."
+    Read-only tools are always available; write and danger tools require raising \
+    `max_tier` in /data/adb/ksu/.mcp_policy.json."
     })
 }

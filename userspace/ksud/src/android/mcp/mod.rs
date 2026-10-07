@@ -16,7 +16,7 @@ pub mod tools;
 use std::io::{BufRead, Write};
 
 use anyhow::Result;
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use protocol::{Request, Response};
 
@@ -27,7 +27,10 @@ pub fn run() -> Result<()> {
         log::warn!("mcp: could not write default policy: {e}");
     }
     let policy = policy::Policy::load();
-    log::info!("mcp: server started (max_tier={})", policy.max_tier.as_str());
+    log::info!(
+        "mcp: server started (max_tier={})",
+        policy.max_tier.as_str()
+    );
 
     let stdin = std::io::stdin();
     let mut stdout = std::io::stdout();
@@ -98,7 +101,10 @@ fn call_tool(policy: &policy::Policy, params: &Value) -> Value {
         None => return protocol::tool_result("missing tool name".into(), true),
     };
     let empty = Map::new();
-    let args = params.get("arguments").and_then(Value::as_object).unwrap_or(&empty);
+    let args = params
+        .get("arguments")
+        .and_then(Value::as_object)
+        .unwrap_or(&empty);
 
     let tool = match tools::find(name) {
         Some(tool) => tool,

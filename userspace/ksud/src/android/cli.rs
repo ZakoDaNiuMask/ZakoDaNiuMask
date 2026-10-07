@@ -925,7 +925,10 @@ fn run_mcp_policy(command: McpPolicyCmd) -> Result<()> {
 
     match command {
         McpPolicyCmd::Get => {
-            println!("{}", serde_json::to_string_pretty(&Policy::load().to_json())?);
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&Policy::load().to_json())?
+            );
         }
         McpPolicyCmd::SetMaxTier { tier } => {
             let tier = Tier::from_name(&tier)

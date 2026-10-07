@@ -53,18 +53,18 @@ class AgentSettingsRepository(
     private val settings: AppSettingsRepository,
 ) {
     fun load(): AgentSettings = AgentSettings(
-        provider = LlmProviderType.fromId(settings.getString("agent_provider", "openai")),
-        endpoint = settings.getString("agent_endpoint", ""),
-        apiKey = settings.getString("agent_api_key", ""),
-        model = settings.getString("agent_model", ""),
-        apiPath = settings.getString("agent_api_path", ""),
-        userAgent = settings.getString("agent_user_agent", ""),
-        extraHeaders = settings.getString("agent_extra_headers", ""),
+        provider = LlmProviderType.fromId(settings.getString("agent_provider", "openai").orEmpty()),
+        endpoint = settings.getString("agent_endpoint", "").orEmpty(),
+        apiKey = settings.getString("agent_api_key", "").orEmpty(),
+        model = settings.getString("agent_model", "").orEmpty(),
+        apiPath = settings.getString("agent_api_path", "").orEmpty(),
+        userAgent = settings.getString("agent_user_agent", "").orEmpty(),
+        extraHeaders = settings.getString("agent_extra_headers", "").orEmpty(),
         temperature = settings.getFloat("agent_temperature", 0.3f).toDouble(),
         maxTokens = settings.getInt("agent_max_tokens", 2048),
         maxIterations = settings.getInt("agent_max_iterations", 8),
-        mode = AgentMode.fromId(settings.getString("agent_mode", "read_only")),
-        systemPrompt = settings.getString("agent_system_prompt", ""),
+        mode = AgentMode.fromId(settings.getString("agent_mode", "read_only").orEmpty()),
+        systemPrompt = settings.getString("agent_system_prompt", "").orEmpty(),
         disabledDomains = settings.getStringSet("agent_disabled_domains", emptySet()),
     )
 
@@ -85,7 +85,7 @@ class AgentSettingsRepository(
     }
 
     fun loadAudit(): List<AgentAuditEntry> {
-        val raw = settings.getString("agent_audit", "")
+        val raw = settings.getString("agent_audit", "").orEmpty()
         if (raw.isBlank()) return emptyList()
         return runCatching {
             val array = JSONArray(raw)

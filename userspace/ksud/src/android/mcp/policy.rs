@@ -68,7 +68,11 @@ pub struct Policy {
 
 impl Default for Policy {
     fn default() -> Self {
-        Policy { max_tier: Tier::Read, allow: BTreeSet::new(), deny: BTreeSet::new() }
+        Policy {
+            max_tier: Tier::Read,
+            allow: BTreeSet::new(),
+            deny: BTreeSet::new(),
+        }
     }
 }
 
