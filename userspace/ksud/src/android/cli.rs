@@ -204,6 +204,40 @@ enum Commands {
 
     /// Run a Model Context Protocol (MCP) server over stdio
     Mcp,
+
+    /// Manage the ksud MCP tool policy
+    McpPolicy {
+        #[command(subcommand)]
+        command: McpPolicyCmd,
+    },
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum McpPolicyCmd {
+    /// Print the current MCP policy as JSON
+    Get,
+    /// Set the maximum permitted tier (read | write | danger)
+    SetMaxTier {
+        /// read | write | danger
+        tier: String,
+    },
+    /// Allow a tool regardless of its tier
+    Allow {
+        /// tool name, e.g. module.enable
+        tool: String,
+    },
+    /// Deny a tool
+    Deny {
+        /// tool name
+        tool: String,
+    },
+    /// Clear a per-tool allow/deny override
+    Clear {
+        /// tool name
+        tool: String,
+    },
+    /// Reset to the default read-only policy
+    Reset,
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -886,6 +920,26 @@ fn num_cpus() -> u32 {
         .unwrap_or(1)
 }
 
+fn run_mcp_policy(command: McpPolicyCmd) -> Result<()> {
+    use crate::android::mcp::policy::{Policy, Tier};
+
+    match command {
+        McpPolicyCmd::Get => {
+            println!("{}", serde_json::to_string_pretty(&Policy::load().to_json())?);
+        }
+        McpPolicyCmd::SetMaxTier { tier } => {
+            let tier = Tier::from_name(&tier)
+                .ok_or_else(|| anyhow::anyhow!("invalid tier '{tier}' (read | write | danger)"))?;
+            Policy::load().set_max_tier(tier)?;
+        }
+        McpPolicyCmd::Allow { tool } => Policy::load().allow_tool(&tool)?,
+        McpPolicyCmd::Deny { tool } => Policy::load().deny_tool(&tool)?,
+        McpPolicyCmd::Clear { tool } => Policy::load().clear_tool(&tool)?,
+        McpPolicyCmd::Reset => Policy::load().reset()?,
+    }
+    Ok(())
+}
+
 #[cfg(all(target_arch = "aarch64", target_os = "android"))]
 mod kpm_cmd {
     use std::path::PathBuf;
@@ -1491,6 +1545,7 @@ pub fn run() -> Result<()> {
             Initrc::Refresh => regenerate_preinit_rc(),
         },
         Commands::Mcp => crate::android::mcp::run(),
+        Commands::McpPolicy { command } => run_mcp_policy(command),
     };
 
     if let Err(e) = &result {

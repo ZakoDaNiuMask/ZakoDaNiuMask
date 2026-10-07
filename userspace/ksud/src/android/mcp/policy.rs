@@ -40,6 +40,11 @@ impl Tier {
             _ => None,
         }
     }
+
+    /// Parse a user-supplied tier name (also accepts unknown as None).
+    pub fn from_name(value: &str) -> Option<Tier> {
+        Tier::parse(value)
+    }
 }
 
 #[derive(Debug, Deserialize, Default)]
@@ -115,6 +120,51 @@ raise \"max_tier\" in {POLICY_PATH} (read | write | danger)",
             tier.as_str(),
             self.max_tier.as_str()
         )
+    }
+
+    /// Serialize the current policy (as persisted).
+    pub fn to_json(&self) -> serde_json::Value {
+        serde_json::json!({
+            "max_tier": self.max_tier.as_str(),
+            "allow": self.allow.iter().cloned().collect::<Vec<_>>(),
+            "deny": self.deny.iter().cloned().collect::<Vec<_>>(),
+        })
+    }
+
+    fn save(&self) -> Result<()> {
+        let text = format!("{}\n", serde_json::to_string_pretty(&self.to_json())?);
+        std::fs::write(POLICY_PATH, text)?;
+        Ok(())
+    }
+
+    pub fn set_max_tier(&mut self, tier: Tier) -> Result<()> {
+        self.max_tier = tier;
+        self.save()
+    }
+
+    pub fn allow_tool(&mut self, name: &str) -> Result<()> {
+        self.deny.remove(name);
+        self.allow.insert(name.to_string());
+        self.save()
+    }
+
+    pub fn deny_tool(&mut self, name: &str) -> Result<()> {
+        self.allow.remove(name);
+        self.deny.insert(name.to_string());
+        self.save()
+    }
+
+    pub fn clear_tool(&mut self, name: &str) -> Result<()> {
+        self.allow.remove(name);
+        self.deny.remove(name);
+        self.save()
+    }
+
+    pub fn reset(&mut self) -> Result<()> {
+        self.max_tier = Tier::Read;
+        self.allow.clear();
+        self.deny.clear();
+        self.save()
     }
 }
 
