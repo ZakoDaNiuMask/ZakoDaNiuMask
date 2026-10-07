@@ -1432,7 +1432,10 @@ pub fn run() -> Result<()> {
                 Ok(())
             }
             Kernel::SpoofUname { release, version } => {
-                ksucalls::set_spoof_version(release.as_deref(), version.as_deref())?;
+                ksucalls::set_spoof_version(
+                    release.as_deref().unwrap_or(""),
+                    version.as_deref().unwrap_or(""),
+                )?;
                 println!("kernel spoof-uname done");
                 Ok(())
             }

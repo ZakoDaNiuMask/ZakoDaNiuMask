@@ -468,17 +468,17 @@ pub fn dynamic_manager_clear() -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn set_spoof_version(release: Option<&str>, version: Option<&str>) -> anyhow::Result<()> {
+pub fn set_spoof_version(release: &str, version: &str) -> anyhow::Result<()> {
     let mut cmd = uapi::ksu_set_spoof_version_cmd {
         release: [0u8; 65],
         version: [0u8; 65],
     };
-    if let Some(release) = release {
+    if !release.is_empty() {
         let bytes = release.as_bytes();
         let len = bytes.len().min(cmd.release.len() - 1);
         cmd.release[..len].copy_from_slice(&bytes[..len]);
     }
-    if let Some(version) = version {
+    if !version.is_empty() {
         let bytes = version.as_bytes();
         let len = bytes.len().min(cmd.version.len() - 1);
         cmd.version[..len].copy_from_slice(&bytes[..len]);

@@ -194,7 +194,6 @@ fun ModulePage(bottomPadding: Dp) {
     val viewModel = koinViewModel<ModuleViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val homeState by koinViewModel<HomeViewModel>().uiState.collectAsStateWithLifecycle()
-    val settingsState by koinViewModel<SettingsViewModel>().uiState.collectAsStateWithLifecycle()
     val snackBarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
     var lastClickTime by remember { mutableStateOf(0L) }
@@ -595,6 +594,7 @@ private fun ModuleList(
     val settings = koinInject<SettingsPlatformRepository>()
     val schemeCopiedMsg = stringResource(R.string.module_shortcut_scheme_copied)
     var showMetaModuleWarning by rememberSaveable { mutableStateOf(true) }
+    val settingsState by koinViewModel<SettingsViewModel>().uiState.collectAsStateWithLifecycle()
     val fetchRemoteText = koinInject<FetchRemoteTextUseCase>()
     val enqueueDownload = koinInject<EnqueueDownloadUseCase>()
     val observeDownload = koinInject<ObserveDownloadUseCase>()
