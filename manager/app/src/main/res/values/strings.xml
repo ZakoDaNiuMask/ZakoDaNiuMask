@@ -159,6 +159,10 @@
     <string name="folk_mount_mode_builtin">Built-in (Folk Mount)</string>
     <string name="folk_mount_mode_metamodule">Metamodule</string>
     <string name="backup_title">Backup</string>
+    <string name="backup_kind">Backup content</string>
+    <string name="backup_kind_allowlist">Allow-list</string>
+    <string name="backup_kind_module">Modules</string>
+    <string name="backup_kind_boot">Boot image</string>
     <string name="backup_summary">Back up and restore the allow-list (root profiles).</string>
     <string name="backup_target">Storage</string>
     <string name="backup_target_local">Local</string>

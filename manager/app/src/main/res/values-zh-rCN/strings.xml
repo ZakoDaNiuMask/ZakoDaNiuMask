@@ -160,6 +160,10 @@
     <string name="folk_mount_mode_builtin">内置（Folk Mount）</string>
     <string name="folk_mount_mode_metamodule">Metamodule</string>
     <string name="backup_title">备份</string>
+    <string name="backup_kind">备份内容</string>
+    <string name="backup_kind_allowlist">允许列表</string>
+    <string name="backup_kind_module">模块</string>
+    <string name="backup_kind_boot">启动镜像</string>
     <string name="backup_summary">备份与恢复允许列表（root 配置）。</string>
     <string name="backup_target">存储位置</string>
     <string name="backup_target_local">本地</string>

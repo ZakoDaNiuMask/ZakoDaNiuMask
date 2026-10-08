@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.data.backup.BackupKind
 import com.zakodaniumask.manager.ui.component.SwipeableSnackbarHost
 import com.zakodaniumask.manager.ui.component.settings.AppBackButton
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
@@ -70,6 +71,7 @@ fun BackupScreen() {
     val savedMessage = stringResource(R.string.agent_settings_saved)
 
     var target by remember { mutableStateOf(0) }
+    var kind by remember { mutableStateOf(0) }
     val url = remember { TextFieldState(viewModel.webDavUrl()) }
     val user = remember { TextFieldState(viewModel.webDavUser()) }
     val pass = remember { TextFieldState(viewModel.webDavPass()) }
@@ -175,13 +177,31 @@ fun BackupScreen() {
             }
 
             item {
+                SegmentedColumn(title = stringResource(R.string.backup_kind)) {
+                    item {
+                        SettingsChooseWidget(
+                            icon = Icons.TwoTone.Storage,
+                            title = stringResource(R.string.backup_kind),
+                            items = listOf(
+                                stringResource(R.string.backup_kind_allowlist),
+                                stringResource(R.string.backup_kind_module),
+                                stringResource(R.string.backup_kind_boot),
+                            ),
+                            selectedIndex = kind,
+                            onSelectedIndexChange = { kind = it },
+                        )
+                    }
+                }
+            }
+
+            item {
                 SegmentedColumn(title = stringResource(R.string.backup_title)) {
                     item {
                         SettingsBaseWidget(
                             icon = Icons.TwoTone.Backup,
                             title = stringResource(R.string.backup_now),
                             enabled = !state.busy,
-                            onClick = { viewModel.backup(target == 1) },
+                            onClick = { viewModel.backup(BackupKind.entries[kind], target == 1) },
                         )
                     }
                     item {

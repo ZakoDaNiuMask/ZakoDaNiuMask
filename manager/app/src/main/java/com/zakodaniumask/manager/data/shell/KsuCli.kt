@@ -215,6 +215,22 @@ class KsuCliRepository(context: Context) {
             .exec().isSuccess
     }
 
+    fun defaultBootPartition(): String {
+        val shell = getRootShell()
+        return shell.newJob()
+            .add("${getKsuDaemonPath()} boot-info default-partition")
+            .to(ArrayList(), null)
+            .exec().out.joinToString("\n").trim()
+    }
+
+    fun flashBackup(partition: String, output: String): Boolean {
+        val shell = getRootShell()
+        return shell.newJob()
+            .add("${getKsuDaemonPath()} flash backup $partition $output")
+            .to(ArrayList(), null)
+            .exec().isSuccess
+    }
+
     fun getModuleCount(): Int {        val result = listModules()
         runCatching {
             val array = JSONArray(result)

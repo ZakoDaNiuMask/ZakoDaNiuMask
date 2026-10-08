@@ -8,6 +8,8 @@ import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.Natives
 import com.zakodaniumask.manager.data.AppSettingsRepository
 import com.zakodaniumask.manager.data.backup.AllowlistBackupSource
+import com.zakodaniumask.manager.data.backup.BootBackupSource
+import com.zakodaniumask.manager.data.backup.ModuleBackupSource
 import com.zakodaniumask.manager.data.backup.AllowlistDocument
 import com.zakodaniumask.manager.data.backup.BackupEngine
 import com.zakodaniumask.manager.data.backup.BackupKind
@@ -17,6 +19,7 @@ import com.zakodaniumask.manager.data.backup.LocalBackupStorage
 import com.zakodaniumask.manager.data.backup.WebDavBackupStorage
 import com.zakodaniumask.manager.data.backup.toProfile
 import com.zakodaniumask.manager.data.packageinfo.SuperUserRepository
+import com.zakodaniumask.manager.data.shell.KsuCliRepository
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +35,7 @@ class BackupViewModel(
     application: Application,
     private val settings: AppSettingsRepository,
     private val superUserRepository: SuperUserRepository,
+    private val ksuCliRepository: KsuCliRepository,
 ) : AndroidViewModel(application) {
 
     data class UiState(
@@ -61,17 +65,17 @@ class BackupViewModel(
         settings.putString(KEY_PASS, pass)
     }
 
-    fun backup(useWebDav: Boolean) {
+    fun backup(kind: BackupKind, useWebDav: Boolean) {
         if (mutableState.value.busy) return
         viewModelScope.launch {
             mutableState.update { it.copy(busy = true, message = null) }
             val result = withContext(Dispatchers.IO) {
                 runCatching {
                     val engine = BackupEngine(
-                        sources = BackupSourceRegistry(listOf(AllowlistBackupSource(superUserRepository))),
+                        sources = sources(),
                         storages = listOf(storage(useWebDav)),
                     )
-                    engine.backup(BackupKind.ALLOWLIST).isSuccess
+                    engine.backup(kind).isSuccess
                 }.getOrDefault(false)
             }
             mutableState.update {
@@ -118,6 +122,17 @@ class BackupViewModel(
             }
         }
     }
+
+    private fun sources(): BackupSourceRegistry = BackupSourceRegistry(
+        listOf(
+            AllowlistBackupSource(superUserRepository),
+            ModuleBackupSource(
+                listModules = { ksuCliRepository.listModules() },
+                rootShell = { ksuCliRepository.getRootShell() },
+            ),
+            BootBackupSource(getApplication<Application>(), ksuCliRepository),
+        )
+    )
 
     private fun storage(useWebDav: Boolean): BackupStorage =
         if (useWebDav) {
