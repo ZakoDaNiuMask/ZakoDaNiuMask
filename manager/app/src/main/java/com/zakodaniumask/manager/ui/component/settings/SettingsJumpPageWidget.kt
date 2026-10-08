@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.zakodaniumask.manager.ui.theme.FolkType
 
 @Composable
 fun SettingsJumpPageWidget(

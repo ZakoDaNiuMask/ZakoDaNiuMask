@@ -603,10 +603,6 @@ private fun ModuleDropdown(
                     onDismissRequest()
                     onOpenCustomOrder()
                 },
-                shapes = MenuDefaults.itemShape(
-                    index = groups.size,
-                    count = groups.size + 1,
-                ),
             )
         }
     }

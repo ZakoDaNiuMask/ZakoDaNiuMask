@@ -49,7 +49,12 @@ class LocalBackupStorage(private val root: File) : BackupStorage {
         }
 
     override suspend fun delete(relativePath: String): Result<Unit> =
-        withContext(Dispatchers.IO) { runCatching { File(root, relativePath).delete() } }
+        withContext(Dispatchers.IO) {
+            runCatching {
+                File(root, relativePath).delete()
+                Unit
+            }
+        }
 
     override fun toString(): String = "local"
 }
