@@ -10,6 +10,7 @@ import com.zakodaniumask.manager.domain.model.KernelFeatureSettings
 import com.zakodaniumask.manager.domain.model.KernelStatus
 import com.zakodaniumask.manager.domain.model.ManagerRecord
 import com.zakodaniumask.manager.domain.model.ManagerRuntimeInfo
+import com.zakodaniumask.manager.domain.model.UapiCompatMode
 import com.zakodaniumask.manager.getKernelVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,8 +28,16 @@ class KernelRepository(
         val managerUapi = runCatching { Natives.managerUAPIVersion }.getOrDefault(1)
         val fullVersion = runCatching { Natives.getFullVersion() }.getOrDefault("Unknown")
         val isRootAvailable = runCatching { ksuCliRepository.rootAvailable() }.getOrDefault(false)
-        val uapiMatched = runCatching { Natives.isFullFeatured() }.getOrDefault(false)
+        val uapiSupported = runCatching { Natives.isUapiSupported() }.getOrDefault(false)
         val ignoreUapi = settings.getBoolean("ignore_uapi", false)
+        val kernelUapiValue = kernelUapi ?: 0
+        val uapiCompatMode = when {
+            !isManager -> UapiCompatMode.SUPPORTED
+            kernelUapiValue == 0 -> UapiCompatMode.LEGACY
+            kernelUapiValue < Natives.KERNEL_UAPI_VERSION_MIN -> UapiCompatMode.TOO_OLD
+            kernelUapiValue > managerUapi -> UapiCompatMode.KERNEL_NEWER
+            else -> UapiCompatMode.SUPPORTED
+        }
         KernelStatus(
             isManager = isManager,
             ksuVersion = ksuVersion,
@@ -38,7 +47,8 @@ class KernelRepository(
             lkmMode = ksuVersion?.let { if (kernelVersion.isGKI()) Natives.isLkmMode else null },
             kernelVersion = kernelVersion,
             isRootAvailable = isRootAvailable,
-            isFullFeatured = isRootAvailable && isManager && (uapiMatched || ignoreUapi),
+            isFullFeatured = isRootAvailable && isManager && (uapiSupported || ignoreUapi),
+            uapiCompatMode = uapiCompatMode,
             isSELinuxPermissive = runCatching { isSELinuxPermissive() }.getOrDefault(false),
             isOfficialSignature = runCatching {
                 ksuCliRepository.isOfficialSignature(application.packageResourcePath)

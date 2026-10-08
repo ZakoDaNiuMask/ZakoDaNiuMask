@@ -749,6 +749,7 @@
     <string name="require_manager_version">Manager update required</string>
     <string name="require_kernel_version">Kernel update required. Tap to install.</string>
     <string name="require_kernel_version_gki">Kernel update required</string>
+    <string name="uapi_compat_mode_notice">Running in compatibility mode (kernel UAPI %1$d, manager %2$d). Some features may be unavailable.</string>
     <string name="umount_path_manager">Kernel Stealth Mount Path Management</string>
     <string name="umount_path_manager_summary">Manage hidden kernel mount paths</string>
     <string name="boot_script_title">Boot script</string>
@@ -916,8 +917,8 @@
     <string name="ghostlock_route_auto">Auto (infer)</string>
     <string name="ghostlock_fallback">Fallback</string>
     <string name="ghostlock_fallback_none">None</string>
-    <string name="settings_ignore_uapi">Ignore UAPI compatibility</string>
-    <string name="settings_ignore_uapi_summary">Treat the manager as usable even when the kernel UAPI version does not match; also lets plugins run at boot.</string>
+    <string name="settings_ignore_uapi">Force compatibility mode</string>
+    <string name="settings_ignore_uapi_summary">Treat the manager as usable even when the kernel UAPI is older than the supported minimum; also lets plugins run at boot. Use only if you understand the risk.</string>
     <string name="settings_show_full_status">Show full status</string>
     <string name="settings_show_full_status_summary">Show fingerprint, full kernel version and kernel warnings on the home card</string>
     <string name="settings_module_description_max_lines">Module description lines</string>

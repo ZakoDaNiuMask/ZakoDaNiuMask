@@ -31,6 +31,19 @@ object Natives {
     // 35002: add sync set dynamic-manager api
     const val MINIMAL_SUPPORTED_KERNEL = 35002
 
+    // Oldest kernel UAPI version this manager can still speak to. We adapt to the
+    // kernel, never the other way around, so this intentionally stays below the
+    // manager's own KERNEL_SU_UAPI_VERSION. History of the version bumps:
+    // 1: introduce the uapi_version field itself
+    // 2: allowlist v4 root profile flags (KSU_NO_NEW_PRIVS)
+    // 3: scoped su-session driver fd
+    // 4: add KSU_GET_INFO_FLAG_BUNDLED
+    // 5: add EVENT_SERVICES
+    // Everything in the [KERNEL_UAPI_VERSION_MIN, managerUAPIVersion] range uses the
+    // same struct layouts for the calls this manager makes, so no struct shim is
+    // needed; individual capabilities are probed via feature ids.
+    const val KERNEL_UAPI_VERSION_MIN = 2
+
     const val KERNEL_SU_DOMAIN = "u:r:ksu:s0"
 
     const val ROOT_UID = 0
@@ -230,8 +243,23 @@ object Natives {
     val managerUAPIVersion: Int
         external get
 
+    /**
+     * True when the running kernel reports a UAPI version this manager can talk to.
+     *
+     * A kernel newer than the manager (kernelUAPIVersion > managerUAPIVersion) is
+     * accepted on purpose: the kernel is expected to stay backward compatible, and
+     * this manager will simply use the subset of capabilities it knows about. A
+     * kernel older than [KERNEL_UAPI_VERSION_MIN] (and the pre-v1 legacy value 0)
+     * is not safe to drive, so it is rejected unless the user forces it.
+     */
+    fun isUapiSupported(): Boolean {
+        if (!isManager) return false
+        val kernelUapi = kernelUAPIVersion
+        return kernelUapi >= KERNEL_UAPI_VERSION_MIN
+    }
+
     fun isFullFeatured(): Boolean {
-        return isManager && kernelUAPIVersion == managerUAPIVersion
+        return isUapiSupported()
     }
 
     @Immutable

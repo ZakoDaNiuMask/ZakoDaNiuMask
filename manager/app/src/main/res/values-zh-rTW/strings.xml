@@ -293,6 +293,7 @@
     <string name="failed_to_update_app_profile">為 %s 更新 App Profile 失敗</string>
     <string name="debug_version_notice">您正在使用 DEBUG 組建的管理器，如果你不知道什麼是 DEBUG 組建，請立即切換至 RELEASE 組建</string>
     <string name="unofficial_version_notice">您使用的管理器不是 %s 官方管理器，您可能無法取得權限。</string>
+    <string name="uapi_compat_mode_notice">正在以相容模式執行（核心 UAPI %1$d，管理器 %2$d），部分功能可能無法使用。</string>
     <string name="conflict_with_apatch">檢測到APatch，所有功能均可能停止運作。</string>
     <string name="settings_umount_modules_default">自動一鍵卸載隱藏</string>
     <string name="settings_umount_modules_default_summary">對未設定 Profile 的應用程式自動一鍵卸載並隱藏模組</string>
@@ -648,8 +649,8 @@
     <string name="axeron_shell_desc">以 shell 或 root 權限執行命令</string>
     <string name="axeron_shell_command">命令</string>
     <string name="axeron_shell_run">執行</string>
-    <string name="settings_ignore_uapi">忽略 UAPI 相容性</string>
-    <string name="settings_ignore_uapi_summary">即使核心 UAPI 版本不相符，也將管理器視為可用。進階選項：部分功能可能異常；同時允許外掛在開機時執行。</string>
+    <string name="settings_ignore_uapi">強制相容模式</string>
+    <string name="settings_ignore_uapi_summary">即使核心 UAPI 低於支援的最低版本，也將管理器視為可用。進階選項：部分功能可能異常；同時允許外掛在開機時執行。</string>
     <string name="settings_show_full_status">顯示完整狀態</string>
     <string name="settings_show_full_status_summary">在首頁卡片上顯示指紋、完整核心版本和核心警告</string>
     <string name="settings_module_description_max_lines">模組描述行數</string>

@@ -434,8 +434,8 @@
     <string name="axeron_shell_desc">以 shell 或 root 權限執行命令</string>
     <string name="axeron_shell_command">命令</string>
     <string name="axeron_shell_run">執行</string>
-    <string name="settings_ignore_uapi">忽略 UAPI 相容性</string>
-    <string name="settings_ignore_uapi_summary">即使核心 UAPI 版本不相符，也將管理器視為可用。進階選項：部分功能可能異常；同時允許外掛在開機時執行。</string>
+    <string name="settings_ignore_uapi">強制相容模式</string>
+    <string name="settings_ignore_uapi_summary">即使核心 UAPI 低於支援嘅最低版本，都將管理器視為可用。進階選項：部分功能可能異常；同時允許外掛喺開機時執行。</string>
     <string name="settings_show_full_status">顯示完整狀態</string>
     <string name="settings_show_full_status_summary">在首頁卡片上顯示指紋、完整內核版本和內核警告</string>
     <string name="settings_module_description_max_lines">模組描述行數</string>
@@ -849,6 +849,7 @@
     <string name="require_manager_version">需要更新管理器</string>
     <string name="require_kernel_version">需要更新內核。撳一下嚟安裝。</string>
     <string name="require_kernel_version_gki">需要更新內核</string>
+    <string name="uapi_compat_mode_notice">正以相容模式行緊（內核 UAPI %1$d，管理器 %2$d），部分功能可能用唔到。</string>
     <string name="settings_adb_root">ADB 最高權限</string>
     <string name="home_kernel_type_gki2">GKI 2.0</string>
     <string name="home_kernel_type_gki1">GKI 1.0</string>

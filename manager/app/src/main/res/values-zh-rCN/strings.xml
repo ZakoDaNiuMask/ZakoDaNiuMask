@@ -743,6 +743,7 @@
     <string name="require_manager_version">需要更新管理器</string>
     <string name="require_kernel_version">需要更新内核，点击此处安装。</string>
     <string name="require_kernel_version_gki">需要更新内核</string>
+    <string name="uapi_compat_mode_notice">正在以兼容模式运行（内核 UAPI %1$d，管理器 %2$d），部分功能可能不可用。</string>
     <string name="umount_path_manager">内核无痕隐藏挂载路径管理</string>
     <string name="umount_path_manager_summary">管理内核无痕隐藏挂载路径</string>
     <string name="boot_script_title">开机脚本</string>
@@ -910,8 +911,8 @@
     <string name="ghostlock_route_auto">自动（推断）</string>
     <string name="ghostlock_fallback">回退路由</string>
     <string name="ghostlock_fallback_none">不启用</string>
-    <string name="settings_ignore_uapi">忽略 UAPI 兼容性</string>
-    <string name="settings_ignore_uapi_summary">即使内核 UAPI 版本不匹配，也将管理器视为可用；同时允许插件在开机时运行。</string>
+    <string name="settings_ignore_uapi">强制兼容模式</string>
+    <string name="settings_ignore_uapi_summary">即使内核 UAPI 低于支持的最低版本，也将管理器视为可用；同时允许插件在开机时运行。请仅在了解风险时开启。</string>
     <string name="settings_show_full_status">显示完整状态</string>
     <string name="settings_show_full_status_summary">在主页卡片上显示指纹、完整内核版本和内核警告</string>
     <string name="settings_module_description_max_lines">模块描述行数</string>

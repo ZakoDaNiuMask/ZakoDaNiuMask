@@ -84,6 +84,7 @@ import com.zakodaniumask.manager.domain.model.HomeSystemInfo
 import com.zakodaniumask.manager.domain.model.KernelStatus
 import com.zakodaniumask.manager.domain.model.ManagerUpdateChannel
 import com.zakodaniumask.manager.domain.model.ManagerUpdateInfo
+import com.zakodaniumask.manager.domain.model.UapiCompatMode
 import com.zakodaniumask.manager.domain.usecase.EnqueueManagerUpdateUseCase
 import com.zakodaniumask.manager.magica.MagicaService
 import com.zakodaniumask.manager.ui.component.KsuIsValid
@@ -193,46 +194,76 @@ fun HomePage(
         ) {
                 // 状态卡片
                 if (uiState.isCoreDataLoaded) {
-                    if (uiState.systemStatus.isManager && !uiState.systemStatus.isFullFeatured) {
-                        if ((uiState.systemStatus.kernelUAPIVersion
-                                ?: 1) > uiState.systemStatus.managerUAPIVersion
-                        ) {
-                            WarningCard(
-                                message = stringResource(R.string.require_manager_version),
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.TwoTone.Error,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onErrorContainer,
-                                        modifier = Modifier.size(18.dp)
+                    val status = uiState.systemStatus
+                    if (status.isManager) {
+                        val kernelUapi = status.kernelUAPIVersion ?: 0
+                        when (status.uapiCompatMode) {
+                            UapiCompatMode.KERNEL_NEWER -> {
+                                WarningCard(
+                                    message = stringResource(R.string.require_manager_version),
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.TwoTone.Error,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    },
+                                    onClick = {
+                                        if (status.isLateLoadMode) return@WarningCard
+                                        navigator.push(Route.Install(preselectedKernelUri = null))
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(10.dp))
+                            }
+
+                            UapiCompatMode.TOO_OLD, UapiCompatMode.LEGACY -> {
+                                WarningCard(
+                                    message = if (status.lkmMode == true)
+                                        stringResource(R.string.require_kernel_version)
+                                    else
+                                        stringResource(R.string.require_kernel_version_gki),
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.TwoTone.Error,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    },
+                                    onClick = {
+                                        if (status.isLateLoadMode) return@WarningCard
+                                        navigator.push(Route.Install(preselectedKernelUri = null))
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(10.dp))
+                            }
+
+                            UapiCompatMode.SUPPORTED -> {
+                                if (kernelUapi < status.managerUAPIVersion) {
+                                    WarningCard(
+                                        message = stringResource(
+                                            R.string.uapi_compat_mode_notice,
+                                            kernelUapi,
+                                            status.managerUAPIVersion,
+                                        ),
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        icon = {
+                                            Icon(
+                                                imageVector = Icons.TwoTone.Info,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        },
+                                        onClick = {
+                                            navigator.push(Route.Install(preselectedKernelUri = null))
+                                        }
                                     )
-                                },
-                                onClick = {
-                                    if (uiState.systemStatus.isLateLoadMode) return@WarningCard
-                                    navigator.push(Route.Install(preselectedKernelUri = null))
+                                    Spacer(modifier = Modifier.height(10.dp))
                                 }
-                            )
-                        } else {
-                            WarningCard(
-                                message = if (uiState.systemStatus.lkmMode == true)
-                                    stringResource(R.string.require_kernel_version)
-                                else
-                                    stringResource(R.string.require_kernel_version_gki),
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.TwoTone.Error,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onErrorContainer,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                },
-                                onClick = {
-                                    if (uiState.systemStatus.isLateLoadMode) return@WarningCard
-                                    navigator.push(Route.Install(preselectedKernelUri = null))
-                                }
-                            )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
 
                     // 警告信息
