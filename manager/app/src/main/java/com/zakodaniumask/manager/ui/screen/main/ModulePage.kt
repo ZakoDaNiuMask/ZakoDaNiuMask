@@ -51,8 +51,7 @@ import androidx.compose.material.icons.twotone.Cloud
 import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Download
 import androidx.compose.material.icons.twotone.Extension
-import androidx.compose.material.icons.twotone.KeyboardArrowDown
-import androidx.compose.material.icons.twotone.KeyboardArrowUp
+import androidx.compose.material.icons.twotone.DragHandle
 import androidx.compose.material.icons.twotone.MoreVert
 import androidx.compose.material.icons.twotone.Photo
 import androidx.compose.material.icons.twotone.PlayArrow
@@ -170,6 +169,8 @@ import com.zakodaniumask.manager.ui.viewmodel.ModuleUiEvent
 import com.zakodaniumask.manager.domain.model.ModuleSortGroup
 import com.zakodaniumask.manager.domain.model.ModuleSortPriorityGroups
 import com.zakodaniumask.manager.ui.viewmodel.ModuleUiState
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
 import com.zakodaniumask.manager.ui.webui.WebUIActivity
@@ -214,40 +215,37 @@ fun ModulePage(bottomPadding: Dp) {
 
     if (showCustomOrder) {
         val order = customOrder
+        val orderListState = rememberLazyListState()
+        val reorderState = rememberReorderableLazyListState(orderListState) { from, to ->
+            customOrder = customOrder.toMutableList().also {
+                it.add(to.index, it.removeAt(from.index))
+            }
+        }
         AlertDialog(
             onDismissRequest = { showCustomOrder = false },
             title = { Text(stringResource(R.string.module_sort_custom_order)) },
             text = {
-                LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
-                    itemsIndexed(order, key = { _, id -> id }) { index, id ->
-                        val module = uiState.moduleList.firstOrNull { it.id == id }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(
-                                text = module?.name ?: id,
-                                modifier = Modifier.weight(1f),
-                            )
-                            IconButton(
-                                enabled = index > 0,
-                                onClick = {
-                                    customOrder = order.toMutableList().also {
-                                        it.add(index - 1, it.removeAt(index))
-                                    }
-                                },
+                LazyColumn(
+                    state = orderListState,
+                    modifier = Modifier.heightIn(max = 420.dp),
+                ) {
+                    itemsIndexed(order, key = { _, id -> id }) { _, id ->
+                        ReorderableItem(reorderState, key = id) { _ ->
+                            val module = uiState.moduleList.firstOrNull { it.id == id }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth(),
                             ) {
-                                Icon(Icons.TwoTone.KeyboardArrowUp, contentDescription = null)
-                            }
-                            IconButton(
-                                enabled = index < order.lastIndex,
-                                onClick = {
-                                    customOrder = order.toMutableList().also {
-                                        it.add(index + 1, it.removeAt(index))
-                                    }
-                                },
-                            ) {
-                                Icon(Icons.TwoTone.KeyboardArrowDown, contentDescription = null)
+                                Text(
+                                    text = module?.name ?: id,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                IconButton(
+                                    modifier = Modifier.draggableHandle(),
+                                    onClick = {},
+                                ) {
+                                    Icon(Icons.TwoTone.DragHandle, contentDescription = null)
+                                }
                             }
                         }
                     }

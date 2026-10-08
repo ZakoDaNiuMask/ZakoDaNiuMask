@@ -207,6 +207,7 @@ dependencies {
 
     implementation(libs.gson)
     implementation(libs.org.jsoup.jsoup)
+    implementation(libs.sh.calvin.reorderable)
     implementation(libs.com.squareup.okhttp3.okhttp)
     implementation(libs.commons.compress)
     implementation(libs.xz)
