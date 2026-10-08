@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Base64
 import com.zakodaniumask.manager.BuildConfig
 import com.zakodaniumask.manager.Natives
+import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.agent.ShellExecutor
 import com.zakodaniumask.manager.data.agent.browser.BrowserActionResult
 import com.zakodaniumask.manager.data.agent.browser.HeadlessBrowser
@@ -37,6 +38,7 @@ class ManagerMcpServer(
     private val webSearchRepository: WebSearchRepository,
     private val browser: HeadlessBrowser,
     private val webUiRepository: WebUiRepository,
+    private val agentSettingsRepository: AgentSettingsRepository,
     private val context: Context,
 ) {
 
@@ -160,11 +162,17 @@ class ManagerMcpServer(
                 }
 
                 "browser.open" -> {
+                    if (!agentSettingsRepository.load().browserEnabled) {
+                        return err("browser automation is disabled in agent settings")
+                    }
                     val url = arguments.req("url")
                     AgentToolResult(browserResult(browser.open(url, null)), false)
                 }
 
                 "browser.control" -> {
+                    if (!agentSettingsRepository.load().browserEnabled) {
+                        return err("browser automation is disabled in agent settings")
+                    }
                     val action = arguments.req("action")
                     AgentToolResult(
                         browserResult(browser.control(action, arguments)),
@@ -172,9 +180,17 @@ class ManagerMcpServer(
                     )
                 }
 
-                "module.webui.list" -> AgentToolResult(moduleWebUiListJson().toString(2), false)
+                "module.webui.list" -> {
+                    if (!agentSettingsRepository.load().webUiEnabled) {
+                        return err("module WebUI control is disabled in agent settings")
+                    }
+                    AgentToolResult(moduleWebUiListJson().toString(2), false)
+                }
 
                 "module.webui.open" -> {
+                    if (!agentSettingsRepository.load().webUiEnabled) {
+                        return err("module WebUI control is disabled in agent settings")
+                    }
                     val id = arguments.req("module_id")
                     val intent = Intent(context, WebUIActivity::class.java)
                         .setData(
@@ -190,6 +206,9 @@ class ManagerMcpServer(
                 }
 
                 "module.webui.control" -> {
+                    if (!agentSettingsRepository.load().webUiEnabled) {
+                        return err("module WebUI control is disabled in agent settings")
+                    }
                     val id = arguments.req("module_id")
                     val action = arguments.req("action")
                     AgentToolResult(
@@ -572,7 +591,8 @@ class ManagerMcpServer(
             ToolSpec(
                 "browser.control",
                 "Drive the headless browser: navigate, get_text, get_page_info, execute_js, " +
-                    "find_elements, click, type, scroll, screenshot, back, forward, set_user_agent.",
+                    "find_elements, click, type, scroll, screenshot, back, forward, set_user_agent, " +
+                    "wait_for_dom_stable, get_cookies, set_cookies.",
                 ToolTier.WRITE,
                 schema(
                     listOf("action"),
@@ -584,6 +604,8 @@ class ManagerMcpServer(
                     "direction" to str("scroll direction: up|down"),
                     "amount" to int("scroll amount in px"),
                     "user_agent" to str("user agent string"),
+                    "cookies" to str("cookie string (set_cookies)"),
+                    "timeout" to int("timeout ms (wait_for_dom_stable)"),
                 ),
             ),
             ToolSpec(
@@ -611,6 +633,8 @@ class ManagerMcpServer(
                     "selector" to str("css selector"),
                     "text" to str("text to type"),
                     "script" to str("javascript (execute_js)"),
+                    "cookies" to str("cookie string (set_cookies)"),
+                    "timeout" to int("timeout ms (wait_for_dom_stable)"),
                 ),
             ),
             ToolSpec(

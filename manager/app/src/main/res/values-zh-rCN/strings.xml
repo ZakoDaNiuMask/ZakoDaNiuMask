@@ -136,6 +136,13 @@
     <string name="agent_web_fetch_api_key">读取器 API 密钥</string>
     <string name="agent_web_allow_local">允许本地地址</string>
     <string name="agent_web_allow_local_summary">允许抓取本地/内网地址（存在 SSRF 风险）。</string>
+    <string name="agent_browser_title">浏览器自动化</string>
+    <string name="agent_browser_enable">启用浏览器自动化</string>
+    <string name="agent_browser_enable_summary">允许助手打开并操作网页。</string>
+    <string name="agent_browser_gpu">GPU 截图</string>
+    <string name="agent_browser_gpu_summary">通过 GPU 合成器截图（支持 WebGL/视频）。</string>
+    <string name="agent_webui_enable">启用模块 WebUI 控制</string>
+    <string name="agent_webui_enable_summary">允许助手在隐藏的 WebView 中操作模块 WebUI（以 root 运行模块脚本）。</string>
     <string name="agent_tool_arguments">参数</string>
     <string name="agent_tool_result">结果</string>
     <string name="agent_tool_copy_result">复制结果</string>

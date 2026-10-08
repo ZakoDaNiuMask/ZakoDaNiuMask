@@ -135,6 +135,13 @@
     <string name="agent_web_fetch_api_key">Reader API key</string>
     <string name="agent_web_allow_local">Allow local addresses</string>
     <string name="agent_web_allow_local_summary">Permit fetching local/private network addresses (SSRF risk).</string>
+    <string name="agent_browser_title">Browser automation</string>
+    <string name="agent_browser_enable">Enable browser automation</string>
+    <string name="agent_browser_enable_summary">Let the assistant open and operate web pages.</string>
+    <string name="agent_browser_gpu">GPU screenshots</string>
+    <string name="agent_browser_gpu_summary">Capture screenshots through the GPU compositor (WebGL/video).</string>
+    <string name="agent_webui_enable">Enable module WebUI control</string>
+    <string name="agent_webui_enable_summary">Let the assistant drive module WebUIs in a hidden WebView (runs module scripts as root).</string>
     <string name="agent_tool_arguments">Arguments</string>
     <string name="agent_tool_result">Result</string>
     <string name="agent_tool_copy_result">Copy result</string>

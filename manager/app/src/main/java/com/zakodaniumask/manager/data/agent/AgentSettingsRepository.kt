@@ -53,6 +53,11 @@ data class AgentSettings(
     val webFetchReader: WebFetchReader = WebFetchReader.AUTO,
     val webFetchApiKey: String = "",
     val webFetchAllowLocal: Boolean = false,
+    /** Headless browser automation (general web). */
+    val browserEnabled: Boolean = false,
+    val browserHeadlessGpu: Boolean = false,
+    /** Module WebUI control in a hidden WebView. */
+    val webUiEnabled: Boolean = false,
 )
 
 data class AgentAuditEntry(
@@ -96,6 +101,9 @@ class AgentSettingsRepository(
         ),
         webFetchApiKey = settings.getString("agent_web_fetch_api_key", "").orEmpty(),
         webFetchAllowLocal = settings.getBoolean("agent_web_fetch_allow_local", false),
+        browserEnabled = settings.getBoolean("agent_browser_enabled", false),
+        browserHeadlessGpu = settings.getBoolean("agent_browser_headless_gpu", false),
+        webUiEnabled = settings.getBoolean("agent_webui_enabled", false),
     )
 
     fun save(value: AgentSettings) {
@@ -122,6 +130,9 @@ class AgentSettingsRepository(
         settings.putString("agent_web_fetch_reader", value.webFetchReader.id)
         settings.putString("agent_web_fetch_api_key", value.webFetchApiKey)
         settings.putBoolean("agent_web_fetch_allow_local", value.webFetchAllowLocal)
+        settings.putBoolean("agent_browser_enabled", value.browserEnabled)
+        settings.putBoolean("agent_browser_headless_gpu", value.browserHeadlessGpu)
+        settings.putBoolean("agent_webui_enabled", value.webUiEnabled)
     }
 
     fun loadAudit(): List<AgentAuditEntry> {

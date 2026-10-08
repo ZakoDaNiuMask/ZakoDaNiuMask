@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
+import android.os.SystemClock
+import android.webkit.CookieManager
 import android.util.Base64
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -12,6 +14,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.webkit.WebViewAssetLoader
+import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.packageinfo.InstalledPackageRepository
 import com.zakodaniumask.manager.data.webui.WebUiRepository
 import com.zakodaniumask.manager.ui.webui.SuFilePathHandler
@@ -22,6 +25,7 @@ import java.io.File
 import kotlin.coroutines.resume
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -51,6 +55,7 @@ class HeadlessBrowser(
     private val context: Context,
     private val webUiRepository: WebUiRepository,
     private val packageRepository: InstalledPackageRepository,
+    private val settingsRepository: AgentSettingsRepository,
 ) {
     private var webView: WebView? = null
     private var state: WebUIState? = null
@@ -90,6 +95,9 @@ class HeadlessBrowser(
                     "back" -> goBackResult()
                     "forward" -> goForwardResult()
                     "set_user_agent" -> setUserAgentResult(args.optString("user_agent"))
+                    "wait_for_dom_stable" -> waitDomStableResult(args.optInt("timeout", 4000))
+                    "get_cookies" -> cookiesResult()
+                    "set_cookies" -> setCookiesResult(args.optString("cookies"))
                     else -> BrowserActionResult.error("unsupported action '$action'")
                 }
             } catch (t: Throwable) {
@@ -331,14 +339,46 @@ class HeadlessBrowser(
         val wv = ensure() ?: return BrowserActionResult.error("webview unavailable")
         val width = if (wv.width > 0) wv.width else DEFAULT_WIDTH
         val height = if (wv.height > 0) wv.height else DEFAULT_HEIGHT
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        wv.draw(canvas)
+        val gpu = settingsRepository.load().browserHeadlessGpu
+        val bitmap = (if (gpu) GpuScreenshot.capture(context, wv, width, height) else null)
+            ?: run {
+                val software = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                wv.draw(Canvas(software))
+                software
+            }
         val out = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         val base64 = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
         bitmap.recycle()
         return BrowserActionResult("screenshot ${width}x$height", imageBase64 = base64)
+    }
+
+    private suspend fun waitDomStableResult(timeoutMs: Int): BrowserActionResult {
+        val deadline = SystemClock.elapsedRealtime() + timeoutMs.coerceIn(500, 20_000)
+        while (SystemClock.elapsedRealtime() < deadline) {
+            val state = evalRaw("document.readyState")
+            if (state == "complete") {
+                delay(150)
+                return BrowserActionResult("dom stable")
+            }
+            delay(200)
+        }
+        return BrowserActionResult("dom wait timed out")
+    }
+
+    private fun cookiesResult(): BrowserActionResult {
+        val url = currentUrl().ifBlank { "https://$MODULE_ORIGIN/" }
+        val cookie = runCatching { CookieManager.getInstance().getCookie(url) }.getOrNull()
+        return BrowserActionResult(cookie?.takeIf { it.isNotBlank() } ?: "(no cookies)")
+    }
+
+    private fun setCookiesResult(cookie: String): BrowserActionResult {
+        if (cookie.isBlank()) return BrowserActionResult.error("missing 'cookies'")
+        val url = currentUrl().ifBlank { return BrowserActionResult.error("no page loaded") }
+        val manager = CookieManager.getInstance()
+        manager.setCookie(url, cookie)
+        runCatching { manager.flush() }
+        return BrowserActionResult("cookies set")
     }
 
     // ---- JS helpers ----

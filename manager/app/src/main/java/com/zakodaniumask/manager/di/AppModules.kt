@@ -351,7 +351,7 @@ val repositoryModule = module {
     single { AgentSessionStore(androidApplication()) }
     single { AgentProviderStore(androidApplication()) }
     single { WebSearchRepository(get()) }
-    single { HeadlessBrowser(androidApplication(), get(), get()) }
+    single { HeadlessBrowser(androidApplication(), get(), get(), get()) }
     single { AgentMcpPolicyRepository(get()) }
     single { DetectorRepository(get(), get(), get(), get(), get(), get()) }
     single { ShellExecutor(get(), get()) }

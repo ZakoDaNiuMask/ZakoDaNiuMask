@@ -131,6 +131,9 @@ fun AgentSettingsScreen() {
     var webBackend by remember { mutableStateOf(initial.webSearchBackend) }
     var webReader by remember { mutableStateOf(initial.webFetchReader) }
     var webAllowLocal by remember { mutableStateOf(initial.webFetchAllowLocal) }
+    var browserEnabled by remember { mutableStateOf(initial.browserEnabled) }
+    var browserHeadlessGpu by remember { mutableStateOf(initial.browserHeadlessGpu) }
+    var webUiEnabled by remember { mutableStateOf(initial.webUiEnabled) }
 
     var policy by remember { mutableStateOf(AgentMcpPolicyRepository.McpPolicy()) }
     var tools by remember { mutableStateOf<List<AgentTool>>(emptyList()) }
@@ -169,6 +172,9 @@ fun AgentSettingsScreen() {
         webFetchReader = webReader,
         webFetchApiKey = webFetchApiKey.text.toString().trim(),
         webFetchAllowLocal = webAllowLocal,
+        browserEnabled = browserEnabled,
+        browserHeadlessGpu = browserHeadlessGpu,
+        webUiEnabled = webUiEnabled,
     )
 
     val scrollBehavior =
@@ -460,6 +466,38 @@ fun AgentSettingsScreen() {
                             description = stringResource(R.string.agent_web_allow_local_summary),
                             checked = webAllowLocal,
                             onCheckedChange = { webAllowLocal = it },
+                        )
+                    }
+                }
+            }
+
+            item {
+                SegmentedColumn(title = stringResource(R.string.agent_browser_title)) {
+                    item {
+                        SettingsSwitchWidget(
+                            icon = Icons.TwoTone.Public,
+                            title = stringResource(R.string.agent_browser_enable),
+                            description = stringResource(R.string.agent_browser_enable_summary),
+                            checked = browserEnabled,
+                            onCheckedChange = { browserEnabled = it },
+                        )
+                    }
+                    item {
+                        SettingsSwitchWidget(
+                            icon = Icons.TwoTone.Memory,
+                            title = stringResource(R.string.agent_browser_gpu),
+                            description = stringResource(R.string.agent_browser_gpu_summary),
+                            checked = browserHeadlessGpu,
+                            onCheckedChange = { browserHeadlessGpu = it },
+                        )
+                    }
+                    item {
+                        SettingsSwitchWidget(
+                            icon = Icons.TwoTone.Extension,
+                            title = stringResource(R.string.agent_webui_enable),
+                            description = stringResource(R.string.agent_webui_enable_summary),
+                            checked = webUiEnabled,
+                            onCheckedChange = { webUiEnabled = it },
                         )
                     }
                 }

@@ -134,6 +134,13 @@
     <string name="agent_web_fetch_api_key">讀取器 API 金鑰</string>
     <string name="agent_web_allow_local">允許本地位址</string>
     <string name="agent_web_allow_local_summary">允許擷取本地/內網位址（存在 SSRF 風險）。</string>
+    <string name="agent_browser_title">瀏覽器自動化</string>
+    <string name="agent_browser_enable">啟用瀏覽器自動化</string>
+    <string name="agent_browser_enable_summary">允許助手開啟並操作網頁。</string>
+    <string name="agent_browser_gpu">GPU 截圖</string>
+    <string name="agent_browser_gpu_summary">透過 GPU 合成器截圖（支援 WebGL/影片）。</string>
+    <string name="agent_webui_enable">啟用模組 WebUI 控制</string>
+    <string name="agent_webui_enable_summary">允許助手在隱藏的 WebView 中操作模組 WebUI（以 root 執行模組腳本）。</string>
     <string name="agent_tool_arguments">參數</string>
     <string name="agent_tool_result">結果</string>
     <string name="agent_tool_copy_result">複製結果</string>
