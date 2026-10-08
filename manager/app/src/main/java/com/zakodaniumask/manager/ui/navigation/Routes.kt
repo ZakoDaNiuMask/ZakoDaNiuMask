@@ -191,6 +191,10 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object FolkMount : Route
+
+    @Parcelize
+    @Serializable
     data object NavigationLayout : Route
 
     @Parcelize

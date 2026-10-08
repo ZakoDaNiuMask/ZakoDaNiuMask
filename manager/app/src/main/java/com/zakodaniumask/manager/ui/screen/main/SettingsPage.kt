@@ -215,6 +215,17 @@ fun SettingsPage(bottomPadding: Dp) {
                             }
 
                             item {
+                                SettingsJumpPageWidget(
+                                    icon = Icons.TwoTone.Storage,
+                                    title = stringResource(R.string.folk_mount_title),
+                                    description = stringResource(R.string.folk_mount_mode_summary),
+                                    onClick = {
+                                        navigator.push(Route.FolkMount)
+                                    }
+                                )
+                            }
+
+                            item {
                                 val suSummary = when (uiState.suStatus) {
                                     "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                     "managed" -> stringResource(id = R.string.feature_status_managed_summary)

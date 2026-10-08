@@ -199,8 +199,23 @@ class KsuCliRepository(context: Context) {
         return out.joinToString("\n").ifBlank { "[]" }
     }
 
-    fun getModuleCount(): Int {
-        val result = listModules()
+    fun mountStatusJson(): String {
+        val shell = getRootShell()
+        return shell.newJob()
+            .add("${getKsuDaemonPath()} mount status --json")
+            .to(ArrayList(), null)
+            .exec().out.joinToString("\n")
+    }
+
+    fun setMountMode(mode: String): Boolean {
+        val shell = getRootShell()
+        return shell.newJob()
+            .add("${getKsuDaemonPath()} mount set-mode $mode")
+            .to(ArrayList(), null)
+            .exec().isSuccess
+    }
+
+    fun getModuleCount(): Int {        val result = listModules()
         runCatching {
             val array = JSONArray(result)
             return array.length()
