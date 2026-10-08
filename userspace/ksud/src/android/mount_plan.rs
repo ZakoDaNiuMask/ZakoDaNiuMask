@@ -1,3 +1,4 @@
+// Ported from FolkSU (GPL-3.0); modified for ZakoDaNiuMask.
 //! Pure, host-testable planning for Folk Mount (built-in module mounting).
 //!
 //! This module contains only filesystem-agnostic tree logic: module filtering,

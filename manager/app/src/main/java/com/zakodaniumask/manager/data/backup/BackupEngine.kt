@@ -1,3 +1,4 @@
+// Ported from FolkSU (GPL-3.0); modified for ZakoDaNiuMask.
 package com.zakodaniumask.manager.data.backup
 
 /** A single failed storage or source operation during a backup run. */

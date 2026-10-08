@@ -1,3 +1,4 @@
+// Ported from FolkSU (GPL-3.0); modified for ZakoDaNiuMask.
 package com.zakodaniumask.manager.ui.component
 
 import androidx.compose.animation.core.animateFloatAsState

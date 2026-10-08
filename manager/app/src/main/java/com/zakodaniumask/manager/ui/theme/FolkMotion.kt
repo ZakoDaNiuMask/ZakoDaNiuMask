@@ -1,3 +1,4 @@
+// Ported from FolkSU (GPL-3.0); modified for ZakoDaNiuMask.
 package com.zakodaniumask.manager.ui.theme
 
 import androidx.compose.animation.core.FiniteAnimationSpec

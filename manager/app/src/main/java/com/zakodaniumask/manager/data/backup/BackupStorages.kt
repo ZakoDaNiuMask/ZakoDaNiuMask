@@ -1,3 +1,4 @@
+// Ported from FolkSU (GPL-3.0); modified for ZakoDaNiuMask.
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.zakodaniumask.manager.data.backup
 

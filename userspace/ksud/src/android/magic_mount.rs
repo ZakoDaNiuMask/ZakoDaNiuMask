@@ -1,3 +1,4 @@
+// Ported from FolkSU (GPL-3.0); modified for ZakoDaNiuMask.
 //! Folk Mount: built-in module mounting.
 //!
 //! Phase 1 provided the configuration file, the `auto | builtin | metamodule`
