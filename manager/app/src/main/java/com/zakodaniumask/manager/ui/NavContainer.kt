@@ -85,6 +85,7 @@ import com.zakodaniumask.manager.ui.screen.agent.AgentAuditScreen
 import com.zakodaniumask.manager.ui.screen.agent.AgentProviderEditScreen
 import com.zakodaniumask.manager.ui.screen.agent.AgentProvidersScreen
 import com.zakodaniumask.manager.ui.screen.agent.AgentSettingsScreen
+import com.zakodaniumask.manager.ui.screen.settings.BackupScreen
 import com.zakodaniumask.manager.ui.screen.settings.FolkMountScreen
 import com.zakodaniumask.manager.ui.screen.spoof.CpuSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.MemSpoofScreen
@@ -671,6 +672,17 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     FolkMountScreen()
+                }
+            }
+            entry<Route.Backup>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    BackupScreen()
                 }
             }
             entry<Route.NavigationLayout>(swipeDismiss = swipeBackDirection) {

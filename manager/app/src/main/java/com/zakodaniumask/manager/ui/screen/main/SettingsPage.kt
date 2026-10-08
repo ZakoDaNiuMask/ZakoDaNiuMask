@@ -52,6 +52,7 @@ import androidx.compose.material.icons.twotone.Science
 import androidx.compose.material.icons.twotone.Security
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Share
+import androidx.compose.material.icons.twotone.Backup
 import androidx.compose.material.icons.twotone.Storage
 import androidx.compose.material.icons.twotone.ViewSidebar
 import androidx.compose.material.icons.twotone.Visibility
@@ -221,6 +222,17 @@ fun SettingsPage(bottomPadding: Dp) {
                                     description = stringResource(R.string.folk_mount_mode_summary),
                                     onClick = {
                                         navigator.push(Route.FolkMount)
+                                    }
+                                )
+                            }
+
+                            item {
+                                SettingsJumpPageWidget(
+                                    icon = Icons.TwoTone.Backup,
+                                    title = stringResource(R.string.backup_title),
+                                    description = stringResource(R.string.backup_summary),
+                                    onClick = {
+                                        navigator.push(Route.Backup)
                                     }
                                 )
                             }

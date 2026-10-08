@@ -220,6 +220,7 @@ import com.zakodaniumask.manager.ui.viewmodel.CpuSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.UtsSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.MemSpoofViewModel
 import com.zakodaniumask.manager.ui.viewmodel.AgentViewModel
+import com.zakodaniumask.manager.ui.viewmodel.BackupViewModel
 import com.zakodaniumask.manager.ui.viewmodel.OnlinePluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.PluginViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
@@ -544,6 +545,7 @@ val viewModelModule = module {
     viewModelOf(::UtsSpoofViewModel)
     viewModelOf(::MemSpoofViewModel)
     viewModelOf(::AgentViewModel)
+    viewModelOf(::BackupViewModel)
     viewModelOf(::PluginViewModel)
 
     viewModelOf(::OnlinePluginViewModel)
