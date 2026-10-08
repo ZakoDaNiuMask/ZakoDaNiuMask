@@ -191,6 +191,15 @@ pub const fn uapi_version() -> u32 {
     uapi::KERNEL_SU_UAPI_VERSION
 }
 
+/// Oldest kernel UAPI version this ksud can still drive.
+///
+/// We adapt to the kernel, never the other way around, so this intentionally
+/// stays below our own `KERNEL_SU_UAPI_VERSION`. It must be kept in sync with the
+/// manager's `Natives.KERNEL_UAPI_VERSION_MIN`. Version history: 1 introduces the
+/// field, 2 adds allowlist v4 root-profile flags, 3 scopes the su-session fd,
+/// 4 adds the bundled flag, 5 adds `EVENT_SERVICES`.
+pub const KERNEL_UAPI_VERSION_MIN: u32 = 2;
+
 pub fn runtime_mode() -> &'static str {
     if is_late_load() {
         "late-load"
@@ -208,11 +217,23 @@ pub fn ensure_uapi_version_matched() -> anyhow::Result<()> {
     }
     let kernel_uapi = get_info().uapi_version;
     let userspace_uapi = uapi_version();
-    if kernel_uapi != userspace_uapi {
+
+    // A kernel below the minimum (including the pre-v1 legacy value 0) was never
+    // validated against this ksud; refuse it.
+    if kernel_uapi < KERNEL_UAPI_VERSION_MIN {
         bail!(
-            "UAPI version mismatch: kernel={kernel_uapi}, ksud={userspace_uapi}. Please update KernelSU!"
+            "UAPI version too old: kernel={kernel_uapi}, need >= {KERNEL_UAPI_VERSION_MIN} (ksud={userspace_uapi}). Please update the kernel!"
         );
     }
+
+    // A kernel newer than ksud is expected to stay backward compatible, so drive it
+    // with the subset of capabilities ksud knows about instead of refusing.
+    if kernel_uapi > userspace_uapi {
+        log::warn!(
+            "Kernel UAPI is newer than ksud (kernel={kernel_uapi}, ksud={userspace_uapi}); continuing in compatibility mode"
+        );
+    }
+
     Ok(())
 }
 
