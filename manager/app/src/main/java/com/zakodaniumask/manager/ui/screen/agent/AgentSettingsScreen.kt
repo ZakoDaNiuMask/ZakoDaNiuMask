@@ -90,7 +90,7 @@ private val FALLBACK_DOMAINS = listOf(
     "ksu", "flash", "module", "feature", "sepolicy", "profile", "susfs",
     "umount_config", "kpm", "plugin", "debug", "kernel", "manager",
     "detector", "shell", "insmod", "resetprop", "soft_reboot", "anykernel3",
-    "prop", "dynamic_manager", "initrc", "web", "file", "su", "appprofile",
+    "prop", "dynamic_manager", "initrc", "web", "file", "su", "appprofile", "browser",
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)

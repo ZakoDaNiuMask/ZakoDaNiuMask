@@ -1,14 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.zakodaniumask.manager.data.agent.mcp
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Base64
 import com.zakodaniumask.manager.BuildConfig
 import com.zakodaniumask.manager.Natives
 import com.zakodaniumask.manager.data.agent.ShellExecutor
+import com.zakodaniumask.manager.data.agent.browser.BrowserActionResult
+import com.zakodaniumask.manager.data.agent.browser.HeadlessBrowser
+import com.zakodaniumask.manager.data.webui.WebUiRepository
 import com.zakodaniumask.manager.data.agent.web.WebSearchRepository
 import com.zakodaniumask.manager.data.detection.DetectorRepository
 import com.zakodaniumask.manager.data.packageinfo.SuperUserRepository
 import com.zakodaniumask.manager.data.profile.ProfileRepository
+import com.zakodaniumask.manager.ui.webui.WebUIActivity
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -28,6 +35,9 @@ class ManagerMcpServer(
     private val profileRepository: ProfileRepository,
     private val superUserRepository: SuperUserRepository,
     private val webSearchRepository: WebSearchRepository,
+    private val browser: HeadlessBrowser,
+    private val webUiRepository: WebUiRepository,
+    private val context: Context,
 ) {
 
     fun listTools(): List<AgentTool> = TOOLS.map { spec ->
@@ -149,6 +159,45 @@ class ManagerMcpServer(
                     )
                 }
 
+                "browser.open" -> {
+                    val url = arguments.req("url")
+                    AgentToolResult(browserResult(browser.open(url, null)), false)
+                }
+
+                "browser.control" -> {
+                    val action = arguments.req("action")
+                    AgentToolResult(
+                        browserResult(browser.control(action, arguments)),
+                        false,
+                    )
+                }
+
+                "module.webui.list" -> AgentToolResult(moduleWebUiListJson().toString(2), false)
+
+                "module.webui.open" -> {
+                    val id = arguments.req("module_id")
+                    val intent = Intent(context, WebUIActivity::class.java)
+                        .setData(
+                            Uri.Builder()
+                                .scheme("kernelsu")
+                                .authority("webui")
+                                .appendQueryParameter("id", id)
+                                .build()
+                        )
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                    AgentToolResult("opened module WebUI: $id", false)
+                }
+
+                "module.webui.control" -> {
+                    val id = arguments.req("module_id")
+                    val action = arguments.req("action")
+                    AgentToolResult(
+                        browserResult(browser.control(action, arguments, id)),
+                        false,
+                    )
+                }
+
                 "web.search" -> {
                     val query = arguments.req("query")
                     val max = arguments.optInt("max_results", 0)
@@ -191,6 +240,34 @@ class ManagerMcpServer(
         } catch (t: Throwable) {
             AgentToolResult("manager tool '$name' failed: ${t.message}", true)
         }
+    }
+
+    private fun browserResult(result: BrowserActionResult): String =
+        if (result.imageBase64 != null) {
+            "${result.text} (image ${result.imageBase64.length} base64 chars)"
+        } else {
+            result.text
+        }
+
+    private suspend fun moduleWebUiListJson(): JSONObject {
+        val array = runCatching { JSONArray(webUiRepository.listModules()) }
+            .getOrElse { JSONArray() }
+        val out = JSONArray()
+        for (i in 0 until array.length()) {
+            val module = array.optJSONObject(i) ?: continue
+            val id = module.optString("id")
+            if (id.isBlank()) continue
+            val info = runCatching { webUiRepository.getModuleInfo(id) }.getOrNull()
+            if (info?.hasWebUi == true) {
+                out.put(
+                    JSONObject()
+                        .put("id", id)
+                        .put("name", info.name)
+                        .put("enabled", info.enabled)
+                )
+            }
+        }
+        return JSONObject().put("count", out.length()).put("modules", out)
     }
 
     private suspend fun shell(command: String): AgentToolResult {
@@ -484,6 +561,56 @@ class ManagerMcpServer(
                     listOf("url"),
                     "url" to str("http(s) url"),
                     "max_chars" to int("max characters (optional)"),
+                ),
+            ),
+            ToolSpec(
+                "browser.open",
+                "Open an http(s) URL in the agent's headless browser.",
+                ToolTier.READ,
+                schema(listOf("url"), "url" to str("http(s) url")),
+            ),
+            ToolSpec(
+                "browser.control",
+                "Drive the headless browser: navigate, get_text, get_page_info, execute_js, " +
+                    "find_elements, click, type, scroll, screenshot, back, forward, set_user_agent.",
+                ToolTier.WRITE,
+                schema(
+                    listOf("action"),
+                    "action" to str("action name"),
+                    "url" to str("url (navigate)"),
+                    "selector" to str("css selector"),
+                    "text" to str("text to type"),
+                    "script" to str("javascript (execute_js)"),
+                    "direction" to str("scroll direction: up|down"),
+                    "amount" to int("scroll amount in px"),
+                    "user_agent" to str("user agent string"),
+                ),
+            ),
+            ToolSpec(
+                "module.webui.list",
+                "List installed modules that ship a Web UI (webroot).",
+                ToolTier.READ,
+                emptySchema(),
+            ),
+            ToolSpec(
+                "module.webui.open",
+                "Open a module's Web UI in the in-app WebUI activity.",
+                ToolTier.WRITE,
+                schema(listOf("module_id"), "module_id" to str("module id")),
+            ),
+            ToolSpec(
+                "module.webui.control",
+                "Drive a module's Web UI in a hidden WebView (the module's ksu.* API works). " +
+                    "Actions match browser.control.",
+                ToolTier.DANGER,
+                schema(
+                    listOf("module_id", "action"),
+                    "module_id" to str("module id"),
+                    "action" to str("action name"),
+                    "url" to str("module page path (navigate)"),
+                    "selector" to str("css selector"),
+                    "text" to str("text to type"),
+                    "script" to str("javascript (execute_js)"),
                 ),
             ),
             ToolSpec(
