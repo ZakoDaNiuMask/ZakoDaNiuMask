@@ -30,10 +30,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -49,17 +51,21 @@ import androidx.compose.material.icons.twotone.Cloud
 import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material.icons.twotone.Download
 import androidx.compose.material.icons.twotone.Extension
+import androidx.compose.material.icons.twotone.KeyboardArrowDown
+import androidx.compose.material.icons.twotone.KeyboardArrowUp
 import androidx.compose.material.icons.twotone.MoreVert
 import androidx.compose.material.icons.twotone.Photo
 import androidx.compose.material.icons.twotone.PlayArrow
 import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material.icons.twotone.Restore
 import androidx.compose.material.icons.twotone.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CheckableDropdownMenuItem
 import androidx.compose.material3.DropdownMenuGroup
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -81,6 +87,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -201,7 +208,65 @@ fun ModulePage(bottomPadding: Dp) {
     var lastClickTime by remember { mutableStateOf(0L) }
 
     var showDropdown by remember { mutableStateOf(false) }
+    var showCustomOrder by remember { mutableStateOf(false) }
+    var customOrder by remember { mutableStateOf<List<String>>(emptyList()) }
     val listState = rememberLazyListState()
+
+    if (showCustomOrder) {
+        val order = customOrder
+        AlertDialog(
+            onDismissRequest = { showCustomOrder = false },
+            title = { Text(stringResource(R.string.module_sort_custom_order)) },
+            text = {
+                LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
+                    itemsIndexed(order, key = { _, id -> id }) { index, id ->
+                        val module = uiState.moduleList.firstOrNull { it.id == id }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(
+                                text = module?.name ?: id,
+                                modifier = Modifier.weight(1f),
+                            )
+                            IconButton(
+                                enabled = index > 0,
+                                onClick = {
+                                    customOrder = order.toMutableList().also {
+                                        it.add(index - 1, it.removeAt(index))
+                                    }
+                                },
+                            ) {
+                                Icon(Icons.TwoTone.KeyboardArrowUp, contentDescription = null)
+                            }
+                            IconButton(
+                                enabled = index < order.lastIndex,
+                                onClick = {
+                                    customOrder = order.toMutableList().also {
+                                        it.add(index + 1, it.removeAt(index))
+                                    }
+                                },
+                            ) {
+                                Icon(Icons.TwoTone.KeyboardArrowDown, contentDescription = null)
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.dispatch(ModuleUiAction.SetCustomOrder(customOrder))
+                    showCustomOrder = false
+                }) { Text(stringResource(R.string.module_sort_save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    viewModel.dispatch(ModuleUiAction.SetCustomOrder(emptyList()))
+                    showCustomOrder = false
+                }) { Text(stringResource(R.string.module_sort_reset)) }
+            },
+        )
+    }
 
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var pendingZipFiles by remember { mutableStateOf<List<ZipFileInfo>>(emptyList()) }
@@ -335,6 +400,10 @@ fun ModulePage(bottomPadding: Dp) {
                         ModuleDropdown(
                             expanded = showDropdown,
                             onDismissRequest = { showDropdown = false },
+                            onOpenCustomOrder = {
+                                customOrder = uiState.moduleList.map { it.id }
+                                showCustomOrder = true
+                            },
                             viewModel = viewModel,
                             uiState = uiState,
                         )
@@ -498,6 +567,7 @@ fun ModulePage(bottomPadding: Dp) {
 private fun ModuleDropdown(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
+    onOpenCustomOrder: () -> Unit,
     viewModel: ModuleViewModel,
     uiState: ModuleUiState,
 ) {
@@ -523,10 +593,21 @@ private fun ModuleDropdown(
                     text = { Text(stringResource(moduleSortGroupLabel(group))) },
                     shapes = MenuDefaults.itemShape(
                         index = index,
-                        count = groups.size,
+                        count = groups.size + 1,
                     ),
                 )
             }
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.module_sort_custom_order)) },
+                onClick = {
+                    onDismissRequest()
+                    onOpenCustomOrder()
+                },
+                shapes = MenuDefaults.itemShape(
+                    index = groups.size,
+                    count = groups.size + 1,
+                ),
+            )
         }
     }
 }

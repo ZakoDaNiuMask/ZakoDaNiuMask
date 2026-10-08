@@ -23,7 +23,7 @@ fun SettingsJumpPageWidget(
     title: String,
     description: String? = null,
     descriptionColor: Color? = null,
-    descriptionStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    descriptionStyle: TextStyle = FolkType.Summary,
     enabled: Boolean = true,
     renderBackgroundBlur: Boolean = true,
     isError: Boolean = false,

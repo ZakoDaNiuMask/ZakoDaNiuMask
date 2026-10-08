@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.zakodaniumask.manager.ui.component.settings.material3internal.rememberAnimatedShape
 import com.zakodaniumask.manager.ui.theme.CardConfig
+import com.zakodaniumask.manager.ui.theme.FolkType
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.zakodaniumask.manager.ui.theme.renderBackgroundBlur
 import org.koin.compose.koinInject
@@ -120,10 +121,10 @@ fun SettingsBaseWidget(
     iconPlaceholder: Boolean = true,
     iconSize: Dp = 24.dp,
     title: String?,
-    titleStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    titleStyle: TextStyle = FolkType.Title,
     description: String? = null,
     descriptionColor: Color? = null,
-    descriptionStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    descriptionStyle: TextStyle = FolkType.Summary,
     enabled: Boolean = true,
     isError: Boolean = false,
     selected: Boolean = false,
