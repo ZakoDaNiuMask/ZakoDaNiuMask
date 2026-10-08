@@ -172,7 +172,7 @@ class HeadlessBrowser(
                 request: WebResourceRequest?,
             ): WebResourceResponse? {
                 val loader = assetLoader ?: return null
-                return request?.let { loader.shouldInterceptRequest(it) }
+                return request?.let { loader.shouldInterceptRequest(it.url) }
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
