@@ -199,6 +199,10 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object AppLock : Route
+
+    @Parcelize
+    @Serializable
     data object NavigationLayout : Route
 
     @Parcelize

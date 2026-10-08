@@ -2,6 +2,9 @@ package com.zakodaniumask.manager
 
 import android.app.Application
 import android.os.Build
+import androidx.lifecycle.ProcessLifecycleOwner
+import com.zakodaniumask.manager.data.applock.AppLockLifecycleObserver
+import com.zakodaniumask.manager.data.applock.AppLockManager
 import com.zakodaniumask.manager.di.appModules
 import com.zakodaniumask.manager.domain.usecase.InitializeApplicationUseCase
 import kotlinx.coroutines.Dispatchers
@@ -36,5 +39,10 @@ class KernelSUApplication : Application() {
         runBlocking(Dispatchers.IO) {
             koin.get<InitializeApplicationUseCase>()()
         }
+
+        // Re-lock the manager when the whole process returns to the foreground.
+        ProcessLifecycleOwner.get().lifecycle.addObserver(
+            AppLockLifecycleObserver(koin.get<AppLockManager>())
+        )
     }
 }

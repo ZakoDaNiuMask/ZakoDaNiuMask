@@ -15,6 +15,8 @@ import com.zakodaniumask.manager.data.kernel.KernelRepository
 import com.zakodaniumask.manager.data.kernel.SpoofRepository
 import com.zakodaniumask.manager.data.agent.AgentMcpPolicyRepository
 import com.zakodaniumask.manager.data.agent.AgentProviderStore
+import com.zakodaniumask.manager.data.applock.AppLockManager
+import com.zakodaniumask.manager.data.applock.AppLockRepository
 import com.zakodaniumask.manager.data.agent.AgentSessionStore
 import com.zakodaniumask.manager.data.agent.AgentSettingsRepository
 import com.zakodaniumask.manager.data.agent.AgentToolRouter
@@ -353,6 +355,8 @@ val repositoryModule = module {
     single { AgentProviderStore(androidApplication()) }
     single { WebSearchRepository(get()) }
     single { HeadlessBrowser(androidApplication(), get(), get(), get()) }
+    single { AppLockRepository(get()) }
+    single { AppLockManager(get()) }
     single { AgentMcpPolicyRepository(get()) }
     single { DetectorRepository(get(), get(), get(), get(), get(), get()) }
     single { ShellExecutor(get(), get()) }

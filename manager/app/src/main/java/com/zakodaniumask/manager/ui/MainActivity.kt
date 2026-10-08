@@ -14,13 +14,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.zakodaniumask.manager.data.applock.AppLockManager
 import com.zakodaniumask.manager.domain.model.StartupState
 import com.zakodaniumask.manager.domain.usecase.ApplyLanguageUseCase
 import com.zakodaniumask.manager.domain.usecase.EnsureManagerInstalledUseCase
 import com.zakodaniumask.manager.domain.usecase.ObserveStartupStateUseCase
 import com.zakodaniumask.manager.ui.activity.util.ThemeChangeContentObserver
+import com.zakodaniumask.manager.ui.screen.applock.AppLockScreen
 import com.zakodaniumask.manager.ui.activity.util.ThemeUtils
 import com.zakodaniumask.manager.ui.theme.KernelSUTheme
 import com.zakodaniumask.manager.ui.viewmodel.HomeUiAction
@@ -37,7 +40,8 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
+    private val appLockManager: AppLockManager by inject()
     private val superUserViewModel: SuperUserViewModel by viewModel()
     private val homeViewModel: HomeViewModel by viewModel()
     private val moduleViewModel: ModuleViewModel by viewModel()
@@ -119,7 +123,14 @@ class MainActivity : ComponentActivity() {
                 KernelSUTheme {
                     when (val state = startupState.collectAsStateWithLifecycle().value) {
                         is StartupState.Failed -> StartupFailureContent(state.message)
-                        else -> NavContainer(settingsViewModel, intentChannel)
+                        else -> {
+                            val locked = appLockManager.locked.collectAsStateWithLifecycle().value
+                            if (locked) {
+                                AppLockScreen()
+                            } else {
+                                NavContainer(settingsViewModel, intentChannel)
+                            }
+                        }
                     }
                 }
             }
