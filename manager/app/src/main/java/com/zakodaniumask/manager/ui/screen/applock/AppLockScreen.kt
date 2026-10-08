@@ -43,6 +43,10 @@ fun AppLockScreen(modifier: Modifier = Modifier) {
     val appLockManager: AppLockManager = koinInject()
     var message by remember { mutableStateOf<String?>(null) }
 
+    val titleText = stringResource(R.string.app_lock_title)
+    val hintText = stringResource(R.string.app_lock_hint)
+    val noCredentialsText = stringResource(R.string.app_lock_no_credentials)
+
     val activity = context as? FragmentActivity
     val prompt = remember(activity) {
         activity?.let {
@@ -72,14 +76,14 @@ fun AppLockScreen(modifier: Modifier = Modifier) {
     fun authenticate() {
         message = null
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(context.getString(R.string.app_lock_title))
-            .setSubtitle(context.getString(R.string.app_lock_hint))
+            .setTitle(titleText)
+            .setSubtitle(hintText)
             .setAllowedAuthenticators(AUTHENTICATORS)
             .build()
         if (prompt != null) {
             prompt.authenticate(info)
         } else {
-            message = context.getString(R.string.app_lock_no_credentials)
+            message = noCredentialsText
         }
     }
 
