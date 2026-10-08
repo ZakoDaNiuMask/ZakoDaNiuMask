@@ -179,6 +179,11 @@
     <string name="backup_none">未找到备份</string>
     <string name="backup_restored">已恢复 %1$d，失败 %2$d</string>
     <string name="backup_restore_reboot">已恢复，重启后生效</string>
+    <string name="backup_history">备份记录</string>
+    <string name="backup_load">加载备份</string>
+    <string name="backup_confirm_restore">恢复 %1$s？</string>
+    <string name="backup_confirm_boot">将 %1$s 刷回对应分区？这会覆盖当前启动镜像。</string>
+    <string name="backup_cancel">取消</string>
     <string name="agent_browser_enable">启用浏览器自动化</string>
     <string name="agent_browser_enable_summary">允许助手打开并操作网页。</string>
     <string name="agent_browser_gpu">GPU 截图</string>

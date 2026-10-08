@@ -17,12 +17,14 @@ import androidx.compose.material.icons.twotone.Key
 import androidx.compose.material.icons.twotone.Restore
 import androidx.compose.material.icons.twotone.Save
 import androidx.compose.material.icons.twotone.Storage
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -45,6 +47,7 @@ import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsChooseWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsTextFieldWidget
+import com.zakodaniumask.manager.ui.component.settings.lazySegmentColumn
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
@@ -54,6 +57,7 @@ import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
 import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
 import com.zakodaniumask.manager.ui.util.adaptiveScaffoldWindowInsets
 import com.zakodaniumask.manager.ui.viewmodel.BackupViewModel
+import com.zakodaniumask.manager.ui.viewmodel.formatFileSize
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -63,6 +67,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun BackupScreen() {
     val viewModel: BackupViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val history by viewModel.history.collectAsStateWithLifecycle()
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
@@ -72,6 +77,7 @@ fun BackupScreen() {
 
     var target by remember { mutableStateOf(0) }
     var kind by remember { mutableStateOf(0) }
+    var pendingRestore by remember { mutableStateOf<BackupViewModel.BackupItem?>(null) }
     val url = remember { TextFieldState(viewModel.webDavUrl()) }
     val user = remember { TextFieldState(viewModel.webDavUser()) }
     val pass = remember { TextFieldState(viewModel.webDavPass()) }
@@ -207,12 +213,60 @@ fun BackupScreen() {
                     item {
                         SettingsBaseWidget(
                             icon = Icons.TwoTone.Restore,
-                            title = stringResource(R.string.backup_restore),
+                            title = stringResource(R.string.backup_load),
                             enabled = !state.busy,
-                            onClick = { viewModel.restore(BackupKind.entries[kind], target == 1) },
+                            onClick = {
+                                viewModel.refreshHistory(BackupKind.entries[kind], target == 1)
+                            },
                         )
                     }
                 }
+            }
+
+            if (history.isNotEmpty()) {
+                lazySegmentColumn(
+                    items = history,
+                    title = stringResource(R.string.backup_history),
+                    key = { _, item -> item.relativePath },
+                ) { _, item ->
+                    SettingsBaseWidget(
+                        iconPlaceholder = false,
+                        title = item.relativePath.substringAfterLast('/'),
+                        description = formatFileSize(item.sizeBytes).takeIf { item.sizeBytes > 0 },
+                        enabled = !state.busy,
+                        onClick = { pendingRestore = item },
+                    )
+                }
+            }
+
+            pendingRestore?.let { item ->
+                AlertDialog(
+                    onDismissRequest = { pendingRestore = null },
+                    title = { Text(stringResource(R.string.backup_restore)) },
+                    text = {
+                        Text(
+                            stringResource(
+                                if (item.kind == BackupKind.BOOT) {
+                                    R.string.backup_confirm_boot
+                                } else {
+                                    R.string.backup_confirm_restore
+                                },
+                                item.relativePath.substringAfterLast('/'),
+                            )
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            viewModel.restore(item, target == 1)
+                            pendingRestore = null
+                        }) { Text(stringResource(R.string.backup_restore)) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { pendingRestore = null }) {
+                            Text(stringResource(R.string.backup_cancel))
+                        }
+                    },
+                )
             }
 
             state.message?.let { message ->

@@ -44,8 +44,17 @@ class BackupViewModel(
         val message: String? = null,
     )
 
+    data class BackupItem(
+        val kind: BackupKind,
+        val relativePath: String,
+        val sizeBytes: Long,
+    )
+
     private val mutableState = MutableStateFlow(UiState())
     val state: StateFlow<UiState> = mutableState.asStateFlow()
+
+    private val mutableHistory = MutableStateFlow<List<BackupItem>>(emptyList())
+    val history: StateFlow<List<BackupItem>> = mutableHistory.asStateFlow()
 
     private val httpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
@@ -90,17 +99,44 @@ class BackupViewModel(
         }
     }
 
-    fun restore(kind: BackupKind, useWebDav: Boolean) {
+    fun refreshHistory(kind: BackupKind, useWebDav: Boolean) {
+        if (mutableState.value.busy) return
+        viewModelScope.launch {
+            mutableState.update { it.copy(busy = true, message = null) }
+            val items = withContext(Dispatchers.IO) {
+                runCatching {
+                    storage(useWebDav).list(prefixFor(kind)).getOrThrow()
+                        .filter { it.relativePath.endsWith(suffixFor(kind)) }
+                        .sortedByDescending { it.relativePath }
+                        .map { BackupItem(kind, it.relativePath, it.sizeBytes) }
+                }.getOrElse { emptyList() }
+            }
+            mutableHistory.value = items
+            mutableState.update {
+                it.copy(
+                    busy = false,
+                    isError = items.isEmpty(),
+                    message = if (items.isEmpty()) {
+                        getApplication<Application>().getString(R.string.backup_none)
+                    } else {
+                        null
+                    },
+                )
+            }
+        }
+    }
+
+    fun restore(item: BackupItem, useWebDav: Boolean) {
         if (mutableState.value.busy) return
         viewModelScope.launch {
             mutableState.update { it.copy(busy = true, message = null) }
             val outcome = withContext(Dispatchers.IO) {
                 runCatching {
                     val store = storage(useWebDav)
-                    when (kind) {
-                        BackupKind.ALLOWLIST -> restoreAllowlist(store)
-                        BackupKind.MODULE -> restoreModule(store)
-                        BackupKind.BOOT -> restoreBoot(store)
+                    when (item.kind) {
+                        BackupKind.ALLOWLIST -> restoreAllowlist(store, item.relativePath)
+                        BackupKind.MODULE -> restoreModule(store, item.relativePath)
+                        BackupKind.BOOT -> restoreBoot(store, item.relativePath)
                     }
                 }.getOrElse { error ->
                     RestoreOutcome(false, error.message ?: error.javaClass.simpleName)
@@ -112,12 +148,11 @@ class BackupViewModel(
         }
     }
 
-    private suspend fun restoreAllowlist(store: BackupStorage): RestoreOutcome {
-        val latest = store.list("allowlist").getOrThrow()
-            .filter { it.relativePath.endsWith(".json") }
-            .maxByOrNull { it.relativePath }
-            ?: return RestoreOutcome(false, getApplication<Application>().getString(R.string.backup_none))
-        val bytes = store.get(latest.relativePath).getOrThrow()
+    private suspend fun restoreAllowlist(
+        store: BackupStorage,
+        relativePath: String,
+    ): RestoreOutcome {
+        val bytes = store.get(relativePath).getOrThrow()
         val document = AllowlistDocument.fromJson(String(bytes, Charsets.UTF_8)).getOrThrow()
         var ok = 0
         var failed = 0
@@ -134,16 +169,12 @@ class BackupViewModel(
         )
     }
 
-    private suspend fun restoreModule(store: BackupStorage): RestoreOutcome {
-        val latest = store.list("modules").getOrThrow()
-            .filter { it.relativePath.endsWith(".zip") }
-            .maxByOrNull { it.relativePath }
-            ?: return RestoreOutcome(false, getApplication<Application>().getString(R.string.backup_none))
-        val bytes = store.get(latest.relativePath).getOrThrow()
-        val tmp = File(
-            getApplication<Application>().cacheDir,
-            latest.relativePath.substringAfterLast('/'),
-        )
+    private suspend fun restoreModule(
+        store: BackupStorage,
+        relativePath: String,
+    ): RestoreOutcome {
+        val bytes = store.get(relativePath).getOrThrow()
+        val tmp = File(getApplication<Application>().cacheDir, relativePath.substringAfterLast('/'))
         val ok = try {
             tmp.writeBytes(bytes)
             ksuCliRepository.moduleInstall(tmp.absolutePath)
@@ -158,17 +189,13 @@ class BackupViewModel(
         )
     }
 
-    private suspend fun restoreBoot(store: BackupStorage): RestoreOutcome {
-        val latest = store.list("boot").getOrThrow()
-            .filter { it.relativePath.endsWith(".img") }
-            .maxByOrNull { it.relativePath }
-            ?: return RestoreOutcome(false, getApplication<Application>().getString(R.string.backup_none))
-        val partition = latest.relativePath.substringAfterLast('/').substringBefore("-stock-")
-        val bytes = store.get(latest.relativePath).getOrThrow()
-        val tmp = File(
-            getApplication<Application>().cacheDir,
-            latest.relativePath.substringAfterLast('/'),
-        )
+    private suspend fun restoreBoot(
+        store: BackupStorage,
+        relativePath: String,
+    ): RestoreOutcome {
+        val partition = relativePath.substringAfterLast('/').substringBefore("-stock-")
+        val bytes = store.get(relativePath).getOrThrow()
+        val tmp = File(getApplication<Application>().cacheDir, relativePath.substringAfterLast('/'))
         val ok = try {
             tmp.writeBytes(bytes)
             ksuCliRepository.flashImage(tmp.absolutePath, partition)
@@ -181,6 +208,18 @@ class BackupViewModel(
                 if (ok) R.string.backup_restore_reboot else R.string.backup_failed
             ),
         )
+    }
+
+    private fun prefixFor(kind: BackupKind): String = when (kind) {
+        BackupKind.ALLOWLIST -> "allowlist"
+        BackupKind.MODULE -> "modules"
+        BackupKind.BOOT -> "boot"
+    }
+
+    private fun suffixFor(kind: BackupKind): String = when (kind) {
+        BackupKind.ALLOWLIST -> ".json"
+        BackupKind.MODULE -> ".zip"
+        BackupKind.BOOT -> ".img"
     }
 
     private fun sources(): BackupSourceRegistry = BackupSourceRegistry(
