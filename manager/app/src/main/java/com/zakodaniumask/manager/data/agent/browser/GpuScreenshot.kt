@@ -80,7 +80,7 @@ internal object GpuScreenshot {
         val container = FrameLayout(context).apply { setBackgroundColor(Color.WHITE) }
         try {
             withContext(Dispatchers.Main) {
-                val created = Presentation(context, display)
+                val created = Presentation(context, display.display)
                 created.setContentView(container)
                 created.show()
                 presentation = created
