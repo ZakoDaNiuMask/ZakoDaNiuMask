@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.zakodaniumask.manager.ui.component.settings.material3internal.rememberAnimatedShape
 import com.zakodaniumask.manager.ui.theme.CardConfig
+import com.zakodaniumask.manager.ui.component.folkPressScale
 import com.zakodaniumask.manager.ui.theme.FolkType
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
 import com.zakodaniumask.manager.ui.theme.renderBackgroundBlur
@@ -292,6 +293,10 @@ fun SettingsBaseWidget(
         itemModifier = itemModifier
             .clip(clipShape)
             .renderBackgroundBlur(finalContainerColor)
+
+    if (onClick != null || onLongClick != null) {
+        itemModifier = itemModifier.folkPressScale(interactionSource, enabled)
+    }
 
     val finalLeadingContent: (@Composable () -> Unit)? =
         if (leadingContent == null && icon == null && !iconPlaceholder)
