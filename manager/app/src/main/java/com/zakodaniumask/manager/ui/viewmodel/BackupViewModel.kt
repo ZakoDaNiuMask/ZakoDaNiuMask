@@ -112,7 +112,7 @@ class BackupViewModel(
         }
     }
 
-    private fun restoreAllowlist(store: BackupStorage): RestoreOutcome {
+    private suspend fun restoreAllowlist(store: BackupStorage): RestoreOutcome {
         val latest = store.list("allowlist").getOrThrow()
             .filter { it.relativePath.endsWith(".json") }
             .maxByOrNull { it.relativePath }
@@ -134,7 +134,7 @@ class BackupViewModel(
         )
     }
 
-    private fun restoreModule(store: BackupStorage): RestoreOutcome {
+    private suspend fun restoreModule(store: BackupStorage): RestoreOutcome {
         val latest = store.list("modules").getOrThrow()
             .filter { it.relativePath.endsWith(".zip") }
             .maxByOrNull { it.relativePath }
@@ -158,7 +158,7 @@ class BackupViewModel(
         )
     }
 
-    private fun restoreBoot(store: BackupStorage): RestoreOutcome {
+    private suspend fun restoreBoot(store: BackupStorage): RestoreOutcome {
         val latest = store.list("boot").getOrThrow()
             .filter { it.relativePath.endsWith(".img") }
             .maxByOrNull { it.relativePath }
