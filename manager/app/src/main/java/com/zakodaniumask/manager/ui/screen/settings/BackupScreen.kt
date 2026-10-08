@@ -74,6 +74,7 @@ fun BackupScreen() {
     val snackbar = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
     val savedMessage = stringResource(R.string.agent_settings_saved)
+    val backupHistoryTitle = stringResource(R.string.backup_history)
 
     var target by remember { mutableStateOf(0) }
     var kind by remember { mutableStateOf(0) }
@@ -226,7 +227,7 @@ fun BackupScreen() {
             if (history.isNotEmpty()) {
                 lazySegmentColumn(
                     items = history,
-                    title = stringResource(R.string.backup_history),
+                    title = backupHistoryTitle,
                     key = { _, item -> item.relativePath },
                 ) { _, item ->
                     SettingsBaseWidget(
@@ -237,36 +238,6 @@ fun BackupScreen() {
                         onClick = { pendingRestore = item },
                     )
                 }
-            }
-
-            pendingRestore?.let { item ->
-                AlertDialog(
-                    onDismissRequest = { pendingRestore = null },
-                    title = { Text(stringResource(R.string.backup_restore)) },
-                    text = {
-                        Text(
-                            stringResource(
-                                if (item.kind == BackupKind.BOOT) {
-                                    R.string.backup_confirm_boot
-                                } else {
-                                    R.string.backup_confirm_restore
-                                },
-                                item.relativePath.substringAfterLast('/'),
-                            )
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            viewModel.restore(item, target == 1)
-                            pendingRestore = null
-                        }) { Text(stringResource(R.string.backup_restore)) }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { pendingRestore = null }) {
-                            Text(stringResource(R.string.backup_cancel))
-                        }
-                    },
-                )
             }
 
             state.message?.let { message ->
@@ -284,5 +255,35 @@ fun BackupScreen() {
             item { Spacer(Modifier.height(paddingValues.calculateBottomPadding() + 24.dp)) }
         }
     }
+
+                pendingRestore?.let { item ->
+                    AlertDialog(
+                        onDismissRequest = { pendingRestore = null },
+                        title = { Text(stringResource(R.string.backup_restore)) },
+                        text = {
+                            Text(
+                                stringResource(
+                                    if (item.kind == BackupKind.BOOT) {
+                                        R.string.backup_confirm_boot
+                                    } else {
+                                        R.string.backup_confirm_restore
+                                    },
+                                    item.relativePath.substringAfterLast('/'),
+                                )
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.restore(item, target == 1)
+                                pendingRestore = null
+                            }) { Text(stringResource(R.string.backup_restore)) }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { pendingRestore = null }) {
+                                Text(stringResource(R.string.backup_cancel))
+                            }
+                        },
+                    )
+                }
 }
 
