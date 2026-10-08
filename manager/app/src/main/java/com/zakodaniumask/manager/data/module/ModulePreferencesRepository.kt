@@ -41,7 +41,7 @@ class ModulePreferencesRepository(
 
     private fun readPreferences() = ModulePreferences(
         sortGroups = ModuleSortPriorityStore.decode(
-            settings.getString(ModuleSortPriorityStore.Key, "").ifBlank { null }
+            settings.getString(ModuleSortPriorityStore.Key, "").orEmpty().ifBlank { null }
         ),
         sortCustomOrder = ModuleCustomOrderStore.decode(
             settings.getString(ModuleCustomOrderStore.Key, "")

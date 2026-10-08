@@ -157,9 +157,6 @@ fun FolkMountScreen() {
             }
 
             status?.let { s ->
-                val targetsText = s.targetCount?.let {
-                    stringResource(R.string.folk_mount_targets, it)
-                }
                 item {
                     SegmentedColumn(title = stringResource(R.string.folk_mount_status)) {
                         item {
@@ -180,6 +177,9 @@ fun FolkMountScreen() {
                             )
                         }
                         item {
+                            val targetsText = s.targetCount?.let {
+                                stringResource(R.string.folk_mount_targets, it)
+                            }
                             SettingsBaseWidget(
                                 iconPlaceholder = false,
                                 title = stringResource(R.string.folk_mount_boot_result),
