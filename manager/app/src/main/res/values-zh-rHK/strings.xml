@@ -49,6 +49,11 @@
     <string name="module_sort_action_first">排序（可優先執行）</string>
     <string name="module_sort_star_first">排序 (星標數優先)</string>
     <string name="module_sort_enabled_first">排序（已啟用優先）</string>
+    <string name="module_sort_group_metamodule">Metamodule</string>
+    <string name="module_sort_group_zygisk">Zygisk</string>
+    <string name="module_sort_group_lsposed">LSPosed</string>
+    <string name="module_sort_group_webui">網頁介面</string>
+    <string name="module_sort_group_action">操作腳本</string>
     <string name="uninstall">解除安裝</string>
     <string name="install">安裝</string>
     <string name="reboot">重新啟動</string>

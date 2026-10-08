@@ -160,6 +160,8 @@ import com.zakodaniumask.manager.ui.util.showReplacingSnackbar
 import com.zakodaniumask.manager.ui.viewmodel.HomeViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleUiAction
 import com.zakodaniumask.manager.ui.viewmodel.ModuleUiEvent
+import com.zakodaniumask.manager.domain.model.ModuleSortGroup
+import com.zakodaniumask.manager.domain.model.ModuleSortPriorityGroups
 import com.zakodaniumask.manager.ui.viewmodel.ModuleUiState
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
 import com.zakodaniumask.manager.ui.viewmodel.SettingsViewModel
@@ -503,37 +505,38 @@ private fun ModuleDropdown(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
     ) {
+        val groups = ModuleSortPriorityGroups
         DropdownMenuGroup(
             shapes = MenuDefaults.groupShapes(),
         ) {
-            CheckableDropdownMenuItem(
-                checked = uiState.sortActionFirst,
-                onCheckedChange = {
-                    viewModel.dispatch(
-                        ModuleUiAction.Sort(uiState.sortEnabledFirst, it)
-                    )
-                },
-                text = { Text(stringResource(R.string.module_sort_action_first)) },
-                shapes = MenuDefaults.itemShape(
-                    index = 0,
-                    count = 2,
-                ),
-            )
-            CheckableDropdownMenuItem(
-                checked = uiState.sortEnabledFirst,
-                onCheckedChange = {
-                    viewModel.dispatch(
-                        ModuleUiAction.Sort(it, uiState.sortActionFirst)
-                    )
-                },
-                text = { Text(stringResource(R.string.module_sort_enabled_first)) },
-                shapes = MenuDefaults.itemShape(
-                    index = 1,
-                    count = 2,
-                ),
-            )
+            groups.forEachIndexed { index, group ->
+                CheckableDropdownMenuItem(
+                    checked = group in uiState.sortGroups,
+                    onCheckedChange = { checked ->
+                        val next = if (checked) {
+                            uiState.sortGroups + group
+                        } else {
+                            uiState.sortGroups - group
+                        }
+                        viewModel.dispatch(ModuleUiAction.SetSortGroups(next))
+                    },
+                    text = { Text(stringResource(moduleSortGroupLabel(group))) },
+                    shapes = MenuDefaults.itemShape(
+                        index = index,
+                        count = groups.size,
+                    ),
+                )
+            }
         }
     }
+}
+
+private fun moduleSortGroupLabel(group: ModuleSortGroup): Int = when (group) {
+    ModuleSortGroup.MetaModule -> R.string.module_sort_group_metamodule
+    ModuleSortGroup.Zygisk -> R.string.module_sort_group_zygisk
+    ModuleSortGroup.LSPosed -> R.string.module_sort_group_lsposed
+    ModuleSortGroup.WebUi -> R.string.module_sort_group_webui
+    ModuleSortGroup.ActionScript -> R.string.module_sort_group_action
 }
 
 private fun getMetaModuleWarningText(

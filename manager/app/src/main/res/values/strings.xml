@@ -47,6 +47,11 @@
     <string name="module_sort_action_first">Sort (Action first)</string>
     <string name="module_sort_star_first">Sort (Stars first)</string>
     <string name="module_sort_enabled_first">Sort (Enabled first)</string>
+    <string name="module_sort_group_metamodule">Metamodule</string>
+    <string name="module_sort_group_zygisk">Zygisk</string>
+    <string name="module_sort_group_lsposed">LSPosed</string>
+    <string name="module_sort_group_webui">Web UI</string>
+    <string name="module_sort_group_action">Action script</string>
     <string name="uninstall">Uninstall</string>
     <string name="install">Install</string>
     <string name="reboot">Reboot</string>

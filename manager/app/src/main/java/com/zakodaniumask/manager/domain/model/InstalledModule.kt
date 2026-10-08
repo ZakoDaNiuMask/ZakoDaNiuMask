@@ -29,8 +29,8 @@ data class InstalledModulesState(
 )
 
 data class ModulePreferences(
-    val sortEnabledFirst: Boolean = false,
-    val sortActionFirst: Boolean = false,
+    val sortGroups: Set<ModuleSortGroup> = ModuleSortPriorityGroups.toSet(),
+    val sortCustomOrder: List<String> = emptyList(),
     val showMoreModuleInfo: Boolean = false,
 )
 

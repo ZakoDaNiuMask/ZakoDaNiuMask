@@ -1,7 +1,10 @@
 package com.zakodaniumask.manager.data.module
 
 import com.zakodaniumask.manager.data.AppSettingsRepository
+import com.zakodaniumask.manager.domain.model.ModuleCustomOrderStore
 import com.zakodaniumask.manager.domain.model.ModulePreferences
+import com.zakodaniumask.manager.domain.model.ModuleSortGroup
+import com.zakodaniumask.manager.domain.model.ModuleSortPriorityStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,12 +20,18 @@ class ModulePreferencesRepository(
         mutablePreferences.value = readPreferences()
     }
 
-    fun setSort(enabledFirst: Boolean, actionFirst: Boolean) {
-        mutablePreferences.update {
-            it.copy(sortEnabledFirst = enabledFirst, sortActionFirst = actionFirst)
+    fun setSortGroups(groups: Set<ModuleSortGroup>) {
+        mutablePreferences.update { it.copy(sortGroups = groups) }
+        settings.putString(ModuleSortPriorityStore.Key, ModuleSortPriorityStore.encode(groups))
+    }
+
+    fun setCustomOrder(order: List<String>) {
+        mutablePreferences.update { it.copy(sortCustomOrder = order) }
+        if (order.isEmpty()) {
+            settings.putString(ModuleCustomOrderStore.Key, "")
+        } else {
+            settings.putString(ModuleCustomOrderStore.Key, ModuleCustomOrderStore.encode(order))
         }
-        settings.putBoolean(PREF_SORT_ENABLED, enabledFirst)
-        settings.putBoolean(PREF_SORT_ACTION, actionFirst)
     }
 
     fun setShowMoreInfo(enabled: Boolean) {
@@ -31,14 +40,16 @@ class ModulePreferencesRepository(
     }
 
     private fun readPreferences() = ModulePreferences(
-        sortEnabledFirst = settings.getBoolean(PREF_SORT_ENABLED, false),
-        sortActionFirst = settings.getBoolean(PREF_SORT_ACTION, false),
+        sortGroups = ModuleSortPriorityStore.decode(
+            settings.getString(ModuleSortPriorityStore.Key, "").ifBlank { null }
+        ),
+        sortCustomOrder = ModuleCustomOrderStore.decode(
+            settings.getString(ModuleCustomOrderStore.Key, "")
+        ),
         showMoreModuleInfo = settings.getBoolean(PREF_SHOW_MORE_INFO, false),
     )
 
     private companion object {
-        const val PREF_SORT_ENABLED = "module_sort_enabled_first"
-        const val PREF_SORT_ACTION = "module_sort_action_first"
         const val PREF_SHOW_MORE_INFO = "show_more_module_info"
     }
 }

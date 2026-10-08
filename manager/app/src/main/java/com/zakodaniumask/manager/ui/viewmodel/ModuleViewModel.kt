@@ -25,6 +25,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.zakodaniumask.manager.domain.model.ModuleSortFacts
+import com.zakodaniumask.manager.domain.model.ModuleSortGroup
+import com.zakodaniumask.manager.domain.model.ModuleSortPriorityGroups
+import com.zakodaniumask.manager.domain.model.customOrderComparator
+import com.zakodaniumask.manager.domain.model.moduleSortComparator
 import java.text.Collator
 import java.util.Locale
 
@@ -33,8 +38,8 @@ data class ModuleUiState(
     val moduleSizes: Map<String, String> = emptyMap(),
     val isRefreshing: Boolean = false,
     val search: String = "",
-    val sortEnabledFirst: Boolean = false,
-    val sortActionFirst: Boolean = false,
+    val sortGroups: Set<ModuleSortGroup> = ModuleSortPriorityGroups.toSet(),
+    val sortCustomOrder: List<String> = emptyList(),
     val hasModuleRequireMount: Boolean = false,
     val hasMagisk: Boolean = false,
     val metaModuleStatus: MetaModuleStatus = MetaModuleStatus.MISSING,
@@ -46,7 +51,8 @@ sealed interface ModuleUiAction {
     data class Refresh(val manual: Boolean = false) : ModuleUiAction
     data object ReloadSettings : ModuleUiAction
     data class Search(val query: String) : ModuleUiAction
-    data class Sort(val enabledFirst: Boolean, val actionFirst: Boolean) : ModuleUiAction
+    data class SetSortGroups(val groups: Set<ModuleSortGroup>) : ModuleUiAction
+    data class SetCustomOrder(val order: List<String>) : ModuleUiAction
     data class SetShowMoreInfo(val enabled: Boolean) : ModuleUiAction
     data class LoadSize(val moduleId: String) : ModuleUiAction
     data object MarkNeedRefresh : ModuleUiAction
@@ -104,14 +110,14 @@ class ModuleViewModel(
             moduleList = buildModuleList(
                 modules = source.modules,
                 search = local.search,
-                sortEnabledFirst = preferences.sortEnabledFirst,
-                sortActionFirst = preferences.sortActionFirst,
+                sortGroups = preferences.sortGroups,
+                sortCustomOrder = preferences.sortCustomOrder,
             ),
             moduleSizes = local.moduleSizes,
             isRefreshing = source.refreshing,
             search = local.search,
-            sortEnabledFirst = preferences.sortEnabledFirst,
-            sortActionFirst = preferences.sortActionFirst,
+            sortGroups = preferences.sortGroups,
+            sortCustomOrder = preferences.sortCustomOrder,
             hasModuleRequireMount = source.hasModuleRequireMount,
             hasMagisk = source.hasMagisk,
             metaModuleStatus = source.metaModuleStatus,
@@ -126,9 +132,8 @@ class ModuleViewModel(
             is ModuleUiAction.Refresh -> refresh(action.manual)
             ModuleUiAction.ReloadSettings -> modulePreferences.reload()
             is ModuleUiAction.Search -> controls.update { it.copy(search = action.query) }
-            is ModuleUiAction.Sort -> {
-                modulePreferences.setSort(action.enabledFirst, action.actionFirst)
-            }
+            is ModuleUiAction.SetSortGroups -> modulePreferences.setSortGroups(action.groups)
+            is ModuleUiAction.SetCustomOrder -> modulePreferences.setCustomOrder(action.order)
 
             is ModuleUiAction.SetShowMoreInfo -> {
                 modulePreferences.setShowMoreInfo(action.enabled)
@@ -187,29 +192,21 @@ class ModuleViewModel(
     private fun buildModuleList(
         modules: List<InstalledModule>,
         search: String,
-        sortEnabledFirst: Boolean,
-        sortActionFirst: Boolean,
+        sortGroups: Set<ModuleSortGroup>,
+        sortCustomOrder: List<String>,
     ): List<InstalledModule> {
-        val comparator = compareBy<InstalledModule>(
-            {
-                val executable = it.hasWebUi || it.hasActionScript
-                when {
-                    it.metamodule && it.enabled -> 0
-                    sortEnabledFirst && sortActionFirst -> when {
-                        it.enabled && executable -> 1
-                        it.enabled -> 2
-                        executable -> 3
-                        else -> 4
-                    }
-
-                    sortEnabledFirst -> if (it.enabled) 1 else 2
-                    sortActionFirst -> if (executable) 1 else 2
-                    else -> 1
-                }
-            },
-            { if (sortEnabledFirst) !it.enabled else false },
-            { if (sortActionFirst) !(it.hasWebUi || it.hasActionScript) else false },
-        ).thenBy(Collator.getInstance(Locale.getDefault()), InstalledModule::id)
+        val collator = Collator.getInstance(Locale.getDefault())
+        val factsComparator = if (sortCustomOrder.isNotEmpty()) {
+            customOrderComparator(collator, sortCustomOrder)
+        } else {
+            moduleSortComparator(collator, sortGroups)
+        }
+        val comparator = Comparator<InstalledModule> { a, b ->
+            factsComparator.compare(
+                ModuleSortFacts(a.id, a.name, a.metamodule, a.hasWebUi, a.hasActionScript),
+                ModuleSortFacts(b.id, b.name, b.metamodule, b.hasWebUi, b.hasActionScript),
+            )
+        }
 
         return modules.filter { module ->
             module.id.contains(search, ignoreCase = true) ||
