@@ -80,7 +80,7 @@ fun moduleRelativePath(moduleId: String, fileName: String): String =
  * returned path is always relative and never contains a traversal segment.
  */
 fun remotePathFor(kind: BackupKind, moduleId: String?, fileName: String): String = when (kind) {
-    BackupKind.MODULE -> "modules/${sanitizeSegment(moduleId.orEmpty())}/${sanitizeSegment(fileName)}"
+    BackupKind.MODULE -> "modules/${sanitizeSegment(fileName)}"
     BackupKind.ALLOWLIST -> "allowlist/${sanitizeSegment(fileName)}"
     BackupKind.BOOT -> "boot/${sanitizeSegment(fileName)}"
 }

@@ -5,6 +5,7 @@ import android.content.ClipData as AndroidClipData
 import android.content.ClipboardManager as AndroidClipboardManager
 import android.content.Context
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zakodaniumask.manager.R
+import com.zakodaniumask.manager.ui.component.folkPressScale
 import com.zakodaniumask.manager.ui.markdown.MarkdownText
 import com.zakodaniumask.manager.ui.viewmodel.AgentChatItem
 import com.zakodaniumask.manager.ui.viewmodel.AgentToolStatus
@@ -103,12 +105,16 @@ fun AgentMessageBubble(
 @Composable
 fun AgentThinkingBubble(text: String) {
     var expanded by rememberSaveable { mutableStateOf(true) }
+    val interactionSource = remember { MutableInteractionSource() }
     Surface(
         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expanded = !expanded },
+            .clickable(interactionSource = interactionSource, indication = null) {
+                expanded = !expanded
+            }
+            .folkPressScale(interactionSource),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
@@ -134,6 +140,7 @@ fun AgentThinkingBubble(text: String) {
 fun AgentToolCallBubble(item: AgentChatItem.ToolCall) {
     val context = LocalContext.current
     var showDetail by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
     val color = when (item.status) {
         AgentToolStatus.ERROR, AgentToolStatus.DENIED -> MaterialTheme.colorScheme.errorContainer
         AgentToolStatus.RUNNING -> MaterialTheme.colorScheme.tertiaryContainer
@@ -144,7 +151,10 @@ fun AgentToolCallBubble(item: AgentChatItem.ToolCall) {
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { showDetail = true },
+            .clickable(interactionSource = interactionSource, indication = null) {
+                showDetail = true
+            }
+            .folkPressScale(interactionSource),
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(

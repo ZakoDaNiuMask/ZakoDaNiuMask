@@ -90,37 +90,97 @@ class BackupViewModel(
         }
     }
 
-    fun restore(useWebDav: Boolean) {
+    fun restore(kind: BackupKind, useWebDav: Boolean) {
         if (mutableState.value.busy) return
         viewModelScope.launch {
             mutableState.update { it.copy(busy = true, message = null) }
-            val message = withContext(Dispatchers.IO) {
+            val outcome = withContext(Dispatchers.IO) {
                 runCatching {
                     val store = storage(useWebDav)
-                    val latest = store.list("allowlist").getOrThrow()
-                        .filter { it.relativePath.endsWith(".json") }
-                        .maxByOrNull { it.relativePath }
-                        ?: return@runCatching RestoreOutcome(false, getApplication<Application>().getString(R.string.backup_none))
-                    val bytes = store.get(latest.relativePath).getOrThrow()
-                    val document = AllowlistDocument.fromJson(String(bytes, Charsets.UTF_8)).getOrThrow()
-                    var ok = 0
-                    var failed = 0
-                    for (entry in document.entries) {
-                        if (runCatching { Natives.setAppProfile(entry.toProfile()) }.getOrDefault(false)) {
-                            ok++
-                        } else {
-                            failed++
-                        }
+                    when (kind) {
+                        BackupKind.ALLOWLIST -> restoreAllowlist(store)
+                        BackupKind.MODULE -> restoreModule(store)
+                        BackupKind.BOOT -> restoreBoot(store)
                     }
-                    RestoreOutcome(true, getApplication<Application>().getString(R.string.backup_restored, ok, failed))
                 }.getOrElse { error ->
                     RestoreOutcome(false, error.message ?: error.javaClass.simpleName)
                 }
             }
             mutableState.update {
-                it.copy(busy = false, isError = !message.success, message = message.text)
+                it.copy(busy = false, isError = !outcome.success, message = outcome.text)
             }
         }
+    }
+
+    private fun restoreAllowlist(store: BackupStorage): RestoreOutcome {
+        val latest = store.list("allowlist").getOrThrow()
+            .filter { it.relativePath.endsWith(".json") }
+            .maxByOrNull { it.relativePath }
+            ?: return RestoreOutcome(false, getApplication<Application>().getString(R.string.backup_none))
+        val bytes = store.get(latest.relativePath).getOrThrow()
+        val document = AllowlistDocument.fromJson(String(bytes, Charsets.UTF_8)).getOrThrow()
+        var ok = 0
+        var failed = 0
+        for (entry in document.entries) {
+            if (runCatching { Natives.setAppProfile(entry.toProfile()) }.getOrDefault(false)) {
+                ok++
+            } else {
+                failed++
+            }
+        }
+        return RestoreOutcome(
+            true,
+            getApplication<Application>().getString(R.string.backup_restored, ok, failed),
+        )
+    }
+
+    private fun restoreModule(store: BackupStorage): RestoreOutcome {
+        val latest = store.list("modules").getOrThrow()
+            .filter { it.relativePath.endsWith(".zip") }
+            .maxByOrNull { it.relativePath }
+            ?: return RestoreOutcome(false, getApplication<Application>().getString(R.string.backup_none))
+        val bytes = store.get(latest.relativePath).getOrThrow()
+        val tmp = File(
+            getApplication<Application>().cacheDir,
+            latest.relativePath.substringAfterLast('/'),
+        )
+        val ok = try {
+            tmp.writeBytes(bytes)
+            ksuCliRepository.moduleInstall(tmp.absolutePath)
+        } finally {
+            tmp.delete()
+        }
+        return RestoreOutcome(
+            ok,
+            getApplication<Application>().getString(
+                if (ok) R.string.backup_restore_reboot else R.string.backup_failed
+            ),
+        )
+    }
+
+    private fun restoreBoot(store: BackupStorage): RestoreOutcome {
+        val latest = store.list("boot").getOrThrow()
+            .filter { it.relativePath.endsWith(".img") }
+            .maxByOrNull { it.relativePath }
+            ?: return RestoreOutcome(false, getApplication<Application>().getString(R.string.backup_none))
+        val partition = latest.relativePath.substringAfterLast('/').substringBefore("-stock-")
+        val bytes = store.get(latest.relativePath).getOrThrow()
+        val tmp = File(
+            getApplication<Application>().cacheDir,
+            latest.relativePath.substringAfterLast('/'),
+        )
+        val ok = try {
+            tmp.writeBytes(bytes)
+            ksuCliRepository.flashImage(tmp.absolutePath, partition)
+        } finally {
+            tmp.delete()
+        }
+        return RestoreOutcome(
+            ok,
+            getApplication<Application>().getString(
+                if (ok) R.string.backup_restore_reboot else R.string.backup_failed
+            ),
+        )
     }
 
     private fun sources(): BackupSourceRegistry = BackupSourceRegistry(

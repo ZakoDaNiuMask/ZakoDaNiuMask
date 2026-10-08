@@ -178,6 +178,7 @@
     <string name="backup_failed">备份失败</string>
     <string name="backup_none">未找到备份</string>
     <string name="backup_restored">已恢复 %1$d，失败 %2$d</string>
+    <string name="backup_restore_reboot">已恢复，重启后生效</string>
     <string name="agent_browser_enable">启用浏览器自动化</string>
     <string name="agent_browser_enable_summary">允许助手打开并操作网页。</string>
     <string name="agent_browser_gpu">GPU 截图</string>

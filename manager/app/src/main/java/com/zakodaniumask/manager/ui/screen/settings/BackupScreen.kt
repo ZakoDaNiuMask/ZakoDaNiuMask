@@ -209,7 +209,7 @@ fun BackupScreen() {
                             icon = Icons.TwoTone.Restore,
                             title = stringResource(R.string.backup_restore),
                             enabled = !state.busy,
-                            onClick = { viewModel.restore(target == 1) },
+                            onClick = { viewModel.restore(BackupKind.entries[kind], target == 1) },
                         )
                     }
                 }

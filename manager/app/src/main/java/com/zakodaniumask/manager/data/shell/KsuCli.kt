@@ -231,6 +231,24 @@ class KsuCliRepository(context: Context) {
             .exec().isSuccess
     }
 
+    fun moduleInstall(zipPath: String): Boolean {
+        val shell = getRootShell()
+        return shell.newJob()
+            .add("${getKsuDaemonPath()} module install ${shq(zipPath)}")
+            .to(ArrayList(), null)
+            .exec().isSuccess
+    }
+
+    fun flashImage(imagePath: String, partition: String): Boolean {
+        val shell = getRootShell()
+        return shell.newJob()
+            .add("${getKsuDaemonPath()} flash image ${shq(imagePath)} ${shq(partition)}")
+            .to(ArrayList(), null)
+            .exec().isSuccess
+    }
+
+    private fun shq(value: String): String = "'" + value.replace("'", "'\\''") + "'"
+
     fun getModuleCount(): Int {        val result = listModules()
         runCatching {
             val array = JSONArray(result)

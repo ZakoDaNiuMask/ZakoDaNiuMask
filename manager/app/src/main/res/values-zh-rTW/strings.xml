@@ -176,6 +176,7 @@
     <string name="backup_failed">備份失敗</string>
     <string name="backup_none">找不到備份</string>
     <string name="backup_restored">已還原 %1$d，失敗 %2$d</string>
+    <string name="backup_restore_reboot">已還原，重啟後生效</string>
     <string name="agent_browser_enable">啟用瀏覽器自動化</string>
     <string name="agent_browser_enable_summary">允許助手開啟並操作網頁。</string>
     <string name="agent_browser_gpu">GPU 截圖</string>
