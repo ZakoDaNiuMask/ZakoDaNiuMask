@@ -8,7 +8,7 @@ use log::{info, warn};
 use crate::{
     android::{
         dynamic_manager, init_event,
-        module::{ScriptWait, handle_updated_modules, metamodule, prune_modules},
+        module::{ScriptWait, handle_updated_modules, prune_modules},
         restorecon, utils,
     },
     assets, defs,
@@ -166,9 +166,9 @@ pub fn run(
         warn!("load system.prop failed: {e}");
     }
 
-    // 10. Execute metamodule mount script (OverlayFS)
-    if let Err(e) = metamodule::exec_mount_script(defs::MODULE_DIR) {
-        warn!("execute metamodule mount failed: {e}");
+    // 10. Run the selected provider (metamodule script or built-in executor).
+    if let Err(e) = crate::android::magic_mount::mount_selected_provider() {
+        warn!("module mount failed: {e:#}");
     }
     // 11. Execute dynamic manager booted load
     if let Err(e) = dynamic_manager::booted_load() {

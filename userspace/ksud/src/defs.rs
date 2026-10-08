@@ -43,6 +43,7 @@ mod android {
     pub const UPDATE_FILE_NAME: &str = "update";
     pub const REMOVE_FILE_NAME: &str = "remove";
     pub const MODULE_INIT_RC_DIR: &str = "initrc";
+    pub const SKIP_MOUNT_FILE_NAME: &str = "skip_mount";
 
     // Module config system
     pub const MODULE_CONFIG_DIR: &str = concatcp!(WORKING_DIR, "module_configs/");
@@ -57,6 +58,14 @@ mod android {
     pub const METAMODULE_METAUNINSTALL_SCRIPT_LOG: &str =
         concatcp!(LOG_DIR, "metamodule_metauninstall");
     pub const METAMODULE_DEBUG: &str = concatcp!(WORKING_DIR, "metamodule.debug");
+
+    // Folk Mount (built-in module mounting)
+    pub const FOLK_MOUNT_CONFIG: &str = concatcp!(WORKING_DIR, "mount_mode");
+    pub const FOLK_MOUNT_WORK_DIR: &str = concatcp!(WORKING_DIR, "workdir/");
+    pub const FOLK_MOUNT_FS_NAME: &str = "FolkMount";
+    pub const FOLK_MOUNT_RUNTIME: &str = concatcp!(WORKING_DIR, "mount_runtime");
+    pub const FOLK_MOUNT_LOCK: &str = concatcp!(WORKING_DIR, "mount.lock");
+    pub const FOLK_MOUNT_PLACEHOLDER_ID: &str = "folkmount";
 
     pub const KSU_BACKUP_DIR: &str = WORKING_DIR;
     pub const KSU_BACKUP_FILE_PREFIX: &str = "ksu_backup_";

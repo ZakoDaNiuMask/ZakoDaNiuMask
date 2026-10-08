@@ -53,8 +53,6 @@ pub fn on_post_fs_data() -> Result<()> {
         }
     }
 
-    let module_dir = defs::MODULE_DIR;
-
     assets::ensure_binaries(true).with_context(|| "Failed to extract bin assets")?;
 
     // if we are in safe mode, we should disable all modules
@@ -124,9 +122,10 @@ pub fn on_post_fs_data() -> Result<()> {
         warn!("load system.prop failed: {e}");
     }
 
-    // execute metamodule mount script
-    if let Err(e) = metamodule::exec_mount_script(module_dir) {
-        warn!("execute metamodule mount failed: {e}");
+    // Folk Mount: run the selected provider (metamodule script or the built-in
+    // executor; never both) before the post-mount stage.
+    if let Err(e) = crate::android::magic_mount::mount_selected_provider() {
+        warn!("module mount failed: {e:#}");
     }
 
     // Load umount config and apply to kernel

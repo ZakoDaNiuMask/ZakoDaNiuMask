@@ -202,6 +202,12 @@ enum Commands {
         command: Initrc,
     },
 
+    /// Manage built-in module mounting (Folk Mount)
+    Mount {
+        #[command(subcommand)]
+        command: MountCmd,
+    },
+
     /// Run a Model Context Protocol (MCP) server over stdio
     Mcp,
 
@@ -238,6 +244,22 @@ enum McpPolicyCmd {
     },
     /// Reset to the default read-only policy
     Reset,
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum MountCmd {
+    /// Print current provider, mode, and metamodule presence
+    Status {
+        /// Emit a single JSON object instead of key=value lines
+        #[arg(long)]
+        json: bool,
+    },
+
+    /// Set mount mode: auto | builtin | metamodule
+    SetMode {
+        /// one of: auto, builtin, metamodule
+        mode: String,
+    },
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -1546,6 +1568,10 @@ pub fn run() -> Result<()> {
         },
         Commands::Initrc { command } => match command {
             Initrc::Refresh => regenerate_preinit_rc(),
+        },
+        Commands::Mount { command } => match command {
+            MountCmd::Status { json } => crate::android::magic_mount::print_status(json),
+            MountCmd::SetMode { mode } => crate::android::magic_mount::set_mode(&mode),
         },
         Commands::Mcp => crate::android::mcp::run(),
         Commands::McpPolicy { command } => run_mcp_policy(command),
