@@ -29,6 +29,7 @@ import com.zakodaniumask.manager.data.trickystore.KeyboxRepository
 import com.zakodaniumask.manager.data.trickystore.TrickyPropsRepository
 import com.zakodaniumask.manager.data.trickystore.TrickyStoreRepository
 import com.zakodaniumask.manager.data.rkp.RkpRepository
+import com.zakodaniumask.manager.data.superkey.SuperKeyRepository
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpClient
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpProcess
 import com.zakodaniumask.manager.data.agent.mcp.ManagerMcpServer
@@ -226,6 +227,7 @@ import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DeviceIdViewModel
 import com.zakodaniumask.manager.ui.viewmodel.KeyboxWorkbenchViewModel
 import com.zakodaniumask.manager.ui.viewmodel.RkpViewModel
+import com.zakodaniumask.manager.ui.viewmodel.SuperKeyViewModel
 import com.zakodaniumask.manager.ui.viewmodel.TrickyPropsViewModel
 import com.zakodaniumask.manager.ui.viewmodel.TrickyStoreViewModel
 import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
@@ -346,7 +348,7 @@ val repositoryModule = module {
     singleOf(::ManagerUpdateRepository)
     singleOf(::ApplicationControlRepository)
     singleOf(::DownloadRepository)
-    single { FlashRepository(get(), get(applicationScopeQualifier), get(), get()) }
+    single { FlashRepository(get(), get(applicationScopeQualifier), get(), get(), get()) }
     single { RemoteBootImageSource(androidApplication()) }
     singleOf(::KernelRepository)
     singleOf(::HomeRuntimeRepository)
@@ -363,6 +365,7 @@ val repositoryModule = module {
     single { KeyboxRepository(androidApplication(), get(), get()) }
     single { TrickyPropsRepository(get(), get()) }
     single { RkpRepository(androidApplication(), get()) }
+    single { SuperKeyRepository(androidApplication()) }
     single { KsudMcpProcess(get()) }
     single { KsudMcpClient(get()) }
     singleOf(::ManagerMcpServer)
@@ -572,6 +575,7 @@ val viewModelModule = module {
     viewModelOf(::TrickyPropsViewModel)
     viewModelOf(::KeyboxWorkbenchViewModel)
     viewModelOf(::RkpViewModel)
+    viewModelOf(::SuperKeyViewModel)
     viewModelOf(::AgentViewModel)
     viewModelOf(::BackupViewModel)
     viewModelOf(::PluginViewModel)

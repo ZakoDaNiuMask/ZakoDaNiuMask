@@ -14,6 +14,7 @@
 
 #include "prelude.h"
 #include "ksu.h"
+#include "uapi/supercall.h"
 
 static int fd = -1;
 
@@ -429,4 +430,83 @@ bool get_managers_list(struct ksu_get_managers_cmd **out_cmd) {
 
     *out_cmd = cmd;
     return true;
+}
+
+// ---- SuperKey ----
+
+static int ensure_driver_fd() {
+	if (fd < 0) {
+		fd = scan_driver_fd();
+	}
+	if (fd < 0) {
+		// Install handshake: the kernel installs a driver fd and reports it.
+		int new_fd = -1;
+		syscall(__NR_reboot, (int) KSU_INSTALL_MAGIC1, (int) KSU_INSTALL_MAGIC2, 0, &new_fd);
+		fd = new_fd >= 0 ? new_fd : scan_driver_fd();
+	}
+	return fd;
+}
+
+static void reset_info_cache() {
+	g_version.version = 0;
+	g_version.flags = 0;
+	g_version.features = 0;
+	g_version.uapi_version = 0;
+}
+
+bool authenticate_superkey(const char *superkey) {
+	if (!superkey) {
+		return false;
+	}
+
+	struct ksu_superkey_auth_cmd base = {};
+	strncpy((char *) base.superkey, superkey, sizeof(base.superkey) - 1);
+	base.superkey[sizeof(base.superkey) - 1] = '\0';
+
+	// 1) prctl (SECCOMP-safe; only intercepted when a SuperKey is configured).
+	struct ksu_superkey_auth_cmd prctl_cmd = base;
+	long ret = prctl((int) KSU_PRCTL_SUPERKEY_AUTH, &prctl_cmd, 0, 0, 0);
+	if (ret == 0 && prctl_cmd.result == 0) {
+		fd = -1;
+		reset_info_cache();
+		if (ensure_driver_fd() >= 0) {
+			return true;
+		}
+	}
+
+	// 2) reboot handshake.
+	struct ksu_superkey_auth_cmd reboot_cmd = base;
+	ret = syscall(__NR_reboot, (int) KSU_INSTALL_MAGIC1, (int) KSU_SUPERKEY_MAGIC2, 0, &reboot_cmd);
+	if (ret == 0 && reboot_cmd.result == 0) {
+		fd = -1;
+		reset_info_cache();
+		if (ensure_driver_fd() >= 0) {
+			return true;
+		}
+	}
+
+	// 3) ioctl (works once a driver fd is present).
+	struct ksu_superkey_auth_cmd ioctl_cmd = base;
+	if (ensure_driver_fd() >= 0 && ksuctl(KSU_IOCTL_SUPERKEY_AUTH, &ioctl_cmd) == 0 &&
+	    ioctl_cmd.result == 0) {
+		reset_info_cache();
+		return true;
+	}
+	return false;
+}
+
+bool is_superkey_configured() {
+	struct ksu_superkey_status_cmd cmd = {};
+	if (ensure_driver_fd() < 0) {
+		return false;
+	}
+	return ksuctl(KSU_IOCTL_SUPERKEY_STATUS, &cmd) == 0 && cmd.is_configured != 0;
+}
+
+bool is_superkey_authenticated() {
+	struct ksu_superkey_status_cmd cmd = {};
+	if (ensure_driver_fd() < 0) {
+		return false;
+	}
+	return ksuctl(KSU_IOCTL_SUPERKEY_STATUS, &cmd) == 0 && cmd.is_authenticated != 0;
 }

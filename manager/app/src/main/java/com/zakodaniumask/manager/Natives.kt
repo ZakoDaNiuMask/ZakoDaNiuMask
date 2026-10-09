@@ -201,6 +201,11 @@ object Natives {
     external fun isKPMEnabled(): Boolean
     external fun getHookType(): String
 
+    // SuperKey
+    external fun authenticateSuperKey(superKey: String): Boolean
+    external fun isSuperKeyConfigured(): Boolean
+    external fun isSuperKeyAuthenticated(): Boolean
+
     /**
      * Get current dynamic manager configuration
      * @return DynamicManagerConfig object containing current configuration, or null if not set

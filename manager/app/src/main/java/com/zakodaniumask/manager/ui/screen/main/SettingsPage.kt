@@ -59,6 +59,7 @@ import androidx.compose.material.icons.twotone.Storage
 import androidx.compose.material.icons.twotone.ViewSidebar
 import androidx.compose.material.icons.twotone.Visibility
 import androidx.compose.material.icons.twotone.VisibilityOff
+import androidx.compose.material.icons.twotone.VpnKey
 import androidx.compose.material.icons.twotone.Update
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -257,6 +258,17 @@ fun SettingsPage(bottomPadding: Dp) {
                                     description = stringResource(R.string.keybox_management_summary),
                                     onClick = {
                                         navigator.push(Route.Keybox)
+                                    }
+                                )
+                            }
+
+                            item {
+                                SettingsJumpPageWidget(
+                                    icon = Icons.TwoTone.VpnKey,
+                                    title = stringResource(R.string.superkey_title),
+                                    description = stringResource(R.string.superkey_entry_summary),
+                                    onClick = {
+                                        navigator.push(Route.SuperKey)
                                     }
                                 )
                             }

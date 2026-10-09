@@ -1013,4 +1013,29 @@
     <string name="keybox_rkp_device_id">裝置 ID</string>
     <string name="keybox_rkp_cert_count">憑證數量</string>
     <string name="keybox_rkp_failed">RKP 操作失敗</string>
+
+    <!-- SuperKey -->
+    <string name="superkey_title">SuperKey</string>
+    <string name="superkey_entry_summary">使用密碼而非 APK 簽章來驗證管理器身分。</string>
+    <string name="superkey_configured">已設定 SuperKey</string>
+    <string name="superkey_authenticated">已通過驗證</string>
+    <string name="superkey_key">SuperKey</string>
+    <string name="superkey_input">SuperKey</string>
+    <string name="superkey_save_authenticate">儲存並驗證</string>
+    <string name="superkey_authenticate_once">僅驗證一次</string>
+    <string name="superkey_clear">清除</string>
+    <string name="superkey_options">選項</string>
+    <string name="superkey_auto_auth">開機自動驗證</string>
+    <string name="superkey_auto_auth_summary">開機後使用已儲存的 SuperKey 自動驗證。</string>
+    <string name="superkey_skip_storage">不儲存金鑰</string>
+    <string name="superkey_skip_storage_summary">永不儲存 SuperKey，每次手動輸入。</string>
+    <string name="superkey_patch">安裝時設定</string>
+    <string name="superkey_patch_summary">修補啟動映像時注入此 SuperKey。</string>
+    <string name="superkey_bypass">簽章繞過（僅金鑰）</string>
+    <string name="superkey_bypass_summary">僅憑 SuperKey 接受管理器，忽略 APK 簽章。</string>
+    <string name="superkey_yes">是</string>
+    <string name="superkey_no">否</string>
+    <string name="superkey_ok">SuperKey 已通過</string>
+    <string name="superkey_failed">SuperKey 被拒絕</string>
+    <string name="superkey_empty">請先輸入 SuperKey</string>
 </resources>

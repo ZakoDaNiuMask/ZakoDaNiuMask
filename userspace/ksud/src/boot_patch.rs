@@ -525,6 +525,14 @@ pub struct BootPatchArgs {
     #[arg(long, default_value = None)]
     spoof_version: Option<String>,
 
+    /// Inject a SuperKey into the embedded module (password manager auth)
+    #[arg(long, default_value = None)]
+    superkey: Option<String>,
+
+    /// SuperKey-only mode: bypass APK signature verification (requires --superkey)
+    #[arg(long, default_value = "false")]
+    signature_bypass: bool,
+
     #[cfg(not(target_os = "android"))]
     #[arg(long, default_value = "aarch64")]
     arch: String,
@@ -552,6 +560,8 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             block_modules,
             spoof_release,
             spoof_version,
+            superkey,
+            signature_bypass,
             #[cfg(target_os = "android")]
             ota,
             #[cfg(target_os = "android")]
@@ -693,29 +703,43 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             patcher.replace_kernel(Box::new(Cursor::new(kernel_data)), false);
         }
 
-        let kernelsu_ko: Box<dyn AsRef<[u8]>> = if no_install {
-            Box::new(Vec::<u8>::new())
+        let mut kernelsu_ko: Vec<u8> = if no_install {
+            Vec::new()
         } else if let Some(kmod_path) = kmod {
-            Box::new(map_file(&kmod_path)?)
+            map_file(&kmod_path)?.to_vec()
         } else {
             #[cfg(target_os = "android")]
             {
                 println!("- KMI: {kmi}");
                 let name = format!("{kmi}_kernelsu.ko");
-                Box::new(
-                    assets::get_asset(&name).with_context(|| format!("Failed to load {name}"))?,
-                )
+                assets::get_asset(&name)
+                    .with_context(|| format!("Failed to load {name}"))?
+                    .into_owned()
             }
             #[cfg(not(target_os = "android"))]
             {
                 println!("- KMI: {kmi}");
                 println!("- Arch: {arch}");
                 let name = format!("{arch}/{kmi}_kernelsu.ko");
-                Box::new(
-                    assets::get_asset(&name).with_context(|| format!("Failed to load {name}"))?,
-                )
+                assets::get_asset(&name)
+                    .with_context(|| format!("Failed to load {name}"))?
+                    .into_owned()
             }
         };
+
+        if !no_install {
+            let key = superkey.unwrap_or_default();
+            let bypass = signature_bypass && !key.is_empty();
+            match crate::superkey::inject(&mut kernelsu_ko, &key, bypass) {
+                Ok(true) if key.is_empty() => println!("- SuperKey: signature-only mode"),
+                Ok(true) => println!(
+                    "- SuperKey injected (mode: {})",
+                    if bypass { "key-only" } else { "sign+key" }
+                ),
+                Ok(false) => println!("- Warning: SuperKey slot not found in module"),
+                Err(error) => println!("- Warning: SuperKey injection failed: {error:#}"),
+            }
+        }
 
         let ksu_init: Box<dyn AsRef<[u8]>> = if no_install {
             Box::new(Vec::<u8>::new())
@@ -757,7 +781,10 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             }
 
             cpio.add("init", CpioEntry::regular(0o755, ksu_init))?;
-            cpio.add("kernelsu.ko", CpioEntry::regular(0o755, kernelsu_ko))?;
+            cpio.add(
+                "kernelsu.ko",
+                CpioEntry::regular(0o755, Box::new(kernelsu_ko)),
+            )?;
 
             #[cfg(target_os = "android")]
             if (backup || (!is_kernelsu_patched && flash))

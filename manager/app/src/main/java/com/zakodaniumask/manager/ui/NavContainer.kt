@@ -90,6 +90,7 @@ import com.zakodaniumask.manager.ui.screen.settings.BackupScreen
 import com.zakodaniumask.manager.ui.screen.settings.DeviceIdScreen
 import com.zakodaniumask.manager.ui.screen.settings.FolkMountScreen
 import com.zakodaniumask.manager.ui.screen.settings.KeyboxScreen
+import com.zakodaniumask.manager.ui.screen.settings.SuperKeyScreen
 import com.zakodaniumask.manager.ui.screen.keybox.KeyboxRepoScreen
 import com.zakodaniumask.manager.ui.screen.keybox.KeyboxWorkbenchScreen
 import com.zakodaniumask.manager.ui.screen.keybox.RkpScreen
@@ -725,6 +726,17 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     KeyboxScreen()
+                }
+            }
+            entry<Route.SuperKey>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    SuperKeyScreen()
                 }
             }
             entry<Route.TrickyTargets>(swipeDismiss = swipeBackDirection) {

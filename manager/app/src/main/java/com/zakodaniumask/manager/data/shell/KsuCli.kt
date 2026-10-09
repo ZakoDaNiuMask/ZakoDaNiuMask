@@ -411,6 +411,8 @@ class KsuCliRepository(context: Context) {
         onFinish: (Boolean, Int) -> Unit,
         onStdout: (String) -> Unit,
         onStderr: (String) -> Unit,
+        superkey: String? = null,
+        signatureBypass: Boolean = false,
     ): Boolean {
         val resolver = context.contentResolver
 
@@ -480,6 +482,13 @@ class KsuCliRepository(context: Context) {
         }
         if (forceBackup) {
             cmd += " --backup"
+        }
+
+        superkey?.takeIf { it.isNotBlank() }?.let { key ->
+            cmd += " --superkey $key"
+            if (signatureBypass) {
+                cmd += " --signature-bypass"
+            }
         }
 
         val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)

@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import com.zakodaniumask.manager.data.file.ModuleFileRepository
 import com.zakodaniumask.manager.data.shell.KsuCliRepository
+import com.zakodaniumask.manager.data.superkey.SuperKeyRepository
 import com.zakodaniumask.manager.domain.model.FlashOperation
 import com.zakodaniumask.manager.domain.model.FlashOperationUpdate
 import com.zakodaniumask.manager.domain.model.FlashProgress
@@ -33,6 +34,7 @@ class FlashRepository(
     private val applicationScope: CoroutineScope,
     private val moduleFileRepository: ModuleFileRepository,
     private val ksuCliRepository: KsuCliRepository,
+    private val superKeyRepository: SuperKeyRepository,
 ) {
     private val workerState = HorizonKernelState()
     private val mutableSession = MutableStateFlow(KernelFlashSession())
@@ -138,6 +140,8 @@ class FlashRepository(
                         onFinish,
                         onStdout,
                         onStderr,
+                        superkey = superKeyRepository.patchKeyOrNull(),
+                        signatureBypass = superKeyRepository.isSignatureBypass(),
                     )
 
                     is FlashOperation.Module -> ksuCliRepository.flashModule(

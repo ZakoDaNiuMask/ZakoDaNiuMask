@@ -571,6 +571,27 @@ NativeBridgeNP(isKPMEnabled, jboolean) {
     return is_KPM_enable();
 }
 
+// SuperKey authentication
+NativeBridge(authenticateSuperKey, jboolean, jstring superKey) {
+    if (!superKey) {
+        return false;
+    }
+    const char *cSuperKey = GetEnvironment()->GetStringUTFChars(env, superKey, nullptr);
+    bool result = authenticate_superkey(cSuperKey);
+    GetEnvironment()->ReleaseStringUTFChars(env, superKey, cSuperKey);
+    return result;
+}
+
+// Check if a SuperKey is configured in the kernel
+NativeBridgeNP(isSuperKeyConfigured, jboolean) {
+    return is_superkey_configured();
+}
+
+// Check if the current process is authenticated via SuperKey
+NativeBridgeNP(isSuperKeyAuthenticated, jboolean) {
+    return is_superkey_authenticated();
+}
+
 // Get HOOK type
 NativeBridgeNP(getHookType, jstring) {
     char hook_type[32] = { 0 };

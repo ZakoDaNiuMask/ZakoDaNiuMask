@@ -235,6 +235,10 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object SuperKey : Route
+
+    @Parcelize
+    @Serializable
     data object NavigationLayout : Route
 
     @Parcelize

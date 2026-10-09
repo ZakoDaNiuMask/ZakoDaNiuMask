@@ -1223,4 +1223,29 @@
     <string name="keybox_rkp_device_id">Device ID</string>
     <string name="keybox_rkp_cert_count">Certificates</string>
     <string name="keybox_rkp_failed">RKP operation failed</string>
+
+    <!-- SuperKey -->
+    <string name="superkey_title">SuperKey</string>
+    <string name="superkey_entry_summary">Authenticate the manager with a password instead of the APK signature.</string>
+    <string name="superkey_configured">SuperKey configured</string>
+    <string name="superkey_authenticated">Authenticated</string>
+    <string name="superkey_key">SuperKey</string>
+    <string name="superkey_input">SuperKey</string>
+    <string name="superkey_save_authenticate">Save &amp; authenticate</string>
+    <string name="superkey_authenticate_once">Authenticate once</string>
+    <string name="superkey_clear">Clear</string>
+    <string name="superkey_options">Options</string>
+    <string name="superkey_auto_auth">Auto-authenticate at boot</string>
+    <string name="superkey_auto_auth_summary">Authenticate with the saved SuperKey after boot.</string>
+    <string name="superkey_skip_storage">Do not store the key</string>
+    <string name="superkey_skip_storage_summary">Never persist the SuperKey; enter it each time.</string>
+    <string name="superkey_patch">Set at install</string>
+    <string name="superkey_patch_summary">Inject this SuperKey when patching a boot image.</string>
+    <string name="superkey_bypass">Signature bypass (key-only)</string>
+    <string name="superkey_bypass_summary">Accept the manager by SuperKey alone, ignoring the APK signature.</string>
+    <string name="superkey_yes">Yes</string>
+    <string name="superkey_no">No</string>
+    <string name="superkey_ok">SuperKey accepted</string>
+    <string name="superkey_failed">SuperKey rejected</string>
+    <string name="superkey_empty">Enter the SuperKey first</string>
 </resources>

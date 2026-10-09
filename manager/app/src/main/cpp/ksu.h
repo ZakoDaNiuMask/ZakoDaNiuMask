@@ -89,6 +89,11 @@ bool is_uhook_enabled();
 bool get_managers_list(struct ksu_get_managers_cmd **out_cmd);
 bool get_allow_list(struct ksu_new_get_allow_list_cmd *);
 
+// SuperKey
+bool authenticate_superkey(const char *superkey);
+bool is_superkey_configured();
+bool is_superkey_authenticated();
+
 // Legacy Compatible
 struct ksu_version_info legacy_get_info();
 

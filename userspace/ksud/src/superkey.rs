@@ -1,4 +1,4 @@
-// Ported from YukiSU (GPL-2.0), userspace/ksud/src/boot/boot_patch.cpp; modified for ZakoDaNiuMask.
+// Ported from YukiSU (GPL-3.0), userspace/ksud/src/boot/boot_patch.cpp; modified for ZakoDaNiuMask.
 //
 //! Injects the SuperKey slot into a KernelSU LKM (`.ko`) image.
 //!
