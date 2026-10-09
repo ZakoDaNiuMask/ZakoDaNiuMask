@@ -92,6 +92,7 @@ import com.zakodaniumask.manager.ui.screen.settings.FolkMountScreen
 import com.zakodaniumask.manager.ui.screen.settings.KeyboxScreen
 import com.zakodaniumask.manager.ui.screen.keybox.KeyboxRepoScreen
 import com.zakodaniumask.manager.ui.screen.keybox.KeyboxWorkbenchScreen
+import com.zakodaniumask.manager.ui.screen.keybox.RkpScreen
 import com.zakodaniumask.manager.ui.screen.keybox.TrickyPolicyScreen
 import com.zakodaniumask.manager.ui.screen.keybox.TrickyPropsScreen
 import com.zakodaniumask.manager.ui.screen.keybox.TrickyTargetsScreen
@@ -779,6 +780,17 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     KeyboxRepoScreen()
+                }
+            }
+            entry<Route.KeyboxRkp>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    RkpScreen()
                 }
             }
             entry<Route.NavigationLayout>(swipeDismiss = swipeBackDirection) {

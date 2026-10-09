@@ -970,4 +970,44 @@
     <string name="keybox_wb_installed">Keybox 已安裝</string>
     <string name="keybox_wb_failed">Keybox 操作失敗</string>
     <string name="keybox_wb_exported">提供者已複製到剪貼簿</string>
+
+    <!-- RKP workbench -->
+    <string name="keybox_rkp_title">RKP 工作台</string>
+    <string name="keybox_rkp_summary">建構遠端金鑰簽發（RKP）請求並匯出 Keybox。</string>
+    <string name="keybox_rkp_section_key">金鑰來源</string>
+    <string name="keybox_rkp_seed">直接種子（32 位元組）</string>
+    <string name="keybox_rkp_seed_hex">種子（64 位十六進位）</string>
+    <string name="keybox_rkp_hw_key">硬體金鑰 + KDF</string>
+    <string name="keybox_rkp_hw_key_hex">硬體金鑰（32 位十六進位）</string>
+    <string name="keybox_rkp_kdf_label">KDF 標籤</string>
+    <string name="keybox_rkp_curve">DICE 曲線</string>
+    <string name="keybox_rkp_current_curve">目前曲線</string>
+    <string name="keybox_rkp_section_device">裝置</string>
+    <string name="keybox_rkp_read_device">從裝置讀取</string>
+    <string name="keybox_rkp_brand">品牌</string>
+    <string name="keybox_rkp_manufacturer">製造商</string>
+    <string name="keybox_rkp_product">產品</string>
+    <string name="keybox_rkp_model">型號</string>
+    <string name="keybox_rkp_device">裝置代號</string>
+    <string name="keybox_rkp_os_version">系統版本</string>
+    <string name="keybox_rkp_security_level">安全層級</string>
+    <string name="keybox_rkp_vb_state">已驗證啟動狀態</string>
+    <string name="keybox_rkp_bootloader_state">引導載入器狀態</string>
+    <string name="keybox_rkp_dice_issuer">DICE 簽發者</string>
+    <string name="keybox_rkp_dice_subject">DICE 主體</string>
+    <string name="keybox_rkp_section_advanced">進階</string>
+    <string name="keybox_rkp_server">RKP 伺服器位址</string>
+    <string name="keybox_rkp_fingerprint">指紋</string>
+    <string name="keybox_rkp_num_keys">請求金鑰數量</string>
+    <string name="keybox_rkp_derive">檢查衍生金鑰</string>
+    <string name="keybox_rkp_generate">產生 Keybox</string>
+    <string name="keybox_rkp_reset">清除設定</string>
+    <string name="keybox_rkp_info">衍生金鑰</string>
+    <string name="keybox_rkp_mode">模式</string>
+    <string name="keybox_rkp_public_key">公開金鑰</string>
+    <string name="keybox_rkp_result">結果</string>
+    <string name="keybox_rkp_keybox_path">Keybox 路徑</string>
+    <string name="keybox_rkp_device_id">裝置 ID</string>
+    <string name="keybox_rkp_cert_count">憑證數量</string>
+    <string name="keybox_rkp_failed">RKP 操作失敗</string>
 </resources>

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Badge
 import androidx.compose.material.icons.twotone.Build
 import androidx.compose.material.icons.twotone.Key
+import androidx.compose.material.icons.twotone.Security
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -116,6 +117,14 @@ fun KeyboxScreen() {
                             title = stringResource(R.string.keybox_wb_title),
                             description = stringResource(R.string.keybox_wb_summary),
                             onClick = { navigator.push(Route.KeyboxWorkbench) },
+                        )
+                    }
+                    item {
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.Security,
+                            title = stringResource(R.string.keybox_rkp_title),
+                            description = stringResource(R.string.keybox_rkp_summary),
+                            onClick = { navigator.push(Route.KeyboxRkp) },
                         )
                     }
                     item {

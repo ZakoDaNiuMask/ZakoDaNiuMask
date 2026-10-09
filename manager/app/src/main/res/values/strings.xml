@@ -1180,4 +1180,44 @@
     <string name="keybox_wb_installed">Keybox installed</string>
     <string name="keybox_wb_failed">Keybox operation failed</string>
     <string name="keybox_wb_exported">Providers copied to clipboard</string>
+
+    <!-- RKP workbench -->
+    <string name="keybox_rkp_title">RKP workbench</string>
+    <string name="keybox_rkp_summary">Build Remote Key Provisioning requests and export a keybox.</string>
+    <string name="keybox_rkp_section_key">Key source</string>
+    <string name="keybox_rkp_seed">Direct seed (32 bytes)</string>
+    <string name="keybox_rkp_seed_hex">Seed (64 hex)</string>
+    <string name="keybox_rkp_hw_key">Hardware key + KDF</string>
+    <string name="keybox_rkp_hw_key_hex">Hardware key (32 hex)</string>
+    <string name="keybox_rkp_kdf_label">KDF label</string>
+    <string name="keybox_rkp_curve">DICE curve</string>
+    <string name="keybox_rkp_current_curve">Current curve</string>
+    <string name="keybox_rkp_section_device">Device</string>
+    <string name="keybox_rkp_read_device">Read from device</string>
+    <string name="keybox_rkp_brand">Brand</string>
+    <string name="keybox_rkp_manufacturer">Manufacturer</string>
+    <string name="keybox_rkp_product">Product</string>
+    <string name="keybox_rkp_model">Model</string>
+    <string name="keybox_rkp_device">Device</string>
+    <string name="keybox_rkp_os_version">OS version</string>
+    <string name="keybox_rkp_security_level">Security level</string>
+    <string name="keybox_rkp_vb_state">Verified boot state</string>
+    <string name="keybox_rkp_bootloader_state">Bootloader state</string>
+    <string name="keybox_rkp_dice_issuer">DICE issuer</string>
+    <string name="keybox_rkp_dice_subject">DICE subject</string>
+    <string name="keybox_rkp_section_advanced">Advanced</string>
+    <string name="keybox_rkp_server">RKP server URL</string>
+    <string name="keybox_rkp_fingerprint">Fingerprint</string>
+    <string name="keybox_rkp_num_keys">Keys to request</string>
+    <string name="keybox_rkp_derive">Check derived key</string>
+    <string name="keybox_rkp_generate">Generate keybox</string>
+    <string name="keybox_rkp_reset">Clear profile</string>
+    <string name="keybox_rkp_info">Derived key</string>
+    <string name="keybox_rkp_mode">Mode</string>
+    <string name="keybox_rkp_public_key">Public key</string>
+    <string name="keybox_rkp_result">Result</string>
+    <string name="keybox_rkp_keybox_path">Keybox path</string>
+    <string name="keybox_rkp_device_id">Device ID</string>
+    <string name="keybox_rkp_cert_count">Certificates</string>
+    <string name="keybox_rkp_failed">RKP operation failed</string>
 </resources>

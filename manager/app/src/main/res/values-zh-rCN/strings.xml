@@ -1180,4 +1180,44 @@
     <string name="keybox_wb_installed">钥匙箱已安装</string>
     <string name="keybox_wb_failed">钥匙箱操作失败</string>
     <string name="keybox_wb_exported">提供者已复制到剪贴板</string>
+
+    <!-- RKP workbench -->
+    <string name="keybox_rkp_title">RKP 工作台</string>
+    <string name="keybox_rkp_summary">构造远程密钥签发（RKP）请求并导出钥匙箱。</string>
+    <string name="keybox_rkp_section_key">密钥来源</string>
+    <string name="keybox_rkp_seed">直接种子（32 字节）</string>
+    <string name="keybox_rkp_seed_hex">种子（64 位十六进制）</string>
+    <string name="keybox_rkp_hw_key">硬件密钥 + KDF</string>
+    <string name="keybox_rkp_hw_key_hex">硬件密钥（32 位十六进制）</string>
+    <string name="keybox_rkp_kdf_label">KDF 标签</string>
+    <string name="keybox_rkp_curve">DICE 曲线</string>
+    <string name="keybox_rkp_current_curve">当前曲线</string>
+    <string name="keybox_rkp_section_device">设备</string>
+    <string name="keybox_rkp_read_device">从设备读取</string>
+    <string name="keybox_rkp_brand">品牌</string>
+    <string name="keybox_rkp_manufacturer">制造商</string>
+    <string name="keybox_rkp_product">产品</string>
+    <string name="keybox_rkp_model">型号</string>
+    <string name="keybox_rkp_device">设备代号</string>
+    <string name="keybox_rkp_os_version">系统版本</string>
+    <string name="keybox_rkp_security_level">安全级别</string>
+    <string name="keybox_rkp_vb_state">已验证启动状态</string>
+    <string name="keybox_rkp_bootloader_state">引导加载器状态</string>
+    <string name="keybox_rkp_dice_issuer">DICE 签发者</string>
+    <string name="keybox_rkp_dice_subject">DICE 主题</string>
+    <string name="keybox_rkp_section_advanced">高级</string>
+    <string name="keybox_rkp_server">RKP 服务器地址</string>
+    <string name="keybox_rkp_fingerprint">指纹</string>
+    <string name="keybox_rkp_num_keys">请求密钥数量</string>
+    <string name="keybox_rkp_derive">检查派生密钥</string>
+    <string name="keybox_rkp_generate">生成钥匙箱</string>
+    <string name="keybox_rkp_reset">清除配置</string>
+    <string name="keybox_rkp_info">派生密钥</string>
+    <string name="keybox_rkp_mode">模式</string>
+    <string name="keybox_rkp_public_key">公钥</string>
+    <string name="keybox_rkp_result">结果</string>
+    <string name="keybox_rkp_keybox_path">钥匙箱路径</string>
+    <string name="keybox_rkp_device_id">设备 ID</string>
+    <string name="keybox_rkp_cert_count">证书数量</string>
+    <string name="keybox_rkp_failed">RKP 操作失败</string>
 </resources>
