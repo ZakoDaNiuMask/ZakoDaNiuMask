@@ -25,6 +25,9 @@ import com.zakodaniumask.manager.data.agent.web.WebSearchRepository
 import com.zakodaniumask.manager.data.agent.ShellExecutor
 import com.zakodaniumask.manager.data.detection.DetectorRepository
 import com.zakodaniumask.manager.data.deviceid.DeviceIdRepository
+import com.zakodaniumask.manager.data.trickystore.KeyboxRepository
+import com.zakodaniumask.manager.data.trickystore.TrickyPropsRepository
+import com.zakodaniumask.manager.data.trickystore.TrickyStoreRepository
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpClient
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpProcess
 import com.zakodaniumask.manager.data.agent.mcp.ManagerMcpServer
@@ -218,6 +221,9 @@ import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
 import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DeviceIdViewModel
+import com.zakodaniumask.manager.ui.viewmodel.KeyboxWorkbenchViewModel
+import com.zakodaniumask.manager.ui.viewmodel.TrickyPropsViewModel
+import com.zakodaniumask.manager.ui.viewmodel.TrickyStoreViewModel
 import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
 import com.zakodaniumask.manager.ui.viewmodel.UserKoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.CpuSpoofViewModel
@@ -349,6 +355,9 @@ val repositoryModule = module {
     singleOf(::UmountRepository)
     singleOf(::SpoofRepository)
     singleOf(::DeviceIdRepository)
+    single { TrickyStoreRepository(androidApplication(), get(), get()) }
+    single { KeyboxRepository(androidApplication(), get(), get()) }
+    single { TrickyPropsRepository(get(), get()) }
     single { KsudMcpProcess(get()) }
     single { KsudMcpClient(get()) }
     singleOf(::ManagerMcpServer)
@@ -552,6 +561,9 @@ val viewModelModule = module {
     viewModelOf(::UtsSpoofViewModel)
     viewModelOf(::MemSpoofViewModel)
     viewModelOf(::DeviceIdViewModel)
+    viewModelOf(::TrickyStoreViewModel)
+    viewModelOf(::TrickyPropsViewModel)
+    viewModelOf(::KeyboxWorkbenchViewModel)
     viewModelOf(::AgentViewModel)
     viewModelOf(::BackupViewModel)
     viewModelOf(::PluginViewModel)

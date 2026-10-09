@@ -937,4 +937,52 @@
     <string name="device_id_result_library">函式庫</string>
     <string name="device_id_mode_dry">空執行</string>
     <string name="device_id_mode_live">實際寫入</string>
+
+    <!-- Keybox management: Tricky Store manager -->
+    <string name="keybox_ts_targets_title">目標清單</string>
+    <string name="keybox_ts_targets_summary">揀要畀金鑰模組偽裝嘅 App。</string>
+    <string name="keybox_ts_policy_title">預設策略</string>
+    <string name="keybox_ts_policy_summary">對所有目標生效嘅預設修補層級同身分。</string>
+    <string name="keybox_ts_props_title">屬性處理</string>
+    <string name="keybox_ts_props_summary">已驗證啟動雜湊同啟動屬性處理。</string>
+    <string name="keybox_ts_backend">金鑰模組</string>
+    <string name="keybox_ts_no_backend">未偵測到支援嘅金鑰模組</string>
+    <string name="keybox_ts_keybox">Keybox</string>
+    <string name="keybox_ts_missing">缺少</string>
+    <string name="keybox_ts_config_error">設定錯誤</string>
+    <string name="keybox_ts_search">搵應用程式</string>
+    <string name="keybox_ts_select_all">全選</string>
+    <string name="keybox_ts_deselect_all">取消全選</string>
+    <string name="keybox_ts_save">儲存</string>
+    <string name="keybox_ts_saved">已儲存</string>
+    <string name="keybox_ts_restart_required">已儲存，重啟模組後生效</string>
+    <string name="keybox_ts_save_failed">儲存失敗</string>
+    <string name="keybox_ts_mode_auto">自動</string>
+    <string name="keybox_ts_mode_generate">憑證產生</string>
+    <string name="keybox_ts_mode_hack">葉憑證偽造</string>
+    <string name="keybox_ts_not_set">未設定</string>
+    <string name="keybox_ts_prop_handler">屬性處理</string>
+    <string name="keybox_ts_boot_hash">已驗證啟動雜湊</string>
+    <string name="keybox_ts_boot_hash_hint">64 位小寫十六進位</string>
+
+    <!-- Keybox workbench -->
+    <string name="keybox_wb_title">Keybox</string>
+    <string name="keybox_wb_summary">安裝、產生同管理 Keybox。</string>
+    <string name="keybox_wb_aosp">安裝內建 AOSP Keybox</string>
+    <string name="keybox_wb_generate">產生 unknown Keybox</string>
+    <string name="keybox_wb_local">喺檔案安裝</string>
+    <string name="keybox_wb_providers">提供者</string>
+    <string name="keybox_wb_add_provider">新增</string>
+    <string name="keybox_wb_import">匯入</string>
+    <string name="keybox_wb_export">匯出</string>
+    <string name="keybox_wb_reset">重設</string>
+    <string name="keybox_wb_repo">社群 Keybox 倉庫</string>
+    <string name="keybox_wb_repo_summary">喺 keybox.kowx712.cc 瀏覽同下載 Keybox。</string>
+    <string name="keybox_wb_provider_title">Keybox 提供者</string>
+    <string name="keybox_wb_provider_name">名稱</string>
+    <string name="keybox_wb_provider_url">連結</string>
+    <string name="keybox_wb_provider_decode">解碼管線</string>
+    <string name="keybox_wb_installed">Keybox 已安裝</string>
+    <string name="keybox_wb_failed">Keybox 操作失敗</string>
+    <string name="keybox_wb_exported">提供者已複製到剪貼簿</string>
 </resources>

@@ -1132,4 +1132,52 @@
     <string name="device_id_result_library">Library</string>
     <string name="device_id_mode_dry">Dry run</string>
     <string name="device_id_mode_live">Live write</string>
+
+    <!-- Keybox management: Tricky Store manager -->
+    <string name="keybox_ts_targets_title">Target list</string>
+    <string name="keybox_ts_targets_summary">Choose which apps the keystore module spoofs.</string>
+    <string name="keybox_ts_policy_title">Default policy</string>
+    <string name="keybox_ts_policy_summary">Default patch levels and identity used for every target.</string>
+    <string name="keybox_ts_props_title">Prop handler</string>
+    <string name="keybox_ts_props_summary">Verified Boot hash and the boot prop handler.</string>
+    <string name="keybox_ts_backend">Keystore module</string>
+    <string name="keybox_ts_no_backend">No supported keystore module detected</string>
+    <string name="keybox_ts_keybox">Keybox</string>
+    <string name="keybox_ts_missing">missing</string>
+    <string name="keybox_ts_config_error">Config error</string>
+    <string name="keybox_ts_search">Search apps</string>
+    <string name="keybox_ts_select_all">Select all</string>
+    <string name="keybox_ts_deselect_all">Deselect all</string>
+    <string name="keybox_ts_save">Save</string>
+    <string name="keybox_ts_saved">Saved</string>
+    <string name="keybox_ts_restart_required">Saved; restart the module to apply</string>
+    <string name="keybox_ts_save_failed">Save failed</string>
+    <string name="keybox_ts_mode_auto">Auto</string>
+    <string name="keybox_ts_mode_generate">Cert generating</string>
+    <string name="keybox_ts_mode_hack">Leaf hack</string>
+    <string name="keybox_ts_not_set">not set</string>
+    <string name="keybox_ts_prop_handler">Prop handler</string>
+    <string name="keybox_ts_boot_hash">Verified Boot hash</string>
+    <string name="keybox_ts_boot_hash_hint">64 lowercase hex characters</string>
+
+    <!-- Keybox workbench -->
+    <string name="keybox_wb_title">Keybox</string>
+    <string name="keybox_wb_summary">Install, generate and manage keyboxes.</string>
+    <string name="keybox_wb_aosp">Install bundled AOSP keybox</string>
+    <string name="keybox_wb_generate">Generate unknown keybox</string>
+    <string name="keybox_wb_local">Install from file</string>
+    <string name="keybox_wb_providers">Providers</string>
+    <string name="keybox_wb_add_provider">Add</string>
+    <string name="keybox_wb_import">Import</string>
+    <string name="keybox_wb_export">Export</string>
+    <string name="keybox_wb_reset">Reset</string>
+    <string name="keybox_wb_repo">Community keybox repo</string>
+    <string name="keybox_wb_repo_summary">Browse and download keyboxes from keybox.kowx712.cc.</string>
+    <string name="keybox_wb_provider_title">Keybox provider</string>
+    <string name="keybox_wb_provider_name">Name</string>
+    <string name="keybox_wb_provider_url">URL</string>
+    <string name="keybox_wb_provider_decode">Decode pipeline</string>
+    <string name="keybox_wb_installed">Keybox installed</string>
+    <string name="keybox_wb_failed">Keybox operation failed</string>
+    <string name="keybox_wb_exported">Providers copied to clipboard</string>
 </resources>

@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Badge
+import androidx.compose.material.icons.twotone.Build
+import androidx.compose.material.icons.twotone.Key
+import androidx.compose.material.icons.twotone.Settings
+import androidx.compose.material.icons.twotone.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LargeFlexibleTopAppBar
@@ -82,6 +86,38 @@ fun KeyboxScreen() {
 
             item {
                 SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    item {
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.Build,
+                            title = stringResource(R.string.keybox_ts_targets_title),
+                            description = stringResource(R.string.keybox_ts_targets_summary),
+                            onClick = { navigator.push(Route.TrickyTargets) },
+                        )
+                    }
+                    item {
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.Tune,
+                            title = stringResource(R.string.keybox_ts_policy_title),
+                            description = stringResource(R.string.keybox_ts_policy_summary),
+                            onClick = { navigator.push(Route.TrickyPolicy) },
+                        )
+                    }
+                    item {
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.Settings,
+                            title = stringResource(R.string.keybox_ts_props_title),
+                            description = stringResource(R.string.keybox_ts_props_summary),
+                            onClick = { navigator.push(Route.TrickyProps) },
+                        )
+                    }
+                    item {
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.Key,
+                            title = stringResource(R.string.keybox_wb_title),
+                            description = stringResource(R.string.keybox_wb_summary),
+                            onClick = { navigator.push(Route.KeyboxWorkbench) },
+                        )
+                    }
                     item {
                         SettingsJumpPageWidget(
                             icon = Icons.TwoTone.Badge,

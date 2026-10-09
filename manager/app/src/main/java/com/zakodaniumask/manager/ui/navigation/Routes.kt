@@ -211,6 +211,30 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object TrickyTargets : Route
+
+    @Parcelize
+    @Serializable
+    data object TrickyPolicy : Route
+
+    @Parcelize
+    @Serializable
+    data object TrickyProps : Route
+
+    @Parcelize
+    @Serializable
+    data object KeyboxWorkbench : Route
+
+    @Parcelize
+    @Serializable
+    data object KeyboxRepo : Route
+
+    @Parcelize
+    @Serializable
+    data object KeyboxRkp : Route
+
+    @Parcelize
+    @Serializable
     data object NavigationLayout : Route
 
     @Parcelize

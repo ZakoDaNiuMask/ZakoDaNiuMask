@@ -1132,4 +1132,52 @@
     <string name="device_id_result_library">库</string>
     <string name="device_id_mode_dry">空运行</string>
     <string name="device_id_mode_live">实际写入</string>
+
+    <!-- Keybox management: Tricky Store manager -->
+    <string name="keybox_ts_targets_title">目标列表</string>
+    <string name="keybox_ts_targets_summary">选择要让密钥模块伪装的 App。</string>
+    <string name="keybox_ts_policy_title">默认策略</string>
+    <string name="keybox_ts_policy_summary">对所有目标生效的默认补丁级别与身份。</string>
+    <string name="keybox_ts_props_title">属性处理</string>
+    <string name="keybox_ts_props_summary">已验证启动哈希与启动属性处理。</string>
+    <string name="keybox_ts_backend">密钥模块</string>
+    <string name="keybox_ts_no_backend">未检测到受支持的密钥模块</string>
+    <string name="keybox_ts_keybox">钥匙箱</string>
+    <string name="keybox_ts_missing">缺失</string>
+    <string name="keybox_ts_config_error">配置错误</string>
+    <string name="keybox_ts_search">搜索应用</string>
+    <string name="keybox_ts_select_all">全选</string>
+    <string name="keybox_ts_deselect_all">取消全选</string>
+    <string name="keybox_ts_save">保存</string>
+    <string name="keybox_ts_saved">已保存</string>
+    <string name="keybox_ts_restart_required">已保存，重启模块后生效</string>
+    <string name="keybox_ts_save_failed">保存失败</string>
+    <string name="keybox_ts_mode_auto">自动</string>
+    <string name="keybox_ts_mode_generate">证书生成</string>
+    <string name="keybox_ts_mode_hack">叶证书伪造</string>
+    <string name="keybox_ts_not_set">未设置</string>
+    <string name="keybox_ts_prop_handler">属性处理</string>
+    <string name="keybox_ts_boot_hash">已验证启动哈希</string>
+    <string name="keybox_ts_boot_hash_hint">64 位小写十六进制</string>
+
+    <!-- Keybox workbench -->
+    <string name="keybox_wb_title">钥匙箱</string>
+    <string name="keybox_wb_summary">安装、生成与管理钥匙箱。</string>
+    <string name="keybox_wb_aosp">安装内置 AOSP 钥匙箱</string>
+    <string name="keybox_wb_generate">生成 unknown 钥匙箱</string>
+    <string name="keybox_wb_local">从文件安装</string>
+    <string name="keybox_wb_providers">提供者</string>
+    <string name="keybox_wb_add_provider">添加</string>
+    <string name="keybox_wb_import">导入</string>
+    <string name="keybox_wb_export">导出</string>
+    <string name="keybox_wb_reset">重置</string>
+    <string name="keybox_wb_repo">社区钥匙箱仓库</string>
+    <string name="keybox_wb_repo_summary">从 keybox.kowx712.cc 浏览并下载钥匙箱。</string>
+    <string name="keybox_wb_provider_title">钥匙箱提供者</string>
+    <string name="keybox_wb_provider_name">名称</string>
+    <string name="keybox_wb_provider_url">链接</string>
+    <string name="keybox_wb_provider_decode">解码管线</string>
+    <string name="keybox_wb_installed">钥匙箱已安装</string>
+    <string name="keybox_wb_failed">钥匙箱操作失败</string>
+    <string name="keybox_wb_exported">提供者已复制到剪贴板</string>
 </resources>

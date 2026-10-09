@@ -149,6 +149,11 @@ private val PORTED_COMPONENTS = listOf(
         licenseName = "MIT",
         website = "https://github.com/eltavine/Duck-ToolBox",
     ),
+    PortedComponent(
+        name = "Tricky Addon (Update Target List)",
+        licenseName = "Apache-2.0",
+        website = "https://github.com/KOWX712/Tricky-Addon-Update-Target-List",
+    ),
 )
 
 

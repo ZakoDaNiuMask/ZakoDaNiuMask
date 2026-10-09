@@ -90,6 +90,11 @@ import com.zakodaniumask.manager.ui.screen.settings.BackupScreen
 import com.zakodaniumask.manager.ui.screen.settings.DeviceIdScreen
 import com.zakodaniumask.manager.ui.screen.settings.FolkMountScreen
 import com.zakodaniumask.manager.ui.screen.settings.KeyboxScreen
+import com.zakodaniumask.manager.ui.screen.keybox.KeyboxRepoScreen
+import com.zakodaniumask.manager.ui.screen.keybox.KeyboxWorkbenchScreen
+import com.zakodaniumask.manager.ui.screen.keybox.TrickyPolicyScreen
+import com.zakodaniumask.manager.ui.screen.keybox.TrickyPropsScreen
+import com.zakodaniumask.manager.ui.screen.keybox.TrickyTargetsScreen
 import com.zakodaniumask.manager.ui.screen.spoof.CpuSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.MemSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.UtsSpoofScreen
@@ -719,6 +724,61 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     KeyboxScreen()
+                }
+            }
+            entry<Route.TrickyTargets>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    TrickyTargetsScreen()
+                }
+            }
+            entry<Route.TrickyPolicy>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    TrickyPolicyScreen()
+                }
+            }
+            entry<Route.TrickyProps>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    TrickyPropsScreen()
+                }
+            }
+            entry<Route.KeyboxWorkbench>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    KeyboxWorkbenchScreen()
+                }
+            }
+            entry<Route.KeyboxRepo>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    KeyboxRepoScreen()
                 }
             }
             entry<Route.NavigationLayout>(swipeDismiss = swipeBackDirection) {
