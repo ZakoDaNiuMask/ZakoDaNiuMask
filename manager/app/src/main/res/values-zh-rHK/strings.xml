@@ -900,4 +900,41 @@
     <string name="module_shortcut_scheme_copied">已複製 URL Scheme</string>
     <string name="both_kernel_and_module_files">輸入的 zip 檔案同時含有 AnyKernel3 壓縮包和模組</string>
     <string name="more_than_one_kernel_file">輸入的檔案中有多於 1 個的 AnyKernel3 壓縮包</string>
+
+    <!-- Keybox management -->
+    <string name="keybox_management_title">Keybox 管理</string>
+    <string name="keybox_management_summary">管理金鑰認證（Keybox）材料同裝置識別碼。</string>
+
+    <!-- Device ID provisioning (Qualcomm Keymaster) -->
+    <string name="device_id_title">裝置識別碼注入</string>
+    <string name="device_id_summary">將證明用嘅裝置識別碼寫入 Qualcomm Keymaster 受信任應用程式。</string>
+    <string name="device_id_warning">暫時淨係喺部分一加高通裝置測試過，其他裝置嘅結果唔擔保；實際寫入會改變 Keymaster TA 證明嘅裝置識別碼，而且喺呢度冇得復原。</string>
+    <string name="device_id_section_main">識別碼</string>
+    <string name="device_id_section_advanced">IMEI、MEID 同受信任應用程式</string>
+    <string name="device_id_brand">品牌</string>
+    <string name="device_id_device">裝置代號</string>
+    <string name="device_id_product">產品</string>
+    <string name="device_id_serial">序號</string>
+    <string name="device_id_manufacturer">製造商</string>
+    <string name="device_id_model">型號</string>
+    <string name="device_id_imei">IMEI</string>
+    <string name="device_id_imei2">IMEI 2</string>
+    <string name="device_id_meid">MEID</string>
+    <string name="device_id_meid2">MEID 2</string>
+    <string name="device_id_ta_name">受信任應用程式名稱</string>
+    <string name="device_id_ta_path">受信任應用程式路徑</string>
+    <string name="device_id_dry_run">空執行</string>
+    <string name="device_id_dry_run_desc">淨係建構同驗證命令，唔會實際傳送去 Keymaster。</string>
+    <string name="device_id_run_dry">執行空執行</string>
+    <string name="device_id_provision">寫入裝置識別碼</string>
+    <string name="device_id_reload">喺裝置重新讀取</string>
+    <string name="device_id_confirm_title">寫入 Keymaster</string>
+    <string name="device_id_confirm">而家將呢啲識別碼寫入 Keymaster 呀？呢個操作喺呢度冇得復原。</string>
+    <string name="device_id_result">結果</string>
+    <string name="device_id_result_mode">模式</string>
+    <string name="device_id_result_count">寫入項目</string>
+    <string name="device_id_result_ta_version">TA 版本</string>
+    <string name="device_id_result_library">函式庫</string>
+    <string name="device_id_mode_dry">空執行</string>
+    <string name="device_id_mode_live">實際寫入</string>
 </resources>

@@ -1,6 +1,7 @@
 mod boot_script;
 pub mod cli;
 mod debug;
+mod device_ids;
 mod dynamic_manager;
 mod feature;
 mod init_event;

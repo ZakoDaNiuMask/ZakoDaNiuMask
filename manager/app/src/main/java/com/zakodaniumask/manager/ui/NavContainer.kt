@@ -87,7 +87,9 @@ import com.zakodaniumask.manager.ui.screen.agent.AgentProvidersScreen
 import com.zakodaniumask.manager.ui.screen.agent.AgentSettingsScreen
 import com.zakodaniumask.manager.ui.screen.settings.AppLockSettingsScreen
 import com.zakodaniumask.manager.ui.screen.settings.BackupScreen
+import com.zakodaniumask.manager.ui.screen.settings.DeviceIdScreen
 import com.zakodaniumask.manager.ui.screen.settings.FolkMountScreen
+import com.zakodaniumask.manager.ui.screen.settings.KeyboxScreen
 import com.zakodaniumask.manager.ui.screen.spoof.CpuSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.MemSpoofScreen
 import com.zakodaniumask.manager.ui.screen.spoof.UtsSpoofScreen
@@ -695,6 +697,28 @@ fun NavContainer(
                     useBlur = useBlur,
                 ) {
                     AppLockSettingsScreen()
+                }
+            }
+            entry<Route.DeviceId>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    DeviceIdScreen()
+                }
+            }
+            entry<Route.Keybox>(swipeDismiss = swipeBackDirection) {
+                ManagerNavEntry(
+                    interceptPredictiveBack = interceptPredictiveBack,
+                    onBack = onBack,
+                    themeConfig = themeConfig,
+                    backgroundRenderState = backgroundRenderState,
+                    useBlur = useBlur,
+                ) {
+                    KeyboxScreen()
                 }
             }
             entry<Route.NavigationLayout>(swipeDismiss = swipeBackDirection) {

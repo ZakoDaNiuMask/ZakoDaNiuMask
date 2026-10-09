@@ -1095,4 +1095,41 @@
     <string name="home_kernel_type_gki1">GKI 1.0</string>
     <string name="home_kernel_type_nongki">Non-GKI</string>
     <string name="home_load_mode_lkm">LKM</string>
+
+    <!-- Keybox management -->
+    <string name="keybox_management_title">Keybox 管理</string>
+    <string name="keybox_management_summary">管理密钥认证（Keybox）材料与设备标识。</string>
+
+    <!-- Device ID provisioning (Qualcomm Keymaster) -->
+    <string name="device_id_title">设备标识注入</string>
+    <string name="device_id_summary">把证明用的设备标识写入 Qualcomm Keymaster 可信应用。</string>
+    <string name="device_id_warning">目前只在部分一加高通设备上测试过，其他设备的结果不作担保；实际写入会改变 Keymaster TA 证明的设备标识，且无法在此撤销。</string>
+    <string name="device_id_section_main">标识</string>
+    <string name="device_id_section_advanced">IMEI、MEID 与可信应用</string>
+    <string name="device_id_brand">品牌</string>
+    <string name="device_id_device">设备代号</string>
+    <string name="device_id_product">产品</string>
+    <string name="device_id_serial">序列号</string>
+    <string name="device_id_manufacturer">制造商</string>
+    <string name="device_id_model">型号</string>
+    <string name="device_id_imei">IMEI</string>
+    <string name="device_id_imei2">IMEI 2</string>
+    <string name="device_id_meid">MEID</string>
+    <string name="device_id_meid2">MEID 2</string>
+    <string name="device_id_ta_name">可信应用名称</string>
+    <string name="device_id_ta_path">可信应用路径</string>
+    <string name="device_id_dry_run">空运行</string>
+    <string name="device_id_dry_run_desc">只构造并验证命令，不实际发送到 Keymaster。</string>
+    <string name="device_id_run_dry">执行空运行</string>
+    <string name="device_id_provision">写入设备标识</string>
+    <string name="device_id_reload">从设备重新读取</string>
+    <string name="device_id_confirm_title">写入 Keymaster</string>
+    <string name="device_id_confirm">现在把这些标识写入 Keymaster 吗？此操作无法在此撤销。</string>
+    <string name="device_id_result">结果</string>
+    <string name="device_id_result_mode">模式</string>
+    <string name="device_id_result_count">写入条目</string>
+    <string name="device_id_result_ta_version">TA 版本</string>
+    <string name="device_id_result_library">库</string>
+    <string name="device_id_mode_dry">空运行</string>
+    <string name="device_id_mode_live">实际写入</string>
 </resources>

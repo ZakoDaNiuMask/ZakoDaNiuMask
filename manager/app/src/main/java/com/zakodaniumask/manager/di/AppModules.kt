@@ -24,6 +24,7 @@ import com.zakodaniumask.manager.data.agent.browser.HeadlessBrowser
 import com.zakodaniumask.manager.data.agent.web.WebSearchRepository
 import com.zakodaniumask.manager.data.agent.ShellExecutor
 import com.zakodaniumask.manager.data.detection.DetectorRepository
+import com.zakodaniumask.manager.data.deviceid.DeviceIdRepository
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpClient
 import com.zakodaniumask.manager.data.agent.mcp.KsudMcpProcess
 import com.zakodaniumask.manager.data.agent.mcp.ManagerMcpServer
@@ -216,6 +217,7 @@ import com.zakodaniumask.manager.ui.viewmodel.ModuleRepoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.ModuleViewModel
 import com.zakodaniumask.manager.ui.viewmodel.BootScriptViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DetectorViewModel
+import com.zakodaniumask.manager.ui.viewmodel.DeviceIdViewModel
 import com.zakodaniumask.manager.ui.viewmodel.KpmViewModel
 import com.zakodaniumask.manager.ui.viewmodel.UserKoViewModel
 import com.zakodaniumask.manager.ui.viewmodel.CpuSpoofViewModel
@@ -346,6 +348,7 @@ val repositoryModule = module {
     singleOf(::BugreportRepository)
     singleOf(::UmountRepository)
     singleOf(::SpoofRepository)
+    singleOf(::DeviceIdRepository)
     single { KsudMcpProcess(get()) }
     single { KsudMcpClient(get()) }
     singleOf(::ManagerMcpServer)
@@ -548,6 +551,7 @@ val viewModelModule = module {
     viewModelOf(::CpuSpoofViewModel)
     viewModelOf(::UtsSpoofViewModel)
     viewModelOf(::MemSpoofViewModel)
+    viewModelOf(::DeviceIdViewModel)
     viewModelOf(::AgentViewModel)
     viewModelOf(::BackupViewModel)
     viewModelOf(::PluginViewModel)

@@ -203,6 +203,14 @@ sealed interface Route : NavKey, Parcelable {
 
     @Parcelize
     @Serializable
+    data object DeviceId : Route
+
+    @Parcelize
+    @Serializable
+    data object Keybox : Route
+
+    @Parcelize
+    @Serializable
     data object NavigationLayout : Route
 
     @Parcelize

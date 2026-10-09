@@ -7,7 +7,7 @@ use log::{LevelFilter, error, info};
 
 use crate::{
     android::{
-        debug, dynamic_manager, feature, init_event, ksucalls,
+        debug, device_ids, dynamic_manager, feature, init_event, ksucalls,
         module::{self, module_config, regenerate_preinit_rc},
         profile, sepolicy, su, sulog, susfs, uapi, umount_config, utils,
     },
@@ -215,6 +215,12 @@ enum Commands {
     McpPolicy {
         #[command(subcommand)]
         command: McpPolicyCmd,
+    },
+
+    /// Provision Qualcomm Keymaster attestation device IDs
+    DeviceIds {
+        #[command(subcommand)]
+        command: device_ids::DeviceIdsCommand,
     },
 }
 
@@ -1575,6 +1581,7 @@ pub fn run() -> Result<()> {
         },
         Commands::Mcp => crate::android::mcp::run(),
         Commands::McpPolicy { command } => run_mcp_policy(command),
+        Commands::DeviceIds { command } => device_ids::run(command),
     };
 
     if let Err(e) = &result {

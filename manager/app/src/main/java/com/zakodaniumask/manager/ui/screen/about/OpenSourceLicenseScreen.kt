@@ -144,6 +144,11 @@ private val PORTED_COMPONENTS = listOf(
         licenseName = "MIT",
         website = "https://www.lua.org/",
     ),
+    PortedComponent(
+        name = "Duck ToolBox",
+        licenseName = "MIT",
+        website = "https://github.com/eltavine/Duck-ToolBox",
+    ),
 )
 
 

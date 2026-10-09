@@ -1095,4 +1095,41 @@
     <string name="home_kernel_type_gki1">GKI 1.0</string>
     <string name="home_kernel_type_nongki">Non-GKI</string>
     <string name="home_load_mode_lkm">LKM</string>
+
+    <!-- Keybox management -->
+    <string name="keybox_management_title">Keybox management</string>
+    <string name="keybox_management_summary">Manage Keymaster attestation material and device identifiers.</string>
+
+    <!-- Device ID provisioning (Qualcomm Keymaster) -->
+    <string name="device_id_title">Device ID provisioner</string>
+    <string name="device_id_summary">Write attestation device IDs into the Qualcomm Keymaster trusted app.</string>
+    <string name="device_id_warning">Only tested on some Qualcomm-based OnePlus devices. Results on other devices are not guaranteed, and a live write changes the IDs the Keymaster TA attests and cannot be undone from here.</string>
+    <string name="device_id_section_main">Identifiers</string>
+    <string name="device_id_section_advanced">IMEI, MEID and trusted app</string>
+    <string name="device_id_brand">Brand</string>
+    <string name="device_id_device">Device code</string>
+    <string name="device_id_product">Product</string>
+    <string name="device_id_serial">Serial</string>
+    <string name="device_id_manufacturer">Manufacturer</string>
+    <string name="device_id_model">Model</string>
+    <string name="device_id_imei">IMEI</string>
+    <string name="device_id_imei2">IMEI 2</string>
+    <string name="device_id_meid">MEID</string>
+    <string name="device_id_meid2">MEID 2</string>
+    <string name="device_id_ta_name">Trusted app name</string>
+    <string name="device_id_ta_path">Trusted app path</string>
+    <string name="device_id_dry_run">Dry run</string>
+    <string name="device_id_dry_run_desc">Build and validate the command without sending it to Keymaster.</string>
+    <string name="device_id_run_dry">Run dry run</string>
+    <string name="device_id_provision">Provision device IDs</string>
+    <string name="device_id_reload">Reload from device</string>
+    <string name="device_id_confirm_title">Write to Keymaster</string>
+    <string name="device_id_confirm">Write these IDs into Keymaster now? This cannot be undone from here.</string>
+    <string name="device_id_result">Result</string>
+    <string name="device_id_result_mode">Mode</string>
+    <string name="device_id_result_count">Written entries</string>
+    <string name="device_id_result_ta_version">TA version</string>
+    <string name="device_id_result_library">Library</string>
+    <string name="device_id_mode_dry">Dry run</string>
+    <string name="device_id_mode_live">Live write</string>
 </resources>
