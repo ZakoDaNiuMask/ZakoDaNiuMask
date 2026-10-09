@@ -12,7 +12,7 @@ use std::io::Read;
 
 use anyhow::{Context, Result};
 
-const SUPERKEY_MAGIC: u64 = 0x5355_5045_52; // "SUPER"
+const SUPERKEY_MAGIC: u64 = 0x53_55_50_45_52; // "SUPER"
 const SUPERKEY_SALT_LEN: usize = 16;
 const SUPERKEY_BLOCK_LEN: usize = 40;
 

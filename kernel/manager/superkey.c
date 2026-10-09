@@ -27,13 +27,13 @@ struct superkey_data {
 
 static volatile struct superkey_data __attribute__((used, section(".data"))) superkey_store = {
     .magic = SUPERKEY_MAGIC,
-    .salt = {0},
+    .salt = { 0 },
     .hash = 0,
     .flags = 0,
 };
 
 u64 ksu_superkey_hash __read_mostly = 0;
-u8 ksu_superkey_salt[SUPERKEY_SALT_LEN] __read_mostly = {0};
+u8 ksu_superkey_salt[SUPERKEY_SALT_LEN] __read_mostly = { 0 };
 bool ksu_signature_bypass __read_mostly = false;
 
 static uid_t authenticated_manager_uid = (uid_t)-1;
@@ -49,7 +49,7 @@ u64 hash_superkey(const char *key)
 {
     struct crypto_shash *tfm;
     SHASH_DESC_ON_STACK(desc, NULL);
-    u8 digest[32] = {0};
+    u8 digest[32] = { 0 };
     u64 out = 0;
     int ret;
 
@@ -76,10 +76,8 @@ u64 hash_superkey(const char *key)
         return 0;
     }
 
-    out = ((u64)digest[0]) | ((u64)digest[1] << 8) | ((u64)digest[2] << 16) |
-          ((u64)digest[3] << 24) | ((u64)digest[4] << 32) |
-          ((u64)digest[5] << 40) | ((u64)digest[6] << 48) |
-          ((u64)digest[7] << 56);
+    out = ((u64)digest[0]) | ((u64)digest[1] << 8) | ((u64)digest[2] << 16) | ((u64)digest[3] << 24) |
+          ((u64)digest[4] << 32) | ((u64)digest[5] << 40) | ((u64)digest[6] << 48) | ((u64)digest[7] << 56);
     return out;
 }
 
@@ -102,17 +100,15 @@ void superkey_init(void)
     }
 
     ksu_superkey_hash = superkey_store.hash;
-    memcpy(ksu_superkey_salt, (const void *)superkey_store.salt,
-           SUPERKEY_SALT_LEN);
+    memcpy(ksu_superkey_salt, (const void *)superkey_store.salt, SUPERKEY_SALT_LEN);
     ksu_signature_bypass = (superkey_store.flags == 2);
-    pr_info("superkey: loaded hash=0x%llx mode=%llu bypass=%d\n",
-            ksu_superkey_hash, superkey_store.flags,
+    pr_info("superkey: loaded hash=0x%llx mode=%llu bypass=%d\n", ksu_superkey_hash, superkey_store.flags,
             ksu_signature_bypass ? 1 : 0);
 }
 
 int superkey_authenticate(const char __user *user_key)
 {
-    char key[SUPERKEY_MAX_LEN + 1] = {0};
+    char key[SUPERKEY_MAX_LEN + 1] = { 0 };
     long len;
 
     if (!user_key)
@@ -153,8 +149,7 @@ bool superkey_is_manager(void)
     spin_lock(&superkey_lock);
     result = (authenticated_manager_uid != (uid_t)-1 &&
               (authenticated_manager_uid == current_uid_val ||
-               authenticated_manager_uid % PER_USER_RANGE ==
-                   current_uid_val % PER_USER_RANGE));
+               authenticated_manager_uid % PER_USER_RANGE == current_uid_val % PER_USER_RANGE));
     spin_unlock(&superkey_lock);
 
     return result;
