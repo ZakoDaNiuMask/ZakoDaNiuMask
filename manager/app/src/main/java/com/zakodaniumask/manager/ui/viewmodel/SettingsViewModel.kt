@@ -19,7 +19,10 @@ import com.zakodaniumask.manager.domain.usecase.SetMountHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetPtctlEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSamsungCompatEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetUhookEnabledUseCase
+import com.zakodaniumask.manager.data.kernel.SpoofRepository
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.GetSelinuxModeUseCase
+import com.zakodaniumask.manager.domain.usecase.SetSelinuxPermissiveUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSuEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.UpdateAppearanceUseCase
 import com.zakodaniumask.manager.domain.usecase.UpdatePlatformSettingUseCase
@@ -100,6 +103,8 @@ data class SettingsUiState(
     val isSuLogEnabled: Boolean = false,
     val selinuxHideStatus: String = "",
     val isSelinuxHideEnabled: Boolean = false,
+    val selinuxPermissive: Boolean = false,
+    val selinuxAvailable: Boolean = false,
     val mountHideStatus: String = "",
     val isMountHideEnabled: Boolean = false,
     val samsungCompatStatus: String = "",
@@ -154,6 +159,7 @@ sealed interface SettingsUiAction {
     data class SetKernelUmount(val enabled: Boolean) : SettingsUiAction
     data class SetAutoJailbreak(val enabled: Boolean) : SettingsUiAction
     data class SetSelinuxHide(val enabled: Boolean) : SettingsUiAction
+    data class SetSelinuxPermissive(val enabled: Boolean) : SettingsUiAction
     data class SetMountHide(val enabled: Boolean) : SettingsUiAction
     data class SetSamsungCompat(val enabled: Boolean) : SettingsUiAction
     data class SetPtctl(val enabled: Boolean) : SettingsUiAction
@@ -188,6 +194,8 @@ class SettingsViewModel(
     private val setKernelUmountEnabled: SetKernelUmountEnabledUseCase,
     private val setSuLogEnabled: ConfigureSuLogUseCase,
     private val setSelinuxHideEnabled: SetSelinuxHideEnabledUseCase,
+    private val getSelinuxMode: GetSelinuxModeUseCase,
+    private val setSelinuxPermissive: SetSelinuxPermissiveUseCase,
     private val setMountHideEnabled: SetMountHideEnabledUseCase,
     private val setSamsungCompatEnabled: SetSamsungCompatEnabledUseCase,
     private val setPtctlEnabled: SetPtctlEnabledUseCase,
@@ -220,6 +228,7 @@ fun initialize() {
             val suCompatMode = platform.suCompatPersistValue?.let { value ->
                 if (value == 0L) 2 else if (!features.suEnabled) 1 else 0
             } ?: if (!features.suEnabled) 1 else 0
+            val selinuxMode = runCatching { getSelinuxMode() }.getOrDefault("")
             mutableState.update {
                 it.copy(
                     suCompatMode = suCompatMode,
@@ -232,6 +241,9 @@ fun initialize() {
                     isSuLogEnabled = features.suLogEnabled,
                     selinuxHideStatus = platform.selinuxHideStatus,
                     isSelinuxHideEnabled = features.selinuxHideEnabled,
+                    selinuxPermissive = selinuxMode == SpoofRepository.SELINUX_PERMISSIVE,
+                    selinuxAvailable = selinuxMode == SpoofRepository.SELINUX_PERMISSIVE ||
+                        selinuxMode == SpoofRepository.SELINUX_ENFORCING,
                     mountHideStatus = platform.mountHideStatus,
                     isMountHideEnabled = features.mountHideEnabled,
                     samsungCompatStatus = platform.samsungCompatStatus,
@@ -439,6 +451,19 @@ fun initialize() {
         }
     }
 
+    fun handleSelinuxPermissiveChange(checked: Boolean) {
+        viewModelScope.launch {
+            val previous = mutableState.value.selinuxPermissive
+            mutableState.update { it.copy(selinuxPermissive = checked) }
+            if (!setSelinuxPermissive(checked)) {
+                mutableState.update { it.copy(selinuxPermissive = previous) }
+                mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_selinux_permissive_failed)
+                )
+            }
+        }
+    }
+
     fun handleMountHideChange(checked: Boolean) {
         viewModelScope.launch {
             val status = setMountHideEnabled(checked)
@@ -546,6 +571,8 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetKernelUmount -> handleKernelUmountChange(action.enabled)
             is SettingsUiAction.SetAutoJailbreak -> handleAutoJailbreakChange(action.enabled)
             is SettingsUiAction.SetSelinuxHide -> handleSelinuxHideChange(action.enabled)
+            is SettingsUiAction.SetSelinuxPermissive ->
+                handleSelinuxPermissiveChange(action.enabled)
             is SettingsUiAction.SetMountHide -> handleMountHideChange(action.enabled)
             is SettingsUiAction.SetSamsungCompat -> handleSamsungCompatChange(action.enabled)
             is SettingsUiAction.SetPtctl -> handlePtctlChange(action.enabled)

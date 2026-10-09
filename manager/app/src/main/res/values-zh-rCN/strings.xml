@@ -102,6 +102,9 @@
     <string name="settings_selinux_hide_summary">阻止应用检测 SELinux 修改</string>
     <string name="settings_selinux_hide_reboot_required">重启生效</string>
     <string name="settings_selinux_hide_failed">错误： %d</string>
+    <string name="settings_selinux_permissive">SELinux 宽容模式</string>
+    <string name="settings_selinux_permissive_summary">在强制与宽容模式之间切换，重启后恢复。</string>
+    <string name="settings_selinux_permissive_failed">切换 SELinux 模式失败</string>
     <string name="settings_mount_hide">隐藏模块挂载</string>
     <string name="settings_mount_hide_summary">从隔离进程与应用进程的 /proc 挂载视图中过滤模块挂载；与内核卸载和 SuSFS 互补</string>
     <string name="settings_mount_hide_reboot_required">重启后生效</string>

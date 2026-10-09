@@ -101,6 +101,9 @@
     <string name="settings_selinux_hide_summary">Prevent applications from detecting SELinux modifications</string>
     <string name="settings_selinux_hide_reboot_required">Reboot to take effect</string>
     <string name="settings_selinux_hide_failed">Error: %d</string>
+    <string name="settings_selinux_permissive">SELinux permissive</string>
+    <string name="settings_selinux_permissive_summary">Switch between enforcing and permissive mode. Resets on reboot.</string>
+    <string name="settings_selinux_permissive_failed">Failed to change SELinux mode</string>
     <string name="settings_mount_hide">Hide module mounts</string>
     <string name="settings_mount_hide_summary">Filter module mounts from /proc mount views of isolated and app processes; complements kernel umount and SuSFS</string>
     <string name="settings_mount_hide_reboot_required">Reboot to take effect</string>

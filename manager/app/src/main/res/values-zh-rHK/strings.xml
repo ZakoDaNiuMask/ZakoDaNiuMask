@@ -491,6 +491,9 @@
     <string name="settings_selinux_hide_summary">防止應用程式偵測到 SELinux 被修改</string>
     <string name="settings_selinux_hide_reboot_required">重啟後生效</string>
     <string name="settings_selinux_hide_failed">錯誤： %d</string>
+    <string name="settings_selinux_permissive">SELinux 寬容模式</string>
+    <string name="settings_selinux_permissive_summary">喺強制同寬容模式之間切換，重啟後恢復。</string>
+    <string name="settings_selinux_permissive_failed">切換 SELinux 模式失敗</string>
     <string name="settings_mount_hide">隱藏模組掛載</string>
     <string name="settings_mount_hide_summary">從隔離進程與應用的 /proc 掛載視圖中過濾模組掛載；與內核卸載和 SuSFS 互補</string>
     <string name="settings_mount_hide_reboot_required">重啟後生效</string>

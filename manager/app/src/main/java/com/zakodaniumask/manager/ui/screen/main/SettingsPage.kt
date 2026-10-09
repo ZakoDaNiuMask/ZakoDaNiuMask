@@ -408,6 +408,23 @@ fun SettingsPage(bottomPadding: Dp) {
                             }
 
                             item {
+                                SettingsSwitchWidget(
+                                    icon = Icons.TwoTone.Security,
+                                    title = stringResource(id = R.string.settings_selinux_permissive),
+                                    description = stringResource(id = R.string.settings_selinux_permissive_summary),
+                                    enabled = uiState.selinuxAvailable,
+                                    checked = uiState.selinuxPermissive,
+                                    onCheckedChange = { checked ->
+                                        settingsViewModel.dispatch(
+                                            SettingsUiAction.SetSelinuxPermissive(
+                                                checked
+                                            )
+                                        )
+                                    },
+                                )
+                            }
+
+                            item {
                                 val mountHideSummary = when (uiState.mountHideStatus) {
                                     "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                     "managed" -> stringResource(id = R.string.feature_status_managed_summary)

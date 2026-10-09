@@ -132,6 +132,7 @@ import com.zakodaniumask.manager.domain.usecase.GetDetectorActionStatesUseCase
 import com.zakodaniumask.manager.domain.usecase.GetHomeBasicInfoUseCase
 import com.zakodaniumask.manager.domain.usecase.GetInstallEnvironmentUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKernelFeatureSettingsUseCase
+import com.zakodaniumask.manager.domain.usecase.GetSelinuxModeUseCase
 import com.zakodaniumask.manager.domain.usecase.GetKernelStatusUseCase
 import com.zakodaniumask.manager.domain.usecase.GetManagerRuntimeInfoUseCase
 import com.zakodaniumask.manager.domain.usecase.GetPlatformFeatureStatusUseCase
@@ -191,6 +192,7 @@ import com.zakodaniumask.manager.domain.usecase.SetPtctlEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSamsungCompatEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetUhookEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.SetSelinuxPermissiveUseCase
 import com.zakodaniumask.manager.domain.usecase.SetStringPreferenceUseCase
 import com.zakodaniumask.manager.domain.usecase.SetStringSetPreferenceUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSuEnabledUseCase
@@ -434,6 +436,8 @@ val useCaseModule = module {
     factoryOf(::SetKernelUmountEnabledUseCase)
     factoryOf(::ConfigureSuLogUseCase)
     factoryOf(::SetSelinuxHideEnabledUseCase)
+    factoryOf(::GetSelinuxModeUseCase)
+    factoryOf(::SetSelinuxPermissiveUseCase)
     factoryOf(::SetMountHideEnabledUseCase)
     factoryOf(::SetSamsungCompatEnabledUseCase)
     factoryOf(::SetPtctlEnabledUseCase)

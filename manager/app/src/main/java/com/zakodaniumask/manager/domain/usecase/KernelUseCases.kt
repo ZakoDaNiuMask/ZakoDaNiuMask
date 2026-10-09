@@ -1,6 +1,7 @@
 package com.zakodaniumask.manager.domain.usecase
 
 import com.zakodaniumask.manager.data.kernel.KernelRepository
+import com.zakodaniumask.manager.data.kernel.SpoofRepository
 
 class GetKernelStatusUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke() = repository.getStatus()
@@ -28,6 +29,14 @@ class ConfigureSuLogUseCase(private val repository: KernelRepository) {
 
 class SetSelinuxHideEnabledUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setSelinuxHideEnabled(enabled)
+}
+
+class GetSelinuxModeUseCase(private val repository: SpoofRepository) {
+    suspend operator fun invoke() = repository.selinuxMode()
+}
+
+class SetSelinuxPermissiveUseCase(private val repository: SpoofRepository) {
+    suspend operator fun invoke(permissive: Boolean) = repository.setSelinuxPermissive(permissive)
 }
 
 class SetMountHideEnabledUseCase(private val repository: KernelRepository) {

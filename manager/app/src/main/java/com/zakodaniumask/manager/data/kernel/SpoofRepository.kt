@@ -1,7 +1,6 @@
 package com.zakodaniumask.manager.data.kernel
 
 import com.zakodaniumask.manager.data.shell.KsuCliRepository
-import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -149,14 +148,29 @@ class SpoofRepository(
         }
 
     suspend fun isSelinuxPermissive(): Boolean = withContext(Dispatchers.IO) {
+        selinuxMode() == SELINUX_PERMISSIVE
+    }
+
+    /** One of [SELINUX_ENFORCING], [SELINUX_PERMISSIVE], "disabled" or the raw value. */
+    suspend fun selinuxMode(): String = withContext(Dispatchers.IO) {
         val output = ShellUtils.fastCmd(ksuCliRepository.getRootShell(), "getenforce")
             .trim()
             .lowercase()
-        output == "permissive"
+        when {
+            output.contains(SELINUX_PERMISSIVE) -> SELINUX_PERMISSIVE
+            output.contains(SELINUX_ENFORCING) -> SELINUX_ENFORCING
+            output.isBlank() -> "unknown"
+            else -> output
+        }
     }
 
     suspend fun setSelinuxPermissive(permissive: Boolean): Boolean = withContext(Dispatchers.IO) {
         val target = if (permissive) "0" else "1"
-        Shell.cmd("setenforce $target").exec().isSuccess
+        ShellUtils.fastCmdResult(ksuCliRepository.getRootShell(), "setenforce $target")
+    }
+
+    companion object {
+        const val SELINUX_ENFORCING = "enforcing"
+        const val SELINUX_PERMISSIVE = "permissive"
     }
 }
