@@ -125,17 +125,19 @@ class RkpRepository(
         )
     }
 
-    fun keybox(profile: RkpProfile): Result<RkpKeyboxResult> = runCatching {
-        val key = secureEcKey()
-        val eek = fetchEek(profile)
-        val device = deviceKey(profile)
-        val keysToSign = listOf(coseKey(key))
-        val csr = buildCsr(device, eek.challenge, keysToSign, eek.publicBytes, eek.curve, profile.device)
-        val chain = submitCsr(profile.serverUrl, eek.challenge, csr)
-        val xml = keyboxXml(key, chain)
-        val deviceId = "${profile.device.manufacturer}-${hex(RkpCrypto.randomBytes(6))}"
-        val file = File(outputDir, "keybox_${System.currentTimeMillis()}.xml").apply { writeText(xml) }
-        RkpKeyboxResult(file.absolutePath, xml, deviceId, chain.size)
+    suspend fun keybox(profile: RkpProfile): Result<RkpKeyboxResult> = withContext(Dispatchers.IO) {
+        runCatching {
+            val key = secureEcKey()
+            val eek = fetchEek(profile)
+            val device = deviceKey(profile)
+            val keysToSign = listOf(coseKey(key))
+            val csr = buildCsr(device, eek.challenge, keysToSign, eek.publicBytes, eek.curve, profile.device)
+            val chain = submitCsr(profile.serverUrl, eek.challenge, csr)
+            val xml = keyboxXml(key, chain)
+            val deviceId = "${profile.device.manufacturer}-${hex(RkpCrypto.randomBytes(6))}"
+            val file = File(outputDir, "keybox_${System.currentTimeMillis()}.xml").apply { writeText(xml) }
+            RkpKeyboxResult(file.absolutePath, xml, deviceId, chain.size)
+        }
     }
 
     // ---- keys ----

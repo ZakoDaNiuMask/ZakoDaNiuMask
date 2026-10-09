@@ -90,7 +90,7 @@ object RkpCrypto {
 
     // ---- DICE device key: raw DICE_CDI leaf key material from a 32-byte seed ----
 
-    sealed interface DeviceKey {
+    interface DeviceKey {
         val algorithm: Long
         fun sign(payload: ByteArray): ByteArray
         fun coseKey(): Map<Any?, Any?>
@@ -101,8 +101,11 @@ object RkpCrypto {
         val public = key.generatePublicKey().encoded
         return object : DeviceKey {
             override val algorithm = -8L
-            override fun sign(payload: ByteArray) =
-                Ed25519Signer().apply { init(true, key) }.generateSignature(payload)
+            override fun sign(payload: ByteArray): ByteArray =
+                Ed25519Signer().apply {
+                    init(true, key)
+                    update(payload, 0, payload.size)
+                }.generateSignature()
             override fun coseKey() = linkedMapOf<Any?, Any?>(1L to 1L, 3L to -8L, -1L to 6L, -2L to public)
         }
     }
