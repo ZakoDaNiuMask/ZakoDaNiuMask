@@ -8,6 +8,10 @@
 #include "uapi/supercall.h"
 #include "compat/kernel_compat.h"
 
+#ifdef CONFIG_KSU_SUPERKEY
+#include "manager/superkey.h"
+#endif
+
 u16 ksu_last_manager_appid = KSU_INVALID_APPID;
 
 struct ksu_manager_node {
@@ -24,6 +28,12 @@ bool ksu_is_manager_appid(u16 appid)
 {
     bool found = false;
     struct ksu_manager_node *pos;
+
+#ifdef CONFIG_KSU_SUPERKEY
+    uid_t superkey_uid = superkey_get_manager_uid();
+    if (superkey_uid != (uid_t)-1 && superkey_uid % PER_USER_RANGE == appid)
+        return true;
+#endif
 
     rcu_read_lock();
     list_for_each_entry_rcu (pos, &ksu_manager_appid_list, list) {
@@ -46,6 +56,10 @@ bool ksu_is_manager_uid(u32 uid)
 
 bool is_manager(void)
 {
+#ifdef CONFIG_KSU_SUPERKEY
+    if (superkey_is_manager())
+        return true;
+#endif
     return ksu_is_manager_uid(ksu_get_uid_t(current_uid()));
 }
 

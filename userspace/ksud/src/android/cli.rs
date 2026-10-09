@@ -222,6 +222,27 @@ enum Commands {
         #[command(subcommand)]
         command: device_ids::DeviceIdsCommand,
     },
+
+    /// Manage the SuperKey slot inside a kernel module
+    Superkey {
+        #[command(subcommand)]
+        command: SuperkeyCmd,
+    },
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum SuperkeyCmd {
+    /// Patch a kernel module (.ko) with (or without) a SuperKey
+    Patch {
+        /// Path to the kernel module
+        module: PathBuf,
+        /// SuperKey to set; omit for signature-only mode
+        #[arg(long)]
+        superkey: Option<String>,
+        /// SuperKey-only mode (bypass APK signature verification)
+        #[arg(long, default_value = "false")]
+        signature_bypass: bool,
+    },
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -1582,6 +1603,23 @@ pub fn run() -> Result<()> {
         Commands::Mcp => crate::android::mcp::run(),
         Commands::McpPolicy { command } => run_mcp_policy(command),
         Commands::DeviceIds { command } => device_ids::run(command),
+        Commands::Superkey { command } => match command {
+            SuperkeyCmd::Patch {
+                module,
+                superkey,
+                signature_bypass,
+            } => {
+                let key = superkey.unwrap_or_default();
+                let bypass = signature_bypass && !key.is_empty();
+                let found = crate::superkey::inject_file(&module, &key, bypass)?;
+                if found {
+                    println!("superkey patched: {}", module.display());
+                } else {
+                    println!("superkey slot not found in {}", module.display());
+                }
+                Ok(())
+            }
+        },
     };
 
     if let Err(e) = &result {

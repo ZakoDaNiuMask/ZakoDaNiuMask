@@ -14,6 +14,7 @@ mod defs;
 mod flash;
 mod lkm_image;
 mod lkm_image_btf;
+mod superkey;
 
 fn main() -> anyhow::Result<()> {
     #[cfg(target_os = "android")]

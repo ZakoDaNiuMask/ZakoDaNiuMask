@@ -20,6 +20,9 @@
 #include "klog.h" // IWYU pragma: keep
 #include "manager/manager_observer.h"
 #include "manager/throne_tracker.h"
+#ifdef CONFIG_KSU_SUPERKEY
+#include "manager/superkey.h"
+#endif
 #include "runtime/ksud.h"
 #include "runtime/ksud_boot.h"
 #include "supercall/supercall.h"
@@ -256,6 +259,9 @@ int __init kernelsu_init(void)
     ksu_adb_root_init();
     ksu_selinux_hide_init();
 
+#ifdef CONFIG_KSU_SUPERKEY
+    superkey_init();
+#endif
     ksu_supercalls_init();
     ksu_app_profile_init();
 

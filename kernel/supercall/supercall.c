@@ -23,6 +23,10 @@
 #include "hook/kprobe_patch_compat.h"
 #include "klog.h" // IWYU pragma: keep
 
+#ifdef CONFIG_KSU_SUPERKEY
+#include "manager/superkey.h"
+#endif
+
 #define KSU_DRIVER_PERMISSION_SU_SESSION (1UL << 0)
 
 struct ksu_driver_context {
@@ -114,6 +118,55 @@ extern int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user 
 extern int ksu_handle_susfs_cmd(unsigned int cmd, void __user **arg);
 #endif
 
+#ifdef CONFIG_KSU_SUPERKEY
+/*
+ * Shared SuperKey authentication: copies the command from userspace, verifies
+ * the password, grants manager identity and installs the driver fd. Used by the
+ * reboot handshake, the prctl TSR hook and the ioctl path.
+ */
+void ksu_superkey_finish(struct ksu_superkey_auth_cmd __user *cmd_user)
+{
+    struct ksu_superkey_auth_cmd cmd;
+    int fd = -1;
+    int result = -EACCES;
+
+    if (!cmd_user)
+        return;
+
+    if (copy_from_user(&cmd, cmd_user, sizeof(cmd))) {
+        pr_err("superkey auth: copy_from_user failed\n");
+        return;
+    }
+    cmd.superkey[sizeof(cmd.superkey) - 1] = '\0';
+
+    if (verify_superkey((const char *)cmd.superkey)) {
+        uid_t uid = ksu_get_uid_t(current_uid());
+        superkey_on_auth_success(uid);
+
+        fd = ksu_install_fd();
+        if (fd >= 0) {
+            result = 0;
+            pr_info("superkey auth: fd %d installed for uid %d\n", fd, uid);
+        } else {
+            result = fd;
+            pr_err("superkey auth: failed to install fd: %d\n", fd);
+        }
+    } else {
+        // Silent fail - do not reveal KSU existence.
+        superkey_on_auth_fail();
+        return;
+    }
+
+    cmd.result = result;
+    cmd.fd = fd;
+    if (copy_to_user(cmd_user, &cmd, sizeof(cmd))) {
+        pr_err("superkey auth: copy_to_user failed\n");
+        if (fd >= 0)
+            ksu_close_fd(fd);
+    }
+}
+#endif // #ifdef CONFIG_KSU_SUPERKEY
+
 // downstream: make sure to pass arg as reference, this can allow us to extend things.
 int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user **arg)
 {
@@ -135,6 +188,14 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
         }
         return 0;
     }
+
+#ifdef CONFIG_KSU_SUPERKEY
+    // SuperKey authentication + fd install
+    if (magic2 == KSU_SUPERKEY_MAGIC2) {
+        ksu_superkey_finish((struct ksu_superkey_auth_cmd __user *)*arg);
+        return 0;
+    }
+#endif
 
     // extensions
 
@@ -215,13 +276,51 @@ static long ksu_reboot_table_replacement(const struct pt_regs *regs)
         return 0;
     }
 
+#ifdef CONFIG_KSU_SUPERKEY
+    if (magic1 == (int)KSU_INSTALL_MAGIC1 && magic2 == (int)KSU_SUPERKEY_MAGIC2) {
+        unsigned long arg4 = (unsigned long)PT_REGS_SYSCALL_PARM4(regs);
+        ksu_superkey_finish((struct ksu_superkey_auth_cmd __user *)arg4);
+        return 0;
+    }
+#endif
+
     return real_reboot_fn(regs);
 }
 #endif
 
+#ifdef CONFIG_KSU_SUPERKEY
+static bool prctl_hook_registered;
+
+// prctl(2) interception for SuperKey authentication. Registered only when a
+// SuperKey is configured; the reboot handshake and the ioctl remain available.
+static long __nocfi ksu_hook_prctl(int orig_nr, const struct pt_regs *regs)
+{
+    int option = (int)PT_REGS_PARM1(regs);
+    unsigned long arg2 = (unsigned long)PT_REGS_PARM2(regs);
+
+    if (option == KSU_PRCTL_SUPERKEY_AUTH)
+        ksu_superkey_finish((struct ksu_superkey_auth_cmd __user *)arg2);
+
+    return ksu_syscall_table[orig_nr](regs);
+}
+#endif // #ifdef CONFIG_KSU_SUPERKEY
+
 void __init ksu_supercalls_init(void)
 {
     int rc;
+
+#ifdef CONFIG_KSU_SUPERKEY
+    if (superkey_is_set()) {
+        if (ksu_register_syscall_hook(__NR_prctl, ksu_hook_prctl) == 0) {
+            prctl_hook_registered = true;
+            pr_info("superkey: prctl TSR hook registered\n");
+        } else {
+            pr_err("superkey: prctl TSR hook registration failed\n");
+        }
+    } else {
+        pr_info("superkey: signature-only mode, prctl hook not registered\n");
+    }
+#endif
 
     ksu_supercall_dump_commands();
 
@@ -250,6 +349,12 @@ void __exit ksu_supercalls_exit(void)
         ksu_syscall_table_unhook(__NR_reboot);
     if (reboot_kp_registered)
         unregister_kprobe(&reboot_kp);
+#endif
+#ifdef CONFIG_KSU_SUPERKEY
+    if (prctl_hook_registered) {
+        ksu_unregister_syscall_hook(__NR_prctl);
+        prctl_hook_registered = false;
+    }
 #endif
     ksu_supercall_cleanup_state();
 }

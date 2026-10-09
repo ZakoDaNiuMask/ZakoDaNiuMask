@@ -48,6 +48,16 @@ kernelsu-objs += kpm/compact.o
 kernelsu-objs += kpm/super_access.o
 endif
 
+# SuperKey support. Enabled by default (runtime stays signature-only until a
+# SuperKey is injected at patch time). Disable with CONFIG_KSU_SUPERKEY=n.
+ifdef CONFIG_KSU_SUPERKEY
+kernelsu-objs += manager/superkey.o
+ccflags-y += -DCONFIG_KSU_SUPERKEY
+ifneq ($(KSU_SUPERKEY),)
+ccflags-y += -DKSU_SUPERKEY=\"$(KSU_SUPERKEY)\"
+endif
+endif
+
 ifdef CONFIG_ARM64
 kernelsu-objs += compat/apatch_conflict.o
 endif

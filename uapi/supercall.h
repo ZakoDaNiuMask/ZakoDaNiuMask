@@ -24,6 +24,24 @@ static const __u32 KERNEL_SU_UAPI_VERSION = 5;
 DEFINE_KSU_UAPI_CONST(__u32, KSU_INSTALL_MAGIC1, 0xDEADBEEF)
 DEFINE_KSU_UAPI_CONST(__u32, KSU_INSTALL_MAGIC2, 0xCAFEBABE)
 
+/* SuperKey authentication: reboot(KSU_INSTALL_MAGIC1, KSU_SUPERKEY_MAGIC2, 0, &cmd) */
+DEFINE_KSU_UAPI_CONST(__u32, KSU_SUPERKEY_MAGIC2, 0xCAFE5555)
+/* prctl(KSU_PRCTL_SUPERKEY_AUTH, &cmd, 0, 0, 0) */
+#define KSU_PRCTL_SUPERKEY_AUTH 0x5A414B4F /* "ZAKO" */
+
+struct ksu_superkey_auth_cmd {
+    __u8 superkey[65]; /* Input: null-terminated password */
+    __s32 result; /* Output: 0 on success, negative on failure */
+    __s32 fd; /* Output: installed driver fd, or -1 */
+};
+
+struct ksu_superkey_status_cmd {
+    __u8 is_configured; /* Output: a SuperKey is set in the kernel */
+    __u8 is_authenticated; /* Output: the current process is authenticated */
+    __u8 signature_bypass; /* Output: key-only (signature bypass) mode */
+    __u8 reserved;
+};
+
 struct ksu_become_daemon_cmd {
     __u8 token[65]; /* Input: daemon token (null-terminated) */
 };
@@ -413,5 +431,7 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_SPOOF_MEM, _IOC(_IOC_WRITE, 'K', 108,
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_PTCTL, _IOWR('K', 50, struct ksu_ptctl_cmd))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_UHOOK, _IOWR('K', 51, struct ksu_uhook_cmd))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_KPM, _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SUPERKEY_AUTH, _IOWR('K', 109, struct ksu_superkey_auth_cmd))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SUPERKEY_STATUS, _IOWR('K', 110, struct ksu_superkey_status_cmd))
 #undef DEFINE_KSU_UAPI_CONST
 #endif

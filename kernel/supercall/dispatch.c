@@ -20,6 +20,9 @@
 #include "feature/kernel_umount.h"
 #include "compat/kernel_compat.h"
 #include "manager/manager_identity.h"
+#ifdef CONFIG_KSU_SUPERKEY
+#include "manager/superkey.h"
+#endif
 #include "selinux/selinux.h"
 #include "infra/file_wrapper.h"
 #ifdef CONFIG_KSU_TRACEPOINT_HOOK
@@ -1298,6 +1301,45 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
 }
 #endif
 
+#ifdef CONFIG_KSU_SUPERKEY
+static int do_superkey_auth(void __user *arg)
+{
+    struct ksu_superkey_auth_cmd cmd = { 0 };
+    int fd;
+    int ret = superkey_authenticate((const char __user *)arg);
+
+    if (ret)
+        return ret;
+
+    fd = ksu_install_fd();
+    if (fd < 0)
+        return fd;
+
+    cmd.result = 0;
+    cmd.fd = fd;
+    if (copy_to_user(arg, &cmd, sizeof(cmd))) {
+        ksu_close_fd(fd);
+        return -EFAULT;
+    }
+    return 0;
+}
+
+static int do_superkey_status(void __user *arg)
+{
+    struct ksu_superkey_status_cmd cmd = { 0 };
+
+    cmd.is_configured = superkey_is_set() ? 1 : 0;
+    cmd.is_authenticated = superkey_is_manager() ? 1 : 0;
+    cmd.signature_bypass = superkey_is_signature_bypassed() ? 1 : 0;
+
+    if (copy_to_user(arg, &cmd, sizeof(cmd))) {
+        pr_err("superkey status: copy_to_user failed\n");
+        return -EFAULT;
+    }
+    return 0;
+}
+#endif // #ifdef CONFIG_KSU_SUPERKEY
+
 // IOCTL handlers mapping table
 // clang-format off
 static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
@@ -1520,6 +1562,20 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .name = "KPM_OPERATION", 
         .handler = do_kpm, 
         .perm_check = manager_or_root 
+    },
+#endif
+#ifdef CONFIG_KSU_SUPERKEY
+    {
+        .cmd = KSU_IOCTL_SUPERKEY_AUTH,
+        .name = "SUPERKEY_AUTH",
+        .handler = do_superkey_auth,
+        .perm_check = always_allow
+    },
+    {
+        .cmd = KSU_IOCTL_SUPERKEY_STATUS,
+        .name = "SUPERKEY_STATUS",
+        .handler = do_superkey_status,
+        .perm_check = always_allow
     },
 #endif
     { 

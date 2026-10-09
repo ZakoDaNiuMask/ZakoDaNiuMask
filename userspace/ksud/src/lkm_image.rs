@@ -83,6 +83,14 @@ pub struct BootPatchV2Args {
     /// Replace an existing output file
     #[arg(long, default_value = "false")]
     pub force: bool,
+
+    /// Inject a SuperKey into the embedded module (password manager auth)
+    #[arg(long)]
+    pub superkey: Option<String>,
+
+    /// SuperKey-only mode: bypass APK signature verification (requires --superkey)
+    #[arg(long, default_value = "false")]
+    pub signature_bypass: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -2585,7 +2593,7 @@ pub fn patch_boot(args: &BootPatchV2Args) -> Result<()> {
         .dump(&mut raw_kernel, false)
         .context("cannot decompress boot kernel")?;
 
-    let module = if let Some(module) = &args.module {
+    let mut module = if let Some(module) = &args.module {
         println!("- Module: {}", module.display());
         fs::read(module)
             .with_context(|| format!("cannot read kernel module {}", module.display()))?
@@ -2599,6 +2607,21 @@ pub fn patch_boot(args: &BootPatchV2Args) -> Result<()> {
             .with_context(|| format!("no embedded KernelSU module for KMI {kmi}: {name}"))?
             .into_owned()
     };
+
+    let superkey = args.superkey.clone().unwrap_or_default();
+    if args.signature_bypass && superkey.is_empty() {
+        println!("- Warning: --signature-bypass requires --superkey; ignoring");
+    }
+    let bypass = args.signature_bypass && !superkey.is_empty();
+    match crate::superkey::inject(&mut module, &superkey, bypass) {
+        Ok(true) if superkey.is_empty() => println!("- SuperKey: signature-only mode"),
+        Ok(true) => println!(
+            "- SuperKey injected (mode: {})",
+            if bypass { "key-only" } else { "sign+key" }
+        ),
+        Ok(false) => println!("- Warning: SuperKey slot not found in module"),
+        Err(error) => println!("- Warning: SuperKey injection failed: {error:#}"),
+    }
 
     println!("- Recovering BTF/kallsyms and injecting module");
     let (patched_kernel, report) = inject_image(&raw_kernel, &module)?;

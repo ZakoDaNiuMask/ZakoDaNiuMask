@@ -77,6 +77,17 @@ config KSU_MULTI_MANAGER_SUPPORT
 	help
 		Enable multi KernelSU manager support
 
+config KSU_SUPERKEY
+	bool "SuperKey (password-based manager authentication)"
+	depends on KSU && !KSU_DISABLE_MANAGER
+	default y
+	help
+	  Allow the manager to authenticate with a password instead of (or in
+	  addition to) APK signature verification. The SuperKey is injected into
+	  the LKM by ksud at patch time; with no SuperKey configured the kernel
+	  keeps behaving as signature-only. Leave this enabled so the injection
+	  slot exists; a password only takes effect when one is set.
+
 config KPM
     bool "Enable SukiSU KPM"
     depends on KSU && 64BIT
