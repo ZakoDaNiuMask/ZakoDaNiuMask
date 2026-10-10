@@ -46,6 +46,7 @@ data class PlatformFeatureStatus(
     val samsungCompatStatus: String = "",
     val ptctlStatus: String = "",
     val uhookStatus: String = "",
+    val inteSpoofStatus: String = "",
 )
 
 sealed interface AppearanceSetting {

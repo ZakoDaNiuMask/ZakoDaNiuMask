@@ -352,6 +352,14 @@ bool is_inte_spoof_enabled() {
 	return state;
 }
 
+// Probe-only query: distinguishes "kernel lacks the INTE_SPOOF ioctl"
+// (unsupported) from "feature compiled in but disabled". is_inte_spoof_enabled
+// alone cannot tell those apart because both return false.
+bool is_inte_spoof_supported() {
+	bool state = false;
+	return extra_feature_toggle(KSU_IOCTL_INTE_SPOOF, true, &state);
+}
+
 bool is_sulog_enabled() {
     uint64_t value = 0;
     bool supported = false;

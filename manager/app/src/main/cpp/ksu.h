@@ -90,6 +90,7 @@ bool is_uhook_enabled();
 // component from oplus_secure_guard_new)
 int set_inte_spoof_enabled(bool enabled);
 bool is_inte_spoof_enabled();
+bool is_inte_spoof_supported();
 
 bool get_managers_list(struct ksu_get_managers_cmd **out_cmd);
 bool get_allow_list(struct ksu_new_get_allow_list_cmd *);

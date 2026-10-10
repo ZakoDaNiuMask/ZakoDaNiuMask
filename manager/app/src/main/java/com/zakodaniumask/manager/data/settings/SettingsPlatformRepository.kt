@@ -289,6 +289,15 @@ class SettingsPlatformRepository(
             uhookStatus = runCatching {
                 ksuCliRepository.getFeatureStatus("uhook")
             }.getOrDefault(""),
+            // inte spoof has no feature id (downstream ioctl), so support is
+            // probed directly through the driver instead of `ksud feature check`.
+            inteSpoofStatus = if (runCatching { Natives.isInteSpoofSupported() }
+                .getOrDefault(false)
+            ) {
+                "supported"
+            } else {
+                "unsupported"
+            },
         )
     }
 

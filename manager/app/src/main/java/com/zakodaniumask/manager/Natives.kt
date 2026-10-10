@@ -200,6 +200,7 @@ object Natives {
 
     // inte spoof (Oplus inte.ko kernel integrity checker)
     external fun isInteSpoofEnabled(): Boolean
+    external fun isInteSpoofSupported(): Boolean
     external fun setInteSpoofEnabled(enabled: Boolean): Int
 
     external fun isKPMEnabled(): Boolean

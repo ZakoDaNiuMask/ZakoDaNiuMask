@@ -114,6 +114,7 @@ data class SettingsUiState(
     val isPtctlEnabled: Boolean = false,
     val uhookStatus: String = "",
     val isUhookEnabled: Boolean = false,
+    val inteSpoofStatus: String = "",
     val isInteSpoofEnabled: Boolean = false,
     val defaultUmountModules: Boolean = false,
     val useBuiltinMonoFont: Boolean = false,
@@ -256,6 +257,7 @@ fun initialize() {
                     isPtctlEnabled = features.ptctlEnabled,
                     uhookStatus = platform.uhookStatus,
                     isUhookEnabled = features.uhookEnabled,
+                    inteSpoofStatus = platform.inteSpoofStatus,
                     isInteSpoofEnabled = features.inteSpoofEnabled,
                     defaultUmountModules = features.defaultUmountModules,
                 )

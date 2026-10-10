@@ -525,11 +525,15 @@ fun SettingsPage(bottomPadding: Dp) {
                             }
 
                             item(visible = homeState.systemStatus.isRootAvailable) {
+                                val inteSpoofSummary = when (uiState.inteSpoofStatus) {
+                                    "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                    else -> stringResource(id = R.string.settings_inte_spoof_summary)
+                                }
                                 SettingsSwitchWidget(
                                     icon = Icons.TwoTone.Security,
                                     title = stringResource(id = R.string.settings_inte_spoof),
-                                    description = stringResource(id = R.string.settings_inte_spoof_summary),
-                                    enabled = homeState.systemStatus.isRootAvailable,
+                                    description = inteSpoofSummary,
+                                    enabled = uiState.inteSpoofStatus == "supported",
                                     checked = uiState.isInteSpoofEnabled,
                                     onCheckedChange = { checked ->
                                         settingsViewModel.dispatch(

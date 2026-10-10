@@ -562,6 +562,10 @@ NativeBridgeNP(isInteSpoofEnabled, jboolean) {
     return is_inte_spoof_enabled();
 }
 
+NativeBridgeNP(isInteSpoofSupported, jboolean) {
+    return is_inte_spoof_supported();
+}
+
 NativeBridge(setInteSpoofEnabled, jint, jboolean enabled) {
     return set_inte_spoof_enabled(enabled);
 }
