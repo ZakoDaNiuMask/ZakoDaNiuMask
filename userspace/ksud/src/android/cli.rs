@@ -223,6 +223,12 @@ enum Commands {
         command: device_ids::DeviceIdsCommand,
     },
 
+    /// Manage the Oplus SecureGuard (inte.ko) spoof
+    SgSpoof {
+        #[command(subcommand)]
+        command: sg_spoof::SgSpoofCommand,
+    },
+
     /// Manage the SuperKey slot inside a kernel module
     Superkey {
         #[command(subcommand)]
@@ -1603,6 +1609,7 @@ pub fn run() -> Result<()> {
         Commands::Mcp => crate::android::mcp::run(),
         Commands::McpPolicy { command } => run_mcp_policy(command),
         Commands::DeviceIds { command } => device_ids::run(command),
+        Commands::SgSpoof { command } => sg_spoof::run(command),
         Commands::Superkey { command } => match command {
             SuperkeyCmd::Patch {
                 module,
