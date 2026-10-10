@@ -1248,4 +1248,9 @@
     <string name="superkey_ok">SuperKey accepted</string>
     <string name="superkey_failed">SuperKey rejected</string>
     <string name="superkey_empty">Enter the SuperKey first</string>
+
+    <!-- SecureGuard spoof -->
+    <string name="settings_sg_spoof">Hide Oplus SecureGuard</string>
+    <string name="settings_sg_spoof_summary">Unload the inte.ko integrity checker and fake its /proc/inte_* nodes. Applies at boot; disabling does not restore the module until reboot.</string>
+    <string name="settings_sg_spoof_failed">Failed to toggle SecureGuard spoof (is inte loaded?)</string>
 </resources>

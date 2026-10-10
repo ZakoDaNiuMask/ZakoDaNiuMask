@@ -86,6 +86,10 @@ bool is_ptctl_enabled();
 int set_uhook_enabled(bool enabled);
 bool is_uhook_enabled();
 
+// SecureGuard spoof (Oplus inte.ko integrity checker)
+int set_sg_spoof_enabled(bool enabled);
+bool is_sg_spoof_enabled();
+
 bool get_managers_list(struct ksu_get_managers_cmd **out_cmd);
 bool get_allow_list(struct ksu_new_get_allow_list_cmd *);
 

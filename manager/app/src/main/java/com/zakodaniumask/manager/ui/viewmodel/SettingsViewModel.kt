@@ -113,6 +113,7 @@ data class SettingsUiState(
     val isPtctlEnabled: Boolean = false,
     val uhookStatus: String = "",
     val isUhookEnabled: Boolean = false,
+    val isSgSpoofEnabled: Boolean = false,
     val defaultUmountModules: Boolean = false,
     val useBuiltinMonoFont: Boolean = false,
     val useSoftReboot: Boolean = false,
@@ -164,6 +165,7 @@ sealed interface SettingsUiAction {
     data class SetSamsungCompat(val enabled: Boolean) : SettingsUiAction
     data class SetPtctl(val enabled: Boolean) : SettingsUiAction
     data class SetUhook(val enabled: Boolean) : SettingsUiAction
+    data class SetSgSpoof(val enabled: Boolean) : SettingsUiAction
     data class SetAdbRoot(val enabled: Boolean) : SettingsUiAction
     data class SetSuLog(val enabled: Boolean) : SettingsUiAction
     data class SetDefaultUmountModules(val enabled: Boolean) : SettingsUiAction
@@ -200,6 +202,7 @@ class SettingsViewModel(
     private val setSamsungCompatEnabled: SetSamsungCompatEnabledUseCase,
     private val setPtctlEnabled: SetPtctlEnabledUseCase,
     private val setUhookEnabled: SetUhookEnabledUseCase,
+    private val setSgSpoofEnabled: SetSgSpoofEnabledUseCase,
     private val setDefaultUmountModules: SetDefaultUmountModulesUseCase,
 ) : ViewModel() {
     private val mutableState = MutableStateFlow(SettingsUiState())
@@ -252,6 +255,7 @@ fun initialize() {
                     isPtctlEnabled = features.ptctlEnabled,
                     uhookStatus = platform.uhookStatus,
                     isUhookEnabled = features.uhookEnabled,
+                    isSgSpoofEnabled = features.sgSpoofEnabled,
                     defaultUmountModules = features.defaultUmountModules,
                 )
             }
@@ -521,6 +525,19 @@ fun initialize() {
         }
     }
 
+    fun handleSgSpoofChange(checked: Boolean) {
+        viewModelScope.launch {
+            val previous = mutableState.value.isSgSpoofEnabled
+            mutableState.update { it.copy(isSgSpoofEnabled = checked) }
+            if (!setSgSpoofEnabled(checked)) {
+                mutableState.update { it.copy(isSgSpoofEnabled = previous) }
+                mutableEvents.emit(
+                    SettingsUiEvent.Message(R.string.settings_sg_spoof_failed)
+                )
+            }
+        }
+    }
+
     fun handleDefaultUmountModulesChange(checked: Boolean) {
         viewModelScope.launch {
             if (setDefaultUmountModules(checked)) {
@@ -577,6 +594,7 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetSamsungCompat -> handleSamsungCompatChange(action.enabled)
             is SettingsUiAction.SetPtctl -> handlePtctlChange(action.enabled)
             is SettingsUiAction.SetUhook -> handleUhookChange(action.enabled)
+            is SettingsUiAction.SetSgSpoof -> handleSgSpoofChange(action.enabled)
             is SettingsUiAction.SetAdbRoot -> handleAdbRootChange(action.enabled)
             is SettingsUiAction.SetSuLog -> handleSuLogChange(action.enabled)
             is SettingsUiAction.SetDefaultUmountModules ->

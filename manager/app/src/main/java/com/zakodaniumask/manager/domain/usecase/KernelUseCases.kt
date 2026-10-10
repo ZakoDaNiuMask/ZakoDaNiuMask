@@ -55,6 +55,10 @@ class SetUhookEnabledUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setUhookEnabled(enabled)
 }
 
+class SetSgSpoofEnabledUseCase(private val repository: KernelRepository) {
+    suspend operator fun invoke(enabled: Boolean) = repository.setSgSpoofEnabled(enabled)
+}
+
 class SetDefaultUmountModulesUseCase(private val repository: KernelRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.setDefaultUmountModules(enabled)
 }

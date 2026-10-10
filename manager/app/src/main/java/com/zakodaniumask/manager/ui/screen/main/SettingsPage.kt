@@ -524,6 +524,23 @@ fun SettingsPage(bottomPadding: Dp) {
                                 )
                             }
 
+                            item(visible = homeState.systemStatus.isRootAvailable) {
+                                SettingsSwitchWidget(
+                                    icon = Icons.TwoTone.Security,
+                                    title = stringResource(id = R.string.settings_sg_spoof),
+                                    description = stringResource(id = R.string.settings_sg_spoof_summary),
+                                    enabled = homeState.systemStatus.isRootAvailable,
+                                    checked = uiState.isSgSpoofEnabled,
+                                    onCheckedChange = { checked ->
+                                        settingsViewModel.dispatch(
+                                            SettingsUiAction.SetSgSpoof(
+                                                checked
+                                            )
+                                        )
+                                    },
+                                )
+                            }
+
                             item {
                                 // 卸载模块开关
                                 SettingsSwitchWidget(

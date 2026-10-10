@@ -558,6 +558,14 @@ NativeBridge(setUhookEnabled, jint, jboolean enabled) {
     return set_uhook_enabled(enabled);
 }
 
+NativeBridgeNP(isSgSpoofEnabled, jboolean) {
+    return is_sg_spoof_enabled();
+}
+
+NativeBridge(setSgSpoofEnabled, jint, jboolean enabled) {
+    return set_sg_spoof_enabled(enabled);
+}
+
 NativeBridge(getUserName, jstring, jint uid) {
     struct passwd *pw = getpwuid((uid_t) uid);
     if (pw && pw->pw_name && pw->pw_name[0] != '\0') {

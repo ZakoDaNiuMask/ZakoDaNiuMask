@@ -198,6 +198,10 @@ object Natives {
     external fun isUhookEnabled(): Boolean
     external fun setUhookEnabled(enabled: Boolean): Int
 
+    // SecureGuard spoof (Oplus inte.ko integrity checker)
+    external fun isSgSpoofEnabled(): Boolean
+    external fun setSgSpoofEnabled(enabled: Boolean): Int
+
     external fun isKPMEnabled(): Boolean
     external fun getHookType(): String
 
