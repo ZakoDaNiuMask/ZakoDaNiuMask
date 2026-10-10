@@ -5,6 +5,7 @@ mod device_ids;
 mod dynamic_manager;
 mod feature;
 mod init_event;
+mod inte_spoof;
 #[cfg(all(target_arch = "aarch64", target_os = "android"))]
 mod kpm;
 mod ksucalls;
@@ -19,7 +20,6 @@ mod profile;
 pub(crate) mod resetprop;
 mod restorecon;
 mod sepolicy;
-mod sg_spoof;
 mod soft_reboot;
 mod su;
 mod sulog;

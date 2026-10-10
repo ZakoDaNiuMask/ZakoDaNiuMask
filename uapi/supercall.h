@@ -443,6 +443,6 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_MOUNT_HIDE, _IOWR('K', 111, struct ksu_ex
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SAMSUNG_COMPAT, _IOWR('K', 112, struct ksu_extra_feature_cmd))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_PTCTL_ENABLE, _IOWR('K', 113, struct ksu_extra_feature_cmd))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_UHOOK_ENABLE, _IOWR('K', 114, struct ksu_extra_feature_cmd))
-DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SG_SPOOF, _IOWR('K', 115, struct ksu_extra_feature_cmd))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_INTE_SPOOF, _IOWR('K', 115, struct ksu_extra_feature_cmd))
 #undef DEFINE_KSU_UAPI_CONST
 #endif

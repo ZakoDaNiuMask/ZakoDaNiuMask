@@ -1054,8 +1054,8 @@
     <string name="superkey_failed">SuperKey 被拒絕</string>
     <string name="superkey_empty">請先輸入 SuperKey</string>
 
-    <!-- SecureGuard spoof -->
-    <string name="settings_sg_spoof">隱藏 Oplus SecureGuard</string>
-    <string name="settings_sg_spoof_summary">卸載 inte.ko 完整性檢查同偽造佢個 /proc/inte_* 節點。開機生效；關閉後要重啟先會恢復嗰個模組。</string>
-    <string name="settings_sg_spoof_failed">切換 SecureGuard 隱藏失敗（inte 有冇載入？）</string>
+    <!-- inte（內核完整性檢查）隱藏 -->
+    <string name="settings_inte_spoof">隱藏內核完整性檢查</string>
+    <string name="settings_inte_spoof_summary">卸載 Oplus inte.ko 內核完整性檢查模組並偽造佢個 /proc/inte_* 節點。開機生效；關閉後只會移除假節點，要重啟先會恢復 inte。</string>
+    <string name="settings_inte_spoof_failed">切換內核完整性檢查隱藏失敗（inte 有冇載入？）</string>
 </resources>

@@ -558,12 +558,12 @@ NativeBridge(setUhookEnabled, jint, jboolean enabled) {
     return set_uhook_enabled(enabled);
 }
 
-NativeBridgeNP(isSgSpoofEnabled, jboolean) {
-    return is_sg_spoof_enabled();
+NativeBridgeNP(isInteSpoofEnabled, jboolean) {
+    return is_inte_spoof_enabled();
 }
 
-NativeBridge(setSgSpoofEnabled, jint, jboolean enabled) {
-    return set_sg_spoof_enabled(enabled);
+NativeBridge(setInteSpoofEnabled, jint, jboolean enabled) {
+    return set_inte_spoof_enabled(enabled);
 }
 
 NativeBridge(getUserName, jstring, jint uid) {

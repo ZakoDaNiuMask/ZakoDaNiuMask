@@ -336,17 +336,17 @@ bool is_uhook_enabled() {
 	return state;
 }
 
-int set_sg_spoof_enabled(bool enabled) {
+int set_inte_spoof_enabled(bool enabled) {
 	bool state = enabled;
-	if (!extra_feature_toggle(KSU_IOCTL_SG_SPOOF, false, &state)) {
+	if (!extra_feature_toggle(KSU_IOCTL_INTE_SPOOF, false, &state)) {
 		return -errno;
 	}
 	return 0;
 }
 
-bool is_sg_spoof_enabled() {
+bool is_inte_spoof_enabled() {
 	bool state = false;
-	if (!extra_feature_toggle(KSU_IOCTL_SG_SPOOF, true, &state)) {
+	if (!extra_feature_toggle(KSU_IOCTL_INTE_SPOOF, true, &state)) {
 		return false;
 	}
 	return state;

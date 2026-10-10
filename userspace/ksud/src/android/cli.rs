@@ -7,9 +7,9 @@ use log::{LevelFilter, error, info};
 
 use crate::{
     android::{
-        debug, device_ids, dynamic_manager, feature, init_event, ksucalls,
+        debug, device_ids, dynamic_manager, feature, init_event, inte_spoof, ksucalls,
         module::{self, module_config, regenerate_preinit_rc},
-        profile, sepolicy, sg_spoof, su, sulog, susfs, uapi, umount_config, utils,
+        profile, sepolicy, su, sulog, susfs, uapi, umount_config, utils,
     },
     anykernel3::{self, Slot},
     apk_sign, assets,
@@ -223,10 +223,10 @@ enum Commands {
         command: device_ids::DeviceIdsCommand,
     },
 
-    /// Manage the Oplus SecureGuard (inte.ko) spoof
-    SgSpoof {
+    /// Manage the Oplus inte.ko (kernel integrity check) spoof
+    InteSpoof {
         #[command(subcommand)]
-        command: sg_spoof::SgSpoofCommand,
+        command: inte_spoof::InteSpoofCommand,
     },
 
     /// Manage the SuperKey slot inside a kernel module
@@ -1609,7 +1609,7 @@ pub fn run() -> Result<()> {
         Commands::Mcp => crate::android::mcp::run(),
         Commands::McpPolicy { command } => run_mcp_policy(command),
         Commands::DeviceIds { command } => device_ids::run(command),
-        Commands::SgSpoof { command } => sg_spoof::run(command),
+        Commands::InteSpoof { command } => inte_spoof::run(command),
         Commands::Superkey { command } => match command {
             SuperkeyCmd::Patch {
                 module,

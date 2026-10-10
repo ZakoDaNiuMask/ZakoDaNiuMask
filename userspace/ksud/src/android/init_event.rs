@@ -5,9 +5,9 @@ use log::{error, info, warn};
 
 use crate::{
     android::{
-        boot_script, dynamic_manager, ksucalls,
+        boot_script, dynamic_manager, inte_spoof, ksucalls,
         module::{self, ScriptWait, handle_updated_modules, metamodule, prune_modules},
-        plugin_lua, restorecon, sg_spoof, user_ko,
+        plugin_lua, restorecon, user_ko,
         utils::{self, is_safe_mode},
     },
     assets, defs,
@@ -99,8 +99,8 @@ pub fn on_post_fs_data() -> Result<()> {
         warn!("init features failed: {e}");
     }
 
-    // SecureGuard spoof: re-apply the persisted toggle (unload inte + fake nodes)
-    sg_spoof::boot_apply();
+    // inte spoof: re-apply the persisted toggle (unload inte + fake nodes)
+    inte_spoof::boot_apply();
 
     #[cfg(all(target_arch = "aarch64", target_os = "android"))]
     if let Err(e) = crate::android::kpm::booted_load() {

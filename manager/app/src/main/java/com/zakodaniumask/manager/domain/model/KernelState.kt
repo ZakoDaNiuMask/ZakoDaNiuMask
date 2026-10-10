@@ -62,6 +62,6 @@ data class KernelFeatureSettings(
     val samsungCompatEnabled: Boolean,
     val ptctlEnabled: Boolean,
     val uhookEnabled: Boolean,
-    val sgSpoofEnabled: Boolean,
+    val inteSpoofEnabled: Boolean,
     val defaultUmountModules: Boolean,
 )

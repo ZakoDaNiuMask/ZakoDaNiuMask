@@ -22,7 +22,7 @@ import com.zakodaniumask.manager.domain.usecase.SetUhookEnabledUseCase
 import com.zakodaniumask.manager.data.kernel.SpoofRepository
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.GetSelinuxModeUseCase
-import com.zakodaniumask.manager.domain.usecase.SetSgSpoofEnabledUseCase
+import com.zakodaniumask.manager.domain.usecase.SetInteSpoofEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxPermissiveUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSuEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.UpdateAppearanceUseCase
@@ -114,7 +114,7 @@ data class SettingsUiState(
     val isPtctlEnabled: Boolean = false,
     val uhookStatus: String = "",
     val isUhookEnabled: Boolean = false,
-    val isSgSpoofEnabled: Boolean = false,
+    val isInteSpoofEnabled: Boolean = false,
     val defaultUmountModules: Boolean = false,
     val useBuiltinMonoFont: Boolean = false,
     val useSoftReboot: Boolean = false,
@@ -166,7 +166,7 @@ sealed interface SettingsUiAction {
     data class SetSamsungCompat(val enabled: Boolean) : SettingsUiAction
     data class SetPtctl(val enabled: Boolean) : SettingsUiAction
     data class SetUhook(val enabled: Boolean) : SettingsUiAction
-    data class SetSgSpoof(val enabled: Boolean) : SettingsUiAction
+    data class SetInteSpoof(val enabled: Boolean) : SettingsUiAction
     data class SetAdbRoot(val enabled: Boolean) : SettingsUiAction
     data class SetSuLog(val enabled: Boolean) : SettingsUiAction
     data class SetDefaultUmountModules(val enabled: Boolean) : SettingsUiAction
@@ -203,7 +203,7 @@ class SettingsViewModel(
     private val setSamsungCompatEnabled: SetSamsungCompatEnabledUseCase,
     private val setPtctlEnabled: SetPtctlEnabledUseCase,
     private val setUhookEnabled: SetUhookEnabledUseCase,
-    private val setSgSpoofEnabled: SetSgSpoofEnabledUseCase,
+    private val setInteSpoofEnabled: SetInteSpoofEnabledUseCase,
     private val setDefaultUmountModules: SetDefaultUmountModulesUseCase,
 ) : ViewModel() {
     private val mutableState = MutableStateFlow(SettingsUiState())
@@ -256,7 +256,7 @@ fun initialize() {
                     isPtctlEnabled = features.ptctlEnabled,
                     uhookStatus = platform.uhookStatus,
                     isUhookEnabled = features.uhookEnabled,
-                    isSgSpoofEnabled = features.sgSpoofEnabled,
+                    isInteSpoofEnabled = features.inteSpoofEnabled,
                     defaultUmountModules = features.defaultUmountModules,
                 )
             }
@@ -526,14 +526,14 @@ fun initialize() {
         }
     }
 
-    fun handleSgSpoofChange(checked: Boolean) {
+    fun handleInteSpoofChange(checked: Boolean) {
         viewModelScope.launch {
-            val previous = mutableState.value.isSgSpoofEnabled
-            mutableState.update { it.copy(isSgSpoofEnabled = checked) }
-            if (!setSgSpoofEnabled(checked)) {
-                mutableState.update { it.copy(isSgSpoofEnabled = previous) }
+            val previous = mutableState.value.isInteSpoofEnabled
+            mutableState.update { it.copy(isInteSpoofEnabled = checked) }
+            if (!setInteSpoofEnabled(checked)) {
+                mutableState.update { it.copy(isInteSpoofEnabled = previous) }
                 mutableEvents.emit(
-                    SettingsUiEvent.Message(R.string.settings_sg_spoof_failed)
+                    SettingsUiEvent.Message(R.string.settings_inte_spoof_failed)
                 )
             }
         }
@@ -595,7 +595,7 @@ fun dispatch(action: SettingsUiAction) {
             is SettingsUiAction.SetSamsungCompat -> handleSamsungCompatChange(action.enabled)
             is SettingsUiAction.SetPtctl -> handlePtctlChange(action.enabled)
             is SettingsUiAction.SetUhook -> handleUhookChange(action.enabled)
-            is SettingsUiAction.SetSgSpoof -> handleSgSpoofChange(action.enabled)
+            is SettingsUiAction.SetInteSpoof -> handleInteSpoofChange(action.enabled)
             is SettingsUiAction.SetAdbRoot -> handleAdbRootChange(action.enabled)
             is SettingsUiAction.SetSuLog -> handleSuLogChange(action.enabled)
             is SettingsUiAction.SetDefaultUmountModules ->

@@ -34,7 +34,7 @@
 #include "feature/mem_spoof.h"
 #include "feature/ptctl.h"
 #include "feature/uhook.h"
-#include "feature/sg_spoof.h"
+#include "feature/inte_spoof.h"
 #include "feature/mount_hide.h"
 #include "infra/samsung_compat.h"
 #include "policy/app_profile.h"
@@ -1125,9 +1125,9 @@ static int do_uhook_feature(void __user *arg)
     return do_extra_feature(arg, ksu_uhook_feature_get, ksu_uhook_feature_set);
 }
 
-static int do_sg_spoof_feature(void __user *arg)
+static int do_inte_spoof_feature(void __user *arg)
 {
-    return do_extra_feature(arg, ksu_sg_spoof_feature_get, ksu_sg_spoof_feature_set);
+    return do_extra_feature(arg, ksu_inte_spoof_feature_get, ksu_inte_spoof_feature_set);
 }
 
 static int do_ptctl(void __user *arg)
@@ -1630,9 +1630,9 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .perm_check = manager_or_root
     },
     {
-        .cmd = KSU_IOCTL_SG_SPOOF,
-        .name = "SG_SPOOF",
-        .handler = do_sg_spoof_feature,
+        .cmd = KSU_IOCTL_INTE_SPOOF,
+        .name = "INTE_SPOOF",
+        .handler = do_inte_spoof_feature,
         .perm_check = manager_or_root
     },
     {

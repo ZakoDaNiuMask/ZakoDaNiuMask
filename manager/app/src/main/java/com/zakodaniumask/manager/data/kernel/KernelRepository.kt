@@ -85,7 +85,7 @@ class KernelRepository(
                 runCatching { Natives.isSamsungCompatEnabled() }.getOrDefault(false),
             ptctlEnabled = runCatching { Natives.isPtctlEnabled() }.getOrDefault(false),
             uhookEnabled = runCatching { Natives.isUhookEnabled() }.getOrDefault(false),
-            sgSpoofEnabled = runCatching { Natives.isSgSpoofEnabled() }.getOrDefault(false),
+            inteSpoofEnabled = runCatching { Natives.isInteSpoofEnabled() }.getOrDefault(false),
             defaultUmountModules = runCatching { Natives.isDefaultUmountModules() }.getOrDefault(
                 false
             ),
@@ -135,15 +135,15 @@ class KernelRepository(
     }
 
     /**
-     * SecureGuard spoof needs rmmod before the kernel-side nodes can be created,
+     * inte spoof needs rmmod before the kernel-side nodes can be created,
      * so this goes through ksud (which unloads inte first) instead of a direct
-     * Natives call. Persistence is a /data/adb/ksu/.sg_spoof marker, not the
+     * Natives call. Persistence is a /data/adb/ksu/.inte_spoof marker, not the
      * .feature_config path.
      */
-    suspend fun setSgSpoofEnabled(enabled: Boolean): Boolean = withContext(Dispatchers.IO) {
+    suspend fun setInteSpoofEnabled(enabled: Boolean): Boolean = withContext(Dispatchers.IO) {
         runCatching {
             ksuCliRepository.execKsud(
-                if (enabled) "sg-spoof enable" else "sg-spoof disable",
+                if (enabled) "inte-spoof enable" else "inte-spoof disable",
                 true
             )
         }.getOrDefault(false)

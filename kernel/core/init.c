@@ -23,7 +23,7 @@
 #ifdef CONFIG_KSU_SUPERKEY
 #include "manager/superkey.h"
 #endif
-#include "feature/sg_spoof.h"
+#include "feature/inte_spoof.h"
 #include "runtime/ksud.h"
 #include "runtime/ksud_boot.h"
 #include "supercall/supercall.h"
@@ -269,7 +269,7 @@ int __init kernelsu_init(void)
     ksu_setuid_hook_init();
     ksu_ptctl_init();
     ksu_uhook_init();
-    ksu_sg_spoof_init();
+    ksu_inte_spoof_init();
     ksu_sucompat_init();
     if (ksu_late_loaded) {
         // This way are only happen when tracepoint+lkm

@@ -527,13 +527,13 @@ fun SettingsPage(bottomPadding: Dp) {
                             item(visible = homeState.systemStatus.isRootAvailable) {
                                 SettingsSwitchWidget(
                                     icon = Icons.TwoTone.Security,
-                                    title = stringResource(id = R.string.settings_sg_spoof),
-                                    description = stringResource(id = R.string.settings_sg_spoof_summary),
+                                    title = stringResource(id = R.string.settings_inte_spoof),
+                                    description = stringResource(id = R.string.settings_inte_spoof_summary),
                                     enabled = homeState.systemStatus.isRootAvailable,
-                                    checked = uiState.isSgSpoofEnabled,
+                                    checked = uiState.isInteSpoofEnabled,
                                     onCheckedChange = { checked ->
                                         settingsViewModel.dispatch(
-                                            SettingsUiAction.SetSgSpoof(
+                                            SettingsUiAction.SetInteSpoof(
                                                 checked
                                             )
                                         )
