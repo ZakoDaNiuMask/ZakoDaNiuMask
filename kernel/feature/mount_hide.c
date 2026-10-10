@@ -553,13 +553,13 @@ static void ksu_mount_hide_disable(void)
     ksu_mount_hide_unhook();
 }
 
-static int mount_hide_feature_get(u64 *value)
+int ksu_mount_hide_feature_get(u64 *value)
 {
     *value = ksu_mount_hide_enabled ? 1 : 0;
     return 0;
 }
 
-static int mount_hide_feature_set(u64 value)
+int ksu_mount_hide_feature_set(u64 value)
 {
     bool enable = value != 0;
     int ret = 0;
@@ -585,18 +585,8 @@ static int mount_hide_feature_set(u64 value)
     return ret;
 }
 
-static const struct ksu_feature_handler mount_hide_handler = {
-    .feature_id = KSU_FEATURE_MOUNT_HIDE,
-    .name = "mount_hide",
-    .get_handler = mount_hide_feature_get,
-    .set_handler = mount_hide_feature_set,
-};
-
 void __init ksu_mount_hide_init(void)
 {
-    if (ksu_register_feature_handler(&mount_hide_handler))
-        pr_err("Failed to register mount_hide feature handler\n");
-
     /* default enabled: install the hooks up front */
     mutex_lock(&ksu_mount_hide_mutex);
     if (ksu_mount_hide_enabled && !ksu_mount_hide_running) {
@@ -614,5 +604,4 @@ void __exit ksu_mount_hide_exit(void)
         ksu_mount_hide_running = false;
     }
     mutex_unlock(&ksu_mount_hide_mutex);
-    ksu_unregister_feature_handler(KSU_FEATURE_MOUNT_HIDE);
 }

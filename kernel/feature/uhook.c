@@ -1142,7 +1142,7 @@ int ksu_uhook(struct ksu_uhook_cmd *cmd)
     int ret = 0, i;
     struct uhook *h;
 
-    /* Runtime gate (KSU_FEATURE_UHOOK, default off): the hooks persist across
+    /* Runtime gate (downstream UHOOK_ENABLE ioctl, default off): the hooks persist across
      * execve and are invisible to their target, so they stay unreachable
      * until the user opts in from the manager. */
     if (!ksu_uhook_enabled())
@@ -1203,38 +1203,29 @@ int ksu_uhook(struct ksu_uhook_cmd *cmd)
 }
 
 /*
- * Runtime gate (KSU_FEATURE_UHOOK, default off): see ksu_uhook().
+ * Runtime gate (downstream toggle, default off): see ksu_uhook().
  */
+static bool uhook_user_enabled __read_mostly = false;
+
 static bool ksu_uhook_enabled(void)
 {
-    u64 value = 0;
-    bool supported = false;
-
-    if (ksu_get_feature(KSU_FEATURE_UHOOK, &value, &supported) != 0 || !supported)
-        return false;
-    return value != 0;
+    return uhook_user_enabled;
 }
 
-static int uhook_feature_get(u64 *value)
+int ksu_uhook_feature_get(u64 *value)
 {
-    *value = ksu_uhook_enabled() ? 1 : 0;
+    *value = uhook_user_enabled ? 1 : 0;
     return 0;
 }
 
-static int uhook_feature_set(u64 value)
+int ksu_uhook_feature_set(u64 value)
 {
     if (value > 1)
         return -EINVAL;
     pr_info("uhook: %s by user\n", value ? "enabled" : "disabled");
+    uhook_user_enabled = value != 0;
     return 0;
 }
-
-static const struct ksu_feature_handler uhook_handler = {
-    .feature_id = KSU_FEATURE_UHOOK,
-    .name = "uhook",
-    .get_handler = uhook_feature_get,
-    .set_handler = uhook_feature_set,
-};
 
 void __init ksu_uhook_init(void)
 {
@@ -1254,16 +1245,11 @@ void __init ksu_uhook_init(void)
     if (!uhook_ready)
         pr_warn("uhook: disabled (uprobe register/unregister unavailable or no ring)\n");
     pr_info("uhook: init (ready=%d ring=%d)\n", uhook_ready, !!ring);
-
-    if (ksu_register_feature_handler(&uhook_handler))
-        pr_err("uhook: failed to register feature handler\n");
 }
 
 void ksu_uhook_exit(void)
 {
     int i;
-
-    ksu_unregister_feature_handler(KSU_FEATURE_UHOOK);
 
     mutex_lock(&hooks_lock);
     for (i = 0; i < UHOOK_MAX; i++)

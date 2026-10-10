@@ -34,6 +34,8 @@
 #include "feature/mem_spoof.h"
 #include "feature/ptctl.h"
 #include "feature/uhook.h"
+#include "feature/mount_hide.h"
+#include "infra/samsung_compat.h"
 #include "policy/app_profile.h"
 #ifdef CONFIG_KPM
 #include "kpm/kpm.h"
@@ -1069,6 +1071,59 @@ static int do_set_spoof_mem(void __user *arg)
     return ksu_set_spoof_mem(cmd.total_ram_bytes, cmd.cma_total_bytes);
 }
 
+static int do_extra_feature(void __user *arg, int (*get)(u64 *), int (*set)(u64))
+{
+    struct ksu_extra_feature_cmd cmd;
+    u64 value;
+
+    if (!get || !set)
+        return -EOPNOTSUPP;
+    if (copy_from_user(&cmd, arg, sizeof(cmd))) {
+        pr_err("extra_feature: copy_from_user failed\n");
+        return -EFAULT;
+    }
+
+    if (!cmd.query) {
+        if (cmd.value > 1)
+            return -EINVAL;
+        if (set(cmd.value)) {
+            pr_err("extra_feature: set failed\n");
+            return -EFAULT;
+        }
+    }
+    if (get(&value)) {
+        pr_err("extra_feature: get failed\n");
+        return -EFAULT;
+    }
+
+    cmd.value = value;
+    if (copy_to_user(arg, &cmd, sizeof(cmd))) {
+        pr_err("extra_feature: copy_to_user failed\n");
+        return -EFAULT;
+    }
+    return 0;
+}
+
+static int do_mount_hide_feature(void __user *arg)
+{
+    return do_extra_feature(arg, ksu_mount_hide_feature_get, ksu_mount_hide_feature_set);
+}
+
+static int do_samsung_compat_feature(void __user *arg)
+{
+    return do_extra_feature(arg, ksu_samsung_compat_feature_get, ksu_samsung_compat_feature_set);
+}
+
+static int do_ptctl_feature(void __user *arg)
+{
+    return do_extra_feature(arg, ksu_ptctl_feature_get, ksu_ptctl_feature_set);
+}
+
+static int do_uhook_feature(void __user *arg)
+{
+    return do_extra_feature(arg, ksu_uhook_feature_get, ksu_uhook_feature_set);
+}
+
 static int do_ptctl(void __user *arg)
 {
     struct ksu_ptctl_cmd cmd;
@@ -1543,6 +1598,30 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .name = "SET_SPOOF_MEM",
         .handler = do_set_spoof_mem,
         .perm_check = only_root
+    },
+    {
+        .cmd = KSU_IOCTL_MOUNT_HIDE,
+        .name = "MOUNT_HIDE",
+        .handler = do_mount_hide_feature,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = KSU_IOCTL_SAMSUNG_COMPAT,
+        .name = "SAMSUNG_COMPAT",
+        .handler = do_samsung_compat_feature,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = KSU_IOCTL_PTCTL_ENABLE,
+        .name = "PTCTL_ENABLE",
+        .handler = do_ptctl_feature,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = KSU_IOCTL_UHOOK_ENABLE,
+        .name = "UHOOK_ENABLE",
+        .handler = do_uhook_feature,
+        .perm_check = manager_or_root
     },
     {
         .cmd = KSU_IOCTL_PTCTL,

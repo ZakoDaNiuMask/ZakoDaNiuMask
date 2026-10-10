@@ -2,6 +2,8 @@
 #ifndef __KSU_H_UHOOK
 #define __KSU_H_UHOOK
 
+#include <linux/types.h>
+
 /* Entry point for the KSU_IOCTL_UHOOK supercall (see uapi/supercall.h). */
 struct ksu_uhook_cmd;
 int ksu_uhook(struct ksu_uhook_cmd *cmd);
@@ -9,5 +11,9 @@ int ksu_uhook(struct ksu_uhook_cmd *cmd);
 /* Resolve kernel symbols and initialise the hook table. Safe to call once. */
 void __init ksu_uhook_init(void);
 void ksu_uhook_exit(void);
+
+/* Downstream toggle (KSU_IOCTL_UHOOK_ENABLE, see uapi/supercall.h). */
+int ksu_uhook_feature_get(u64 *value);
+int ksu_uhook_feature_set(u64 value);
 
 #endif

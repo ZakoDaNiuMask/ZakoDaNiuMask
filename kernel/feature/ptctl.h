@@ -11,4 +11,8 @@ int ksu_ptctl(struct ksu_ptctl_cmd *cmd);
 void __init ksu_ptctl_init(void);
 void ksu_ptctl_exit(void);
 
+/* Downstream toggle (KSU_IOCTL_PTCTL_ENABLE, see uapi/supercall.h). */
+int ksu_ptctl_feature_get(u64 *value);
+int ksu_ptctl_feature_set(u64 value);
+
 #endif

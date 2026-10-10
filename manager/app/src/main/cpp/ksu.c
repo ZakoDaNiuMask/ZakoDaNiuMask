@@ -260,74 +260,80 @@ bool is_selinux_hide_enabled() {
     return value != 0;
 }
 
+// Downstream feature toggles (KSU_IOCTL_{MOUNT_HIDE,SAMSUNG_COMPAT,PTCTL_ENABLE,UHOOK_ENABLE}).
+static bool extra_feature_toggle(unsigned long cmd, bool query, bool *enabled) {
+	struct ksu_extra_feature_cmd cmd_data = {};
+	cmd_data.value = *enabled ? 1 : 0;
+	cmd_data.query = query ? 1 : 0;
+	if (ksuctl(cmd, &cmd_data) != 0) {
+		return false;
+	}
+	*enabled = cmd_data.value != 0;
+	return true;
+}
+
 int set_mount_hide_enabled(bool enabled) {
-    if (!set_feature(KSU_FEATURE_MOUNT_HIDE, enabled ? 1 : 0)) {
-        return -errno;
-    }
-    return 0;
+	bool state = enabled;
+	if (!extra_feature_toggle(KSU_IOCTL_MOUNT_HIDE, false, &state)) {
+		return -errno;
+	}
+	return 0;
 }
 
 bool is_mount_hide_enabled() {
-    uint64_t value = 0;
-    bool supported = false;
-    if (!get_feature(KSU_FEATURE_MOUNT_HIDE, &value, &supported)) {
-        return false;
-    }
-    if (!supported) {
-        return false;
-    }
-    return value != 0;
+	bool state = false;
+	if (!extra_feature_toggle(KSU_IOCTL_MOUNT_HIDE, true, &state)) {
+		return false;
+	}
+	return state;
 }
 
 int set_samsung_compat_enabled(bool enabled) {
-    if (!set_feature(KSU_FEATURE_SAMSUNG_COMPAT, enabled ? 1 : 0)) {
-        return -errno;
-    }
-    return 0;
+	bool state = enabled;
+	if (!extra_feature_toggle(KSU_IOCTL_SAMSUNG_COMPAT, false, &state)) {
+		return -errno;
+	}
+	return 0;
 }
 
 bool is_samsung_compat_enabled() {
-    uint64_t value = 0;
-    bool supported = false;
-    if (!get_feature(KSU_FEATURE_SAMSUNG_COMPAT, &value, &supported)) {
-        return false;
-    }
-    if (!supported) {
-        return false;
-    }
-    return value != 0;
-}
-
-static bool is_flag_feature_enabled(int feature_id) {
-    uint64_t value = 0;
-    bool supported = false;
-    if (!get_feature(feature_id, &value, &supported)) {
-        return false;
-    }
-    return supported && value != 0;
-}
-
-static int set_flag_feature_enabled(int feature_id, bool enabled) {
-    if (!set_feature(feature_id, enabled ? 1 : 0)) {
-        return -errno;
-    }
-    return 0;
+	bool state = false;
+	if (!extra_feature_toggle(KSU_IOCTL_SAMSUNG_COMPAT, true, &state)) {
+		return false;
+	}
+	return state;
 }
 
 int set_ptctl_enabled(bool enabled) {
-    return set_flag_feature_enabled(KSU_FEATURE_PTCTL, enabled);
+	bool state = enabled;
+	if (!extra_feature_toggle(KSU_IOCTL_PTCTL_ENABLE, false, &state)) {
+		return -errno;
+	}
+	return 0;
 }
 
 bool is_ptctl_enabled() {
-    return is_flag_feature_enabled(KSU_FEATURE_PTCTL);
+	bool state = false;
+	if (!extra_feature_toggle(KSU_IOCTL_PTCTL_ENABLE, true, &state)) {
+		return false;
+	}
+	return state;
 }
 
 int set_uhook_enabled(bool enabled) {
-    return set_flag_feature_enabled(KSU_FEATURE_UHOOK, enabled);
+	bool state = enabled;
+	if (!extra_feature_toggle(KSU_IOCTL_UHOOK_ENABLE, false, &state)) {
+		return -errno;
+	}
+	return 0;
 }
 
 bool is_uhook_enabled() {
-    return is_flag_feature_enabled(KSU_FEATURE_UHOOK);
+	bool state = false;
+	if (!extra_feature_toggle(KSU_IOCTL_UHOOK_ENABLE, true, &state)) {
+		return false;
+	}
+	return state;
 }
 
 bool is_sulog_enabled() {

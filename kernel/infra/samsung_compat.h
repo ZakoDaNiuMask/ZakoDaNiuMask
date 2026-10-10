@@ -47,6 +47,10 @@ bool ksu_samsung_compat_enabled(void);
 int ksu_samsung_compat_init(void);
 void ksu_samsung_compat_exit(void);
 
+/* Downstream toggle (KSU_IOCTL_SAMSUNG_COMPAT, see uapi/supercall.h). */
+int ksu_samsung_compat_feature_get(u64 *value);
+int ksu_samsung_compat_feature_set(u64 value);
+
 /* True if the "uh" hypervisor layer (RKP/KDP) is present on this boot --
  * kprobe_patch_compat.c's signal that a kprobe's BRK patch is unsafe on
  * specific text addresses. */

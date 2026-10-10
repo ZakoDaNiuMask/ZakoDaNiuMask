@@ -123,14 +123,11 @@ const struct ksu_samsung_defex_ops *ksu_samsung_defex_ops(void)
  * The kallsyms probe itself is passive and always runs, so the manager can
  * report what the device would use once the feature is turned on.
  */
+static bool ksu_samsung_compat_user_enabled __read_mostly = false;
+
 static bool ksu_samsung_compat_active(void)
 {
-    u64 value = 0;
-    bool supported = false;
-
-    if (ksu_get_feature(KSU_FEATURE_SAMSUNG_COMPAT, &value, &supported) != 0 || !supported)
-        return false;
-    return value != 0;
+    return ksu_samsung_compat_user_enabled;
 }
 
 bool ksu_samsung_compat_enabled(void)
@@ -142,33 +139,26 @@ bool ksu_samsung_compat_enabled(void)
  * Feature toggle plumbing: persists the switch through the standard
  * .feature_config path and lets the manager flip it at runtime.
  */
-static int samsung_compat_feature_get(u64 *value)
+int ksu_samsung_compat_feature_get(u64 *value)
 {
     *value = ksu_samsung_compat_active() ? 1 : 0;
     return 0;
 }
 
-static int samsung_compat_feature_set(u64 value)
+int ksu_samsung_compat_feature_set(u64 value)
 {
     if (value > 1)
         return -EINVAL;
     pr_info("samsung_compat: %s by user\n", value ? "enabled" : "disabled");
+    ksu_samsung_compat_user_enabled = value != 0;
     return 0;
 }
 
-static const struct ksu_feature_handler samsung_compat_handler = {
-    .feature_id = KSU_FEATURE_SAMSUNG_COMPAT,
-    .name = "samsung_compat",
-    .get_handler = samsung_compat_feature_get,
-    .set_handler = samsung_compat_feature_set,
-};
-
 int __init ksu_samsung_compat_init(void)
 {
-    return ksu_register_feature_handler(&samsung_compat_handler);
+    return 0;
 }
 
 void __exit ksu_samsung_compat_exit(void)
 {
-    ksu_unregister_feature_handler(KSU_FEATURE_SAMSUNG_COMPAT);
 }

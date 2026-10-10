@@ -108,9 +108,38 @@ fn parse_feature_id(name: &str) -> Result<FeatureId> {
     }
 }
 
+/// Downstream feature toggles use dedicated ioctls (see uapi/supercall.h) instead of
+/// the upstream KSU_IOCTL_SET_FEATURE/GET_FEATURE feature-id space.
+fn set_extra_feature_ioctl(ioctl: u32, value: u64) -> Result<u64> {
+    let mut cmd = uapi::ksu_extra_feature_cmd { value, query: 0 };
+    ksucalls::ksuctl(ioctl, &raw mut cmd).with_context(|| "set downstream feature")?;
+    Ok(cmd.value)
+}
+
+fn get_extra_feature_ioctl(ioctl: u32) -> Result<u64> {
+    let mut cmd = uapi::ksu_extra_feature_cmd { value: 0, query: 1 };
+    ksucalls::ksuctl(ioctl, &raw mut cmd).with_context(|| "get downstream feature")?;
+    Ok(cmd.value)
+}
+
+fn is_downstream_feature(feature_id: FeatureId) -> Option<u32> {
+    match feature_id {
+        FeatureId::MountHide => Some(uapi::KSU_IOCTL_MOUNT_HIDE_RUST),
+        FeatureId::SamsungCompat => Some(uapi::KSU_IOCTL_SAMSUNG_COMPAT_RUST),
+        FeatureId::Ptctl => Some(uapi::KSU_IOCTL_PTCTL_ENABLE_RUST),
+        FeatureId::Uhook => Some(uapi::KSU_IOCTL_UHOOK_ENABLE_RUST),
+        _ => None,
+    }
+}
+
 fn set_kernel_feature(feature_id: FeatureId, value: u64) -> Result<()> {
-    crate::android::ksucalls::set_feature(feature_id as u32, value)
-        .with_context(|| format!("Failed to set feature {} to {value}", feature_id.name()))?;
+    if let Some(ioctl) = is_downstream_feature(feature_id) {
+        set_extra_feature_ioctl(ioctl, value)
+            .with_context(|| format!("Failed to set feature {} to {value}", feature_id.name()))?;
+    } else {
+        crate::android::ksucalls::set_feature(feature_id as u32, value)
+            .with_context(|| format!("Failed to set feature {} to {value}", feature_id.name()))?;
+    }
 
     if feature_id == FeatureId::Sulog
         && value != 0
@@ -239,8 +268,15 @@ pub fn apply_config(features: &HashMap<u32, u64>) {
 
 pub fn get_feature(id: &str) -> Result<()> {
     let feature_id = parse_feature_id(id)?;
-    let (value, supported) = ksucalls::get_feature(feature_id as u32)
-        .with_context(|| format!("Failed to get feature {id}"))?;
+    let (value, supported) = if let Some(ioctl) = is_downstream_feature(feature_id) {
+        match get_extra_feature_ioctl(ioctl) {
+            Ok(value) => (value, true),
+            Err(_) => (0, false),
+        }
+    } else {
+        ksucalls::get_feature(feature_id as u32)
+            .with_context(|| format!("Failed to get feature {id}"))?
+    };
 
     if !supported {
         println!("Feature '{id}' is not supported by kernel");

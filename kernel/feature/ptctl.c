@@ -1274,40 +1274,31 @@ int ksu_ptctl(struct ksu_ptctl_cmd *c)
 }
 
 /*
- * Runtime gate (KSU_FEATURE_PTCTL, default off). The primitives are only_root
+ * Runtime gate (downstream toggle, default off). The primitives are only_root
  * by design, which means any uid-0 context could otherwise reach them; the
- * feature keeps them disabled until the user opts in from the manager.
+ * toggle keeps them disabled until the user opts in from the manager.
  */
+static bool ptctl_user_enabled __read_mostly = false;
+
 static bool ksu_ptctl_enabled(void)
 {
-    u64 value = 0;
-    bool supported = false;
-
-    if (ksu_get_feature(KSU_FEATURE_PTCTL, &value, &supported) != 0 || !supported)
-        return false;
-    return value != 0;
+    return ptctl_user_enabled;
 }
 
-static int ptctl_feature_get(u64 *value)
+int ksu_ptctl_feature_get(u64 *value)
 {
-    *value = ksu_ptctl_enabled() ? 1 : 0;
+    *value = ptctl_user_enabled ? 1 : 0;
     return 0;
 }
 
-static int ptctl_feature_set(u64 value)
+int ksu_ptctl_feature_set(u64 value)
 {
     if (value > 1)
         return -EINVAL;
     pr_info("ptctl: %s by user\n", value ? "enabled" : "disabled");
+    ptctl_user_enabled = value != 0;
     return 0;
 }
-
-static const struct ksu_feature_handler ptctl_handler = {
-    .feature_id = KSU_FEATURE_PTCTL,
-    .name = "ptctl",
-    .get_handler = ptctl_feature_get,
-    .set_handler = ptctl_feature_set,
-};
 
 void __init ksu_ptctl_init(void)
 {
@@ -1338,14 +1329,10 @@ void __init ksu_ptctl_init(void)
     /* killguard's kprobe is installed on first use, not here. */
     pr_info("ptctl: init (find_task=%d apvm=%d kprobe=%d hwbp=%d regs=%d)\n", !!p_find_task_by_vpid,
             !!p_access_process_vm, !!p_register_kprobe, !!p_reg_hwbp, !!p_put_task_stack);
-
-    if (ksu_register_feature_handler(&ptctl_handler))
-        pr_err("ptctl: failed to register feature handler\n");
 }
 
 void ksu_ptctl_exit(void)
 {
-    ksu_unregister_feature_handler(KSU_FEATURE_PTCTL);
     hwbp_clear();
     guard_clear();
     mutex_lock(&killguard_lock);

@@ -263,6 +263,12 @@ struct ksu_set_spoof_mem_cmd {
     __u64 cma_total_bytes; /* Target total CMA size in bytes, can be 0 */
 };
 
+// Downstream supercall struct: fork feature toggles
+struct ksu_extra_feature_cmd {
+    __u64 value; /* In: 0/1 to set; Out: resulting state */
+    __u8 query; /* In: 1 = query only, 0 = set */
+};
+
 /* i386 aligns __u64 to 4 bytes while every 64-bit arch aligns it to 8, and the
  * driver points .compat_ioctl at the same handler, so every 64-bit field in
  * the ptctl/uhook structs is force-aligned to keep one layout for both. */
@@ -433,5 +439,9 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_UHOOK, _IOWR('K', 51, struct ksu_uhook_cm
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_KPM, _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SUPERKEY_AUTH, _IOWR('K', 109, struct ksu_superkey_auth_cmd))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SUPERKEY_STATUS, _IOWR('K', 110, struct ksu_superkey_status_cmd))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_MOUNT_HIDE, _IOWR('K', 111, struct ksu_extra_feature_cmd))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SAMSUNG_COMPAT, _IOWR('K', 112, struct ksu_extra_feature_cmd))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_PTCTL_ENABLE, _IOWR('K', 113, struct ksu_extra_feature_cmd))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_UHOOK_ENABLE, _IOWR('K', 114, struct ksu_extra_feature_cmd))
 #undef DEFINE_KSU_UAPI_CONST
 #endif

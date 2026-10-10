@@ -8,16 +8,6 @@ enum ksu_feature_id {
     KSU_FEATURE_ADB_ROOT = 3,
     KSU_FEATURE_SELINUX_HIDE = 4,
 
-    /*
-     * Fork-local features start at 16. Upstream allocates from 0 upwards, so a
-     * gap here keeps a rebase from silently renumbering a feature that the
-     * manager and the on-disk .feature_config already refer to by id.
-     */
-    KSU_FEATURE_MOUNT_HIDE = 16,
-    KSU_FEATURE_SAMSUNG_COMPAT = 17,
-    KSU_FEATURE_PTCTL = 18,
-    KSU_FEATURE_UHOOK = 19,
-
     KSU_FEATURE_MAX
 };
 
