@@ -8,7 +8,6 @@
 use std::{fs, path::Path};
 
 use anyhow::{Context, Result};
-use clap::Subcommand;
 use const_format::concatcp;
 use rustix::system;
 

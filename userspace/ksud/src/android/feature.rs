@@ -9,7 +9,7 @@ use anyhow::{Context, Result, bail};
 use const_format::concatcp;
 
 use crate::{
-    android::{ksucalls, module, sulog},
+    android::{ksucalls, module, sulog, uapi},
     defs,
 };
 
