@@ -22,6 +22,7 @@ import com.zakodaniumask.manager.domain.usecase.SetUhookEnabledUseCase
 import com.zakodaniumask.manager.data.kernel.SpoofRepository
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxHideEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.GetSelinuxModeUseCase
+import com.zakodaniumask.manager.domain.usecase.SetSgSpoofEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSelinuxPermissiveUseCase
 import com.zakodaniumask.manager.domain.usecase.SetSuEnabledUseCase
 import com.zakodaniumask.manager.domain.usecase.UpdateAppearanceUseCase
