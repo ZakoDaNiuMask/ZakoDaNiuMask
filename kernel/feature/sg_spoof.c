@@ -32,6 +32,7 @@
 #include <linux/string.h>
 #include <linux/uaccess.h>
 
+#include "feature/module_load_filter.h"
 #include "klog.h" // IWYU pragma: keep
 #include "manager/manager_identity.h"
 

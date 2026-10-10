@@ -6,7 +6,7 @@
 
 /* Neutralises the Oplus inte.ko kernel integrity checker (see the source). */
 
-void __init ksu_sg_spoof_init(void);
+void ksu_sg_spoof_init(void);
 
 /* Downstream toggle (KSU_IOCTL_SG_SPOOF, see uapi/supercall.h). */
 int ksu_sg_spoof_feature_get(u64 *value);
