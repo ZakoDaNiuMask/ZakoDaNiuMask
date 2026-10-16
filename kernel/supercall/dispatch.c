@@ -1,7 +1,7 @@
 #include <linux/capability.h>
 #include <linux/cred.h>
-#include <linux/err.h>
 #include <linux/kallsyms.h>
+#include <linux/mm.h>
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
@@ -13,6 +13,7 @@
 #include <linux/susfs_def.h>
 #endif
 
+#include <linux/vmalloc.h>
 #include <linux/thread_info.h>
 #include "uapi/supercall.h"
 #include "supercall/internal.h"
@@ -59,6 +60,8 @@
 #include "sulog/event.h"
 #include "sulog/fd.h"
 #include "supercall/supercall.h"
+#include "infra/symbol_resolver.h"
+#include "preinit/preinit.h"
 
 static int do_grant_root(void __user *arg)
 {
@@ -97,6 +100,10 @@ static int do_get_info(void __user *arg)
     }
     if (ksu_late_loaded) {
         cmd.flags |= KSU_GET_INFO_FLAG_LATE_LOAD;
+    }
+    // preinit can not execute in late_load mode
+    else if (ksu_preinit_enabled_param()) {
+        cmd.flags |= KSU_GET_INFO_FLAG_PREINIT;
     }
     cmd.features = KSU_FEATURE_MAX;
     cmd.uapi_version = KERNEL_SU_UAPI_VERSION;
@@ -910,6 +917,12 @@ static int do_disable_escape_to_root(void __user *arg)
     return 0;
 }
 
+/*
+ * Resolve symbols of the running kernel image, exported or not, matching
+ * them like ksuinit's /proc/kallsyms walk. Userspace uses this to bind a
+ * module's undefined symbols before init_module, so the kernel never parses
+ * the module ELF itself.
+ */
 static int do_lookup_symbols(void __user *arg)
 {
     struct ksu_lookup_symbols_cmd cmd;
@@ -930,6 +943,7 @@ static int do_lookup_symbols(void __user *arg)
     if (!cmd.count || cmd.count > KSU_LOOKUP_SYMBOLS_MAX)
         return -EINVAL;
 
+    // TODO overflow check backport
     names = vzalloc(cmd.count * sizeof(*names));
     if (!names) {
         return -ENOMEM;
@@ -1631,10 +1645,10 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .handler = do_get_sulog_fd,
         .perm_check = only_root
     },
-    { 
-        .cmd = KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT, 
-        .name = "DISABLE_ESCAPE_TO_ROOT", 
-        .handler = do_disable_escape_to_root, 
+    {
+        .cmd = KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT,
+        .name = "DISABLE_ESCAPE_TO_ROOT",
+        .handler = do_disable_escape_to_root,
         .perm_check = only_root,
         .allow_su_session = true
     },

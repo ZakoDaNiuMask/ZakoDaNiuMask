@@ -46,10 +46,7 @@
 #include "compat/kernel_compat.h"
 #include "compat/syscall_no.h"
 #include "ksu.h"
-#include "infra/samsung_defex.h"
-#include "infra/cred_compat.h"
-#include <linux/slab.h>
-#include <linux/limits.h>
+#include "preinit/preinit.h"
 
 #define SU_PATH "/system/bin/su"
 #define SH_PATH "/system/bin/sh"
@@ -94,38 +91,6 @@ static const struct ksu_feature_handler su_compat_handler = {
     .get_handler = su_compat_feature_get,
     .set_handler = su_compat_feature_set,
 };
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
-static void __user *userspace_stack_buffer(const void *d, size_t len)
-{
-    // To avoid having to mmap a page in userspace, just write below the stack
-    // pointer.
-    char __user *p = (void __user *)current_user_stack_pointer() - len;
-
-    return copy_to_user(p, d, len) ? NULL : p;
-}
-#else
-static void __user *userspace_stack_buffer(const void *d, size_t len)
-{
-    if (!current->mm)
-        return NULL;
-
-    volatile unsigned long start_stack = current->mm->start_stack;
-    unsigned int step = 32;
-    char __user *p = NULL;
-
-    do {
-        p = (void __user *)(start_stack - step - len);
-        if (!copy_to_user(p, d, len)) {
-            /* pr_info("%s: start_stack: %lx p: %lx len: %zu\n",
-				__func__, start_stack, (unsigned long)p, len ); */
-            return p;
-        }
-        step = step + step;
-    } while (step <= 2048);
-    return NULL;
-}
-#endif
 
 static const char su_path[] = SU_PATH;
 static const char sh_path[] = SH_PATH;
@@ -611,7 +576,7 @@ out:
 }
 
 // fd, filename, argv, envp, flags and retval were NOT provided in bprm_committed_creds (KSU_COMPAT_NO_POST_EXECVE_HOOK)!
-int ksu_handle_post_execve(int *fd, const char *filename, void *argv, void *envp, int *flags, int *retval)
+int ksu_handle_post_execve_common(int *fd, const char **filename, void *argv, void *envp, int *flags, int *retval)
 {
     if (likely(!test_thread_flag(TIF_PROC_IN_KSU_EXECVE))) {
         return -EINVAL;
@@ -632,8 +597,10 @@ extern struct static_key_true ksud_execve_key;
 extern bool ksud_execve_key;
 #endif
 
-static inline void ksu_handle_execveat_init(const char *filename, void *envp)
+static inline void ksu_handle_execveat_init(const char **filename_ptr, void *argv, void *envp)
 {
+    const char *filename = *filename_ptr;
+
     if (current->pid != 1 && is_init(current_cred())) {
         if (unlikely(strcmp(filename, KSUD_PATH) == 0)) {
             pr_info("hook_manager: escape to root for init executing ksud: %d\n", current->pid);
@@ -652,6 +619,12 @@ static inline void ksu_handle_execveat_init(const char *filename, void *envp)
             pr_err("adb root failed: %d\n", (int)ret);
         }
     }
+
+#ifdef CONFIG_KSU_MANUAL_HOOK
+    if (current->pid == 1) {
+        ksu_preinit_handle_execve_manual(filename_ptr, (struct user_arg_ptr *)argv);
+    }
+#endif
 }
 
 int ksu_handle_execve_common(int *fd, const char **filename_ptr, void *argv, void *envp, int *flags)
@@ -678,15 +651,15 @@ int ksu_handle_execve_common(int *fd, const char **filename_ptr, void *argv, voi
 
 skip_check:
     filename = *filename_ptr;
-    ksu_handle_execveat_init(filename, envp);
+    ksu_handle_execveat_init(filename_ptr, argv, envp);
 
 #ifdef KSU_COMPAT_USE_STATIC_KEY
     if (static_branch_unlikely(&ksud_execve_key)) {
-        ksu_handle_execveat_ksud(filename, argv, envp, flags);
+        ksu_handle_execveat_ksud((char *)filename, argv, envp, flags);
     }
 #else
     if (unlikely(ksud_execve_key)) {
-        ksu_handle_execveat_ksud(filename, argv, envp, flags);
+        ksu_handle_execveat_ksud((char *)filename, argv, envp, flags);
     }
 #endif
 
@@ -722,7 +695,7 @@ int ksu_handle_post_execveat(int *fd, struct filename **filename_ptr, void *argv
         return -EINVAL;
     }
 
-    return ksu_handle_post_execve(fd, filename->name, argv, envp, flags, retval);
+    return ksu_handle_post_execve_common(fd, &filename->name, argv, envp, flags, retval);
 }
 
 // compat for check in hook

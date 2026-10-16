@@ -46,6 +46,8 @@
 #include "infra/samsung_compat.h"
 #include "infra/samsung_defex.h"
 #include "infra/symbol_resolver.h"
+#include "preinit/preinit.h"
+#include "uapi/supercall.h"
 
 #ifdef CONFIG_ARM64
 #include "compat/apatch_conflict.h"
@@ -190,14 +192,14 @@ int __init kernelsu_init(void)
     // manually ifdef in there...
 #ifdef MODULE
     #if defined(__x86_64__) 
-        pr_info("Initialized with driver version: %u, full_version: %s, ABI: x86-64, Work mode: LKM\n", KSU_VERSION, KSU_VERSION_FULL);
+        pr_info("Initialized with driver version: %u, full_version: %s, ABI: x86-64, Work mode: LKM, ksu_uapi_version: %d\n", KSU_VERSION, KSU_VERSION_FULL, KERNEL_SU_UAPI_VERSION);
     #elif defined(CONFIG_ARM64)
-        pr_info("Initialized with driver version: %u, full_version: %s, ABI: aarch64, Work mode: LKM\n", KSU_VERSION, KSU_VERSION_FULL);
+        pr_info("Initialized with driver version: %u, full_version: %s, ABI: aarch64, Work mode: LKM, ksu_uapi_version: %d\n", KSU_VERSION, KSU_VERSION_FULL, KERNEL_SU_UAPI_VERSION);
     #else
         #error Unsupported arch!
     #endif
 #else
-    pr_info("Initialized with driver version: %u, full_version: %s, ABI: %s, Work mode: Built-in\n", KSU_VERSION, KSU_VERSION_FULL, UTS_MACHINE);
+    pr_info("Initialized with driver version: %u, full_version: %s, ABI: %s, Work mode: Built-in, ksu_uapi_version: %d\n", KSU_VERSION, KSU_VERSION_FULL, UTS_MACHINE, KERNEL_SU_UAPI_VERSION);
 #endif
     // clang-format on
 
@@ -317,6 +319,8 @@ int __init kernelsu_init(void)
 
         ksu_ksud_init();
 
+        ksu_preinit_init();
+
         ksu_file_wrapper_init();
     }
 
@@ -339,8 +343,11 @@ void __exit kernelsu_exit(void)
     ksu_samsung_defex_exit();
     ksu_samsung_compat_exit();
     ksu_supercalls_exit();
-    if (!ksu_late_loaded)
+
+    if (!ksu_late_loaded) {
         ksu_ksud_exit();
+        ksu_preinit_exit();
+    }
 
     // Wait for any in-flight RCU readers (e.g. handler traversing allow_list)
     synchronize_rcu();

@@ -18,7 +18,7 @@
 // 3: scoped su-session driver fd
 // 4: add KSU_GET_INFO_FLAG_BUNDLED
 // 5: add EVENT_SERVICES with a start/skip result
-// 6: add KSU_IOCTL_LOOKUP_SYMBOLS and KSU_GET_INFO_FLAG_PREINIT
+// 6: add KSU_IOCTL_LOOKUP_SYMBOLS and KSU_GET_INFO_FLAG_PREINIT; modules.rc and preinit may live under /metadata/vold/ksu
 static const __u32 KERNEL_SU_UAPI_VERSION = 6;
 
 /* Magic numbers for reboot hook to install fd */
@@ -191,6 +191,22 @@ DEFINE_KSU_UAPI_CONST(__u8, KSU_UMOUNT_GETSIZE_LEGACY, 107) // get list size (le
 DEFINE_KSU_UAPI_CONST(__u8, KSU_UMOUNT_GETLIST_LEGACY, 108) // get list (legacy)
 DEFINE_KSU_UAPI_CONST(__u8, KSU_UMOUNT_GETSIZE_NEW, 200) // get list size (new (with flags))
 DEFINE_KSU_UAPI_CONST(__u8, KSU_UMOUNT_GETLIST_NEW, 201) // get list (new (with flags))
+
+/*
+ * Batch kernel image symbol lookup. Returns the number of symbols found; the
+ * address of a symbol that does not exist in the running kernel is set to 0.
+ * Matches like ksuinit's /proc/kallsyms walk: a kernel symbol name is cut at
+ * its first '$', else at ".llvm.", and the first match in kallsyms order wins.
+ * Module symbols are never returned.
+ */
+struct ksu_lookup_symbols_cmd {
+    __aligned_u64 names; /* Input: user pointer to `count` user pointers to null-terminated names */
+    __aligned_u64 addrs; /* Output: user pointer to `count` __u64 symbol addresses */
+    __u32 count; /* Input: number of symbols, at most KSU_LOOKUP_SYMBOLS_MAX */
+    __u32 flags; /* Input: reserved for future use, must be 0 */
+};
+
+DEFINE_KSU_UAPI_CONST(__u32, KSU_LOOKUP_SYMBOLS_MAX, 1024)
 
 // Downstream supercall struct
 struct ksu_get_full_version_cmd {
@@ -429,22 +445,6 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_SET_INIT_PGRP, _IO('K', 19))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_SULOG_FD, _IOW('K', 20, struct ksu_get_sulog_fd_cmd))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT, _IO('K', 21))
 
-/*
- * Batch kernel image symbol lookup. Returns the number of symbols found; the
- * address of a symbol that does not exist in the running kernel is set to 0.
- * Matches like ksuinit's /proc/kallsyms walk: a kernel symbol name is cut at
- * its first '$', else at ".llvm.", and the first match in kallsyms order wins.
- * Module symbols are never returned.
- */
-struct ksu_lookup_symbols_cmd {
-    __aligned_u64 names; /* Input: user pointer to `count` user pointers to null-terminated names */
-    __aligned_u64 addrs; /* Output: user pointer to `count` __u64 symbol addresses */
-    __u32 count; /* Input: number of symbols, at most KSU_LOOKUP_SYMBOLS_MAX */
-    __u32 flags; /* Input: reserved for future use, must be 0 */
-};
-
-DEFINE_KSU_UAPI_CONST(__u32, KSU_LOOKUP_SYMBOLS_MAX, 1024)
-DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_LOOKUP_SYMBOLS, _IOW('K', 22, struct ksu_lookup_symbols_cmd))
 // Downstream add IOCTL command definitions
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_FULL_VERSION, _IOC(_IOC_READ, 'K', 100, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_HOOK_TYPE, _IOC(_IOC_READ, 'K', 101, 0))
