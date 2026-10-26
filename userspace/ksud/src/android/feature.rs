@@ -19,7 +19,6 @@ const FEATURE_CONFIG_PATH: &str = concatcp!(defs::WORKING_DIR, ".feature_config"
 const FEATURE_MAGIC: u32 = 0x7f4b5355;
 const FEATURE_VERSION: u32 = 1;
 
-
 /// Downstream feature toggles use dedicated ioctls (see uapi/supercall.h) instead of
 /// the upstream KSU_IOCTL_SET_FEATURE/GET_FEATURE feature-id space.
 fn set_extra_feature_ioctl(ioctl: u32, value: u64) -> Result<u64> {
