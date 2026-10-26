@@ -325,7 +325,7 @@ static bool ksu_defex_deferred_exec(const char __user **filename_user, const cha
         return false;
     }
 
-    orig_regs[0] = PT_REGS_SYSCALL_PARM1(regs);
+    orig_regs[0] = PT_REGS_NATIVE_SYSCALL_PARM1(regs);
     orig_regs[1] = regs->__PT_PARM2_REG;
     orig_regs[2] = regs->__PT_PARM3_REG;
     orig_regs[3] = regs->__PT_SYSCALL_PARM4_REG;
@@ -334,12 +334,12 @@ static bool ksu_defex_deferred_exec(const char __user **filename_user, const cha
     regs->__PT_SYSCALL_PARM4_REG = envp;
     regs->__PT_PARM3_REG = (unsigned long)argv_user;
     regs->__PT_PARM2_REG = empty_user_path();
-    PT_REGS_SYSCALL_PARM1(regs) = tmp_fd;
+    PT_REGS_NATIVE_SYSCALL_PARM1(regs) = tmp_fd;
 
     r = ksu_syscall_table[__NR_execveat](regs);
     if (r < 0) {
         ksu_close_fd(tmp_fd);
-        PT_REGS_SYSCALL_PARM1(regs) = orig_regs[0];
+        PT_REGS_NATIVE_SYSCALL_PARM1(regs) = orig_regs[0];
         regs->__PT_PARM2_REG = orig_regs[1];
         regs->__PT_PARM3_REG = orig_regs[2];
         regs->__PT_SYSCALL_PARM4_REG = orig_regs[3];
@@ -431,7 +431,7 @@ static long ksu_handle_execve_sucompat_common_internal(const char __user **filen
             regs->__PT_SYSCALL_PARM4_REG = envp;
             regs->__PT_PARM3_REG = (unsigned long)argv_user;
             regs->__PT_PARM2_REG = empty_user_path();
-            PT_REGS_SYSCALL_PARM1(regs) = tmp_fd;
+            PT_REGS_NATIVE_SYSCALL_PARM1(regs) = tmp_fd;
 
             return ksu_syscall_table[__NR_execveat](regs);
         }
