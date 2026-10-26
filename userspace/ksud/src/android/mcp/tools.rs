@@ -727,6 +727,20 @@ pub const TOOLS: &[Tool] = &[
         argv: &["initrc", "refresh"],
     },
     Tool {
+        name: "module.preinit_status",
+        description: "Show per-module preinit state for the next boot.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["module", "preinit", "status"],
+    },
+    Tool {
+        name: "module.preinit_reset",
+        description: "Re-enable preinit after it was disabled by repeated failed boots.",
+        tier: W,
+        schema: sch_empty,
+        argv: &["module", "preinit", "reset"],
+    },
+    Tool {
         name: "kpm.load",
         description: "Load a KPM module.",
         tier: W,
