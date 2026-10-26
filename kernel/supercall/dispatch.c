@@ -1,5 +1,6 @@
 #include <linux/capability.h>
 #include <linux/cred.h>
+#include <linux/err.h>
 #include <linux/kallsyms.h>
 #include <linux/string.h>
 #include <linux/slab.h>
