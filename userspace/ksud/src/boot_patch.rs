@@ -32,16 +32,6 @@ fn valid_block_modules(modules: &str) -> bool {
             }))
 }
 
-fn parse_force_feature(s: &str) -> Result<(FeatureId, u64)> {
-    let (name, value) = s
-        .split_once('=')
-        .context("expected FEATURE=VALUE, e.g. su_compat=0")?;
-    let value = value
-        .parse()
-        .with_context(|| format!("invalid value for feature {name}: {value}"))?;
-    Ok((parse_feature_id(name)?, value))
-}
-
 #[cfg(target_os = "android")]
 mod android {
     use rustix::process::getuid;
@@ -496,10 +486,6 @@ pub struct BootPatchArgs {
     #[arg(long, default_value = None)]
     pub out_name: Option<String>,
 
-    /// Always allow shell to get root permission
-    #[arg(long, default_value = "false")]
-    allow_shell: bool,
-
     /// Force enable adbd and disable adbd auth
     #[arg(long, default_value = "false")]
     enable_adbd: bool,
@@ -515,10 +501,6 @@ pub struct BootPatchArgs {
     /// Do not (re-)install kernelsu, only modify configs (allow_shell, etc.)
     #[arg(long, default_value = "false")]
     no_install: bool,
-
-    /// Do not load custom rc
-    #[arg(long, default_value = "false")]
-    no_custom_rc: bool,
 
     /// Block what module loading
     #[arg(
@@ -536,10 +518,10 @@ pub struct BootPatchArgs {
     #[arg(long, default_value = None)]
     spoof_version: Option<String>,
 
-    /// Force a kernel feature to a value at boot, e.g. `su_compat=0`.
-    /// Forced features can not be changed by userspace. Can be repeated.
-    #[arg(long, value_name = "FEATURE=VALUE", value_parser = parse_force_feature)]
-    force_feature: Vec<(FeatureId, u64)>,
+    /// KernelSU module params, stored in ramdisk `/ksu_config` (boot-patch) or
+    /// the injected capsule (boot-patch-v2).
+    #[command(flatten)]
+    config: KsuConfigArgs,
 
     /// Inject a SuperKey into the embedded module (password manager auth)
     #[arg(long, default_value = None)]
@@ -632,7 +614,6 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             out,
             kmi,
             out_name,
-            allow_shell,
             enable_adbd,
             adb_debug_prop,
             cmdline,
@@ -640,7 +621,6 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             block_modules,
             spoof_release,
             spoof_version,
-            force_feature,
             superkey,
             signature_bypass,
             #[cfg(target_os = "android")]
@@ -651,7 +631,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             backup,
             #[cfg(target_os = "android")]
             partition,
-            no_custom_rc,
+            config,
             #[cfg(not(target_os = "android"))]
             arch,
             ramdisk,
@@ -896,19 +876,9 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             }
         };
 
-        apply_config("no custom rc", "norc=1", no_custom_rc);
-        apply_config("allow shell", "allow_shell=1", allow_shell);
+        config.apply(&mut ksu_config);
         if let Some(bundled) = bundled_lkm {
             apply_config("bundled LKM", "bundled=1", bundled);
-        }
-        ksu_config.retain(|v| !v.starts_with("force_feature="));
-        if !force_feature.is_empty() {
-            let mut entries = Vec::with_capacity(force_feature.len());
-            for (feature_id, value) in &force_feature {
-                println!("- Forcing feature {} to {value}", feature_id.name());
-                entries.push(format!("{}:{value}", feature_id.name()));
-            }
-            ksu_config.push(format!("force_feature={}", entries.join(",")));
         }
 
         if ksu_config.is_empty() {
