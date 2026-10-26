@@ -229,6 +229,47 @@ schema_fn!(
 );
 schema_fn!(sch_slot_suffix, [bo("ota", "toggle to the other slot")]);
 
+schema_fn!(
+    sch_superkey_patch,
+    [
+        s("module", "path to the kernel module (.ko) to patch"),
+        so("superkey", "SuperKey to set; omit for signature-only mode"),
+        bo(
+            "signature_bypass",
+            "SuperKey-only mode (bypass APK signature verification)"
+        )
+    ]
+);
+schema_fn!(
+    sch_device_ids_provision,
+    [
+        so("brand", "ro.product.brand"),
+        so("device", "ro.product.device"),
+        so("product", "ro.product.name"),
+        so("serial", "ro.serialno"),
+        so("manufacturer", "ro.product.manufacturer"),
+        so("model", "ro.product.model"),
+        so("imei", "IMEI"),
+        so("imei2", "second IMEI"),
+        so("meid", "MEID"),
+        so("meid2", "second MEID"),
+        so("ta_name", "trusted application name (default: keymaster64)"),
+        so(
+            "ta_path",
+            "trusted application directory (default: /vendor/firmware_mnt/image)"
+        ),
+        bo(
+            "dry_run",
+            "build and validate the command without sending it to Keymaster"
+        )
+    ]
+);
+schema_fn!(sch_mount_status, [bo("json", "emit a single JSON object")]);
+schema_fn!(
+    sch_mount_set_mode,
+    [s("mode", "one of: auto, builtin, metamodule")]
+);
+
 const R: Tier = Tier::Read;
 const W: Tier = Tier::Write;
 const D: Tier = Tier::Danger;
@@ -878,6 +919,99 @@ pub const TOOLS: &[Tool] = &[
         tier: D,
         schema: sch_empty,
         argv: &["unload"],
+    },
+    // ---- fork features ----
+    Tool {
+        name: "inte_spoof.status",
+        description: "Report whether the Oplus inte.ko spoof is active.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["inte-spoof", "status"],
+    },
+    Tool {
+        name: "inte_spoof.enable",
+        description: "Unload inte and create the fake /proc/inte_* nodes.",
+        tier: W,
+        schema: sch_empty,
+        argv: &["inte-spoof", "enable"],
+    },
+    Tool {
+        name: "inte_spoof.disable",
+        description: "Remove the fake /proc/inte_* nodes and unblock inte (it is not re-inserted).",
+        tier: W,
+        schema: sch_empty,
+        argv: &["inte-spoof", "disable"],
+    },
+    Tool {
+        name: "mount.status",
+        description: "Show the current module mount provider, mode and metamodule presence.",
+        tier: R,
+        schema: sch_mount_status,
+        argv: &["mount", "status", "@json"],
+    },
+    Tool {
+        name: "mount.set_mode",
+        description: "Set the module mount mode (auto, builtin or metamodule).",
+        tier: W,
+        schema: sch_mount_set_mode,
+        argv: &["mount", "set-mode", "%mode"],
+    },
+    Tool {
+        name: "device_ids.defaults",
+        description: "Print the device identifiers detected from system properties as JSON.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["device-ids", "defaults"],
+    },
+    Tool {
+        name: "device_ids.provision",
+        description: "Write device IDs into the Qualcomm Keymaster trusted application.",
+        tier: D,
+        schema: sch_device_ids_provision,
+        argv: &[
+            "device-ids",
+            "provision",
+            "@brand=%brand",
+            "@device=%device",
+            "@product=%product",
+            "@serial=%serial",
+            "@manufacturer=%manufacturer",
+            "@model=%model",
+            "@imei=%imei",
+            "@imei2=%imei2",
+            "@meid=%meid",
+            "@meid2=%meid2",
+            "@ta_name=%ta_name",
+            "@ta_path=%ta_path",
+            "@dry_run",
+        ],
+    },
+    Tool {
+        name: "superkey.patch",
+        description: "Patch a kernel module (.ko) with (or without) a SuperKey.",
+        tier: D,
+        schema: sch_superkey_patch,
+        argv: &[
+            "superkey",
+            "patch",
+            "%module",
+            "@superkey=%superkey",
+            "@signature_bypass",
+        ],
+    },
+    Tool {
+        name: "sulogd.start",
+        description: "Start the sulog daemon if it is not already running.",
+        tier: W,
+        schema: sch_empty,
+        argv: &["debug", "sulogd"],
+    },
+    Tool {
+        name: "mcp_policy.get",
+        description: "Print the current MCP tool policy as JSON.",
+        tier: R,
+        schema: sch_empty,
+        argv: &["mcp-policy", "get"],
     },
 ];
 
