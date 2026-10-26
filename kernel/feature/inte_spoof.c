@@ -136,18 +136,23 @@ static int inte_spoof_feature_set(u64 value)
 
     mutex_lock(&inte_spoof_mutex);
     if (value) {
+        /*
+         * Blocking is best effort. It needs the kernel module_blacklist
+         * symbol plus a syscall hook, and a kernel with neither still gets
+         * the fake /proc nodes, which are the actual anti-detection part.
+         */
         ret = inte_spoof_block_module();
         if (ret) {
-            pr_err("inte_spoof: cannot block %s (%d)\n", INTE_BLOCK_TARGET, ret);
-            goto out;
+            pr_warn("inte_spoof: cannot block %s (%d), continuing without it\n", INTE_BLOCK_TARGET, ret);
         }
+
         ret = inte_spoof_create_nodes();
         if (ret) {
             pr_err("inte_spoof: enable failed (%d), is inte still loaded?\n", ret);
             inte_spoof_unblock_module();
         } else {
             inte_spoof_enabled = true;
-            pr_info("inte_spoof: enabled, inte blocked\n");
+            pr_info("inte_spoof: enabled\n");
         }
     } else {
         inte_spoof_remove_nodes();
@@ -155,7 +160,6 @@ static int inte_spoof_feature_set(u64 value)
         inte_spoof_enabled = false;
         pr_info("inte_spoof: disabled\n");
     }
-out:
     mutex_unlock(&inte_spoof_mutex);
     return ret;
 }
