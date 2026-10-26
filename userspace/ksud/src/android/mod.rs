@@ -4,6 +4,7 @@ mod debug;
 mod device_ids;
 mod dynamic_manager;
 mod feature;
+mod hot_install;
 mod init_event;
 mod inte_spoof;
 #[cfg(all(target_arch = "aarch64", target_os = "android"))]
