@@ -11,6 +11,7 @@ use const_format::concatcp;
 use crate::{
     android::{ksucalls, module, sulog, uapi},
     defs,
+    feature_id::{FeatureId, parse_feature_id},
 };
 
 const FEATURE_CONFIG_PATH: &str = concatcp!(defs::WORKING_DIR, ".feature_config");
@@ -18,95 +19,6 @@ const FEATURE_CONFIG_PATH: &str = concatcp!(defs::WORKING_DIR, ".feature_config"
 const FEATURE_MAGIC: u32 = 0x7f4b5355;
 const FEATURE_VERSION: u32 = 1;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(u32)]
-pub enum FeatureId {
-    SuCompat = 0,
-    KernelUmount = 1,
-    Sulog = 2,
-    AdbRoot = 3,
-    SelinuxHide = 4,
-    MountHide = 16,
-    SamsungCompat = 17,
-    Ptctl = 18,
-    Uhook = 19,
-}
-
-impl FeatureId {
-    pub const fn from_u32(id: u32) -> Option<Self> {
-        match id {
-            0 => Some(Self::SuCompat),
-            1 => Some(Self::KernelUmount),
-            2 => Some(Self::Sulog),
-            3 => Some(Self::AdbRoot),
-            4 => Some(Self::SelinuxHide),
-            16 => Some(Self::MountHide),
-            17 => Some(Self::SamsungCompat),
-            18 => Some(Self::Ptctl),
-            19 => Some(Self::Uhook),
-            _ => None,
-        }
-    }
-
-    pub const fn name(self) -> &'static str {
-        match self {
-            Self::SuCompat => "su_compat",
-            Self::KernelUmount => "kernel_umount",
-            Self::Sulog => "sulog",
-            Self::AdbRoot => "adb_root",
-            Self::SelinuxHide => "selinux_hide",
-            Self::MountHide => "mount_hide",
-            Self::SamsungCompat => "samsung_compat",
-            Self::Ptctl => "ptctl",
-            Self::Uhook => "uhook",
-        }
-    }
-
-    pub const fn description(self) -> &'static str {
-        match self {
-            Self::SuCompat => {
-                "SU Compatibility Mode - allows authorized apps to gain root via traditional 'su' command"
-            }
-            Self::KernelUmount => {
-                "Kernel Umount - controls whether kernel automatically unmounts modules when not needed"
-            }
-            Self::Sulog => {
-                "SU Log - streams kernel sulog events to userspace and persists them to disk"
-            }
-            Self::AdbRoot => "ADB Root - Enable adbd root",
-            Self::SelinuxHide => {
-                "SELinux Hide - sanitize /sys/fs/selinux access results for app UIDs"
-            }
-            Self::MountHide => {
-                "Mount Hide - filter module mounts from /proc mount views of isolated and app processes"
-            }
-            Self::SamsungCompat => {
-                "Samsung Compat - RKP/KDP credential path and DEFEX neutralization (side-channel; enable only on affected Samsung devices)"
-            }
-            Self::Ptctl => {
-                "Process Control - cross-process memory/register/debug primitives via KSU_IOCTL_PTCTL (root only)"
-            }
-            Self::Uhook => {
-                "Userspace Hook - persistent uprobe-based instrumentation via KSU_IOCTL_UHOOK (root only)"
-            }
-        }
-    }
-}
-
-fn parse_feature_id(name: &str) -> Result<FeatureId> {
-    match name {
-        "su_compat" | "0" => Ok(FeatureId::SuCompat),
-        "kernel_umount" | "1" => Ok(FeatureId::KernelUmount),
-        "sulog" | "2" => Ok(FeatureId::Sulog),
-        "adb_root" | "3" => Ok(FeatureId::AdbRoot),
-        "selinux_hide" | "4" => Ok(FeatureId::SelinuxHide),
-        "mount_hide" | "16" => Ok(FeatureId::MountHide),
-        "samsung_compat" | "17" => Ok(FeatureId::SamsungCompat),
-        "ptctl" | "18" => Ok(FeatureId::Ptctl),
-        "uhook" | "19" => Ok(FeatureId::Uhook),
-        _ => bail!("Unknown feature: {name}"),
-    }
-}
 
 /// Downstream feature toggles use dedicated ioctls (see uapi/supercall.h) instead of
 /// the upstream KSU_IOCTL_SET_FEATURE/GET_FEATURE feature-id space.
@@ -398,6 +310,7 @@ pub fn list_features() {
         FeatureId::Sulog,
         FeatureId::AdbRoot,
         FeatureId::SelinuxHide,
+        FeatureId::ShellSuAdbOnly,
         FeatureId::MountHide,
         FeatureId::SamsungCompat,
         FeatureId::Ptctl,
@@ -467,6 +380,7 @@ pub fn save_config() -> Result<()> {
         FeatureId::Sulog,
         FeatureId::AdbRoot,
         FeatureId::SelinuxHide,
+        FeatureId::ShellSuAdbOnly,
         FeatureId::MountHide,
         FeatureId::SamsungCompat,
         FeatureId::Ptctl,

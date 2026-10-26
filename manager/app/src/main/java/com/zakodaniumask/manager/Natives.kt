@@ -39,6 +39,7 @@ object Natives {
     // 3: scoped su-session driver fd
     // 4: add KSU_GET_INFO_FLAG_BUNDLED
     // 5: add EVENT_SERVICES
+    // 6: add KSU_IOCTL_LOOKUP_SYMBOLS and KSU_GET_INFO_FLAG_PREINIT
     // Everything in the [KERNEL_UAPI_VERSION_MIN, managerUAPIVersion] range uses the
     // same struct layouts for the calls this manager makes, so no struct shim is
     // needed; individual capabilities are probed via feature ids.

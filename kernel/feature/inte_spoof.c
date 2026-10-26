@@ -35,7 +35,7 @@
 #include <linux/string.h>
 #include <linux/uaccess.h>
 
-#include "feature/module_load_filter.h"
+#include "feature/module_blacklist.h"
 #include "klog.h" // IWYU pragma: keep
 #include "manager/manager_identity.h"
 
@@ -78,52 +78,14 @@ static const struct proc_ops inte_spoof_proc_fops_wo = {
     .proc_write = inte_spoof_proc_write,
 };
 
-static void inte_spoof_block_module(void)
+static int inte_spoof_block_module(void)
 {
-    size_t len = strnlen(ksu_block_modules, sizeof(ksu_block_modules));
-    size_t target = strlen(INTE_BLOCK_TARGET);
-
-    if (len + 1 + target + 1 > sizeof(ksu_block_modules)) {
-        pr_err("inte_spoof: blocklist full, cannot add %s\n", INTE_BLOCK_TARGET);
-        return;
-    }
-    if (len && ksu_block_modules[len - 1] != ',')
-        ksu_block_modules[len++] = ',';
-    memcpy(ksu_block_modules + len, INTE_BLOCK_TARGET, target);
-    ksu_block_modules[len + target] = '\0';
+    return ksu_module_blacklist_add(INTE_BLOCK_TARGET);
 }
 
-static void inte_spoof_unblock_module(void)
+static int inte_spoof_unblock_module(void)
 {
-    char *start = ksu_block_modules;
-    size_t list_len = strnlen(ksu_block_modules, sizeof(ksu_block_modules));
-    size_t target = strlen(INTE_BLOCK_TARGET);
-    char *cursor = start;
-    char *end = start + list_len;
-    char *hit = NULL;
-
-    while (cursor < end) {
-        char *sep = memchr(cursor, ',', end - cursor);
-        size_t entry_len = sep ? (size_t)(sep - cursor) : (size_t)(end - cursor);
-
-        if (entry_len == target && memcmp(cursor, INTE_BLOCK_TARGET, target) == 0) {
-            hit = cursor;
-            /* Include the trailing comma when it is not the last entry. */
-            if (sep)
-                entry_len++;
-            memmove(hit, hit + entry_len, end - (hit + entry_len));
-            list_len -= entry_len;
-            ksu_block_modules[list_len] = '\0';
-            end = start + list_len;
-            cursor = start;
-            hit = NULL;
-            continue;
-        }
-
-        if (!sep)
-            break;
-        cursor = sep + 1;
-    }
+    return ksu_module_blacklist_remove(INTE_BLOCK_TARGET);
 }
 
 static int inte_spoof_create_nodes(void)
@@ -174,7 +136,11 @@ static int inte_spoof_feature_set(u64 value)
 
     mutex_lock(&inte_spoof_mutex);
     if (value) {
-        inte_spoof_block_module();
+        ret = inte_spoof_block_module();
+        if (ret) {
+            pr_err("inte_spoof: cannot block %s (%d)\n", INTE_BLOCK_TARGET, ret);
+            goto out;
+        }
         ret = inte_spoof_create_nodes();
         if (ret) {
             pr_err("inte_spoof: enable failed (%d), is inte still loaded?\n", ret);
@@ -189,6 +155,7 @@ static int inte_spoof_feature_set(u64 value)
         inte_spoof_enabled = false;
         pr_info("inte_spoof: disabled\n");
     }
+out:
     mutex_unlock(&inte_spoof_mutex);
     return ret;
 }

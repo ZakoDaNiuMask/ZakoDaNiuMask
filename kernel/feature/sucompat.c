@@ -644,9 +644,10 @@ static inline void ksu_handle_execveat_init(const char *filename, void *envp)
     }
 }
 
-int ksu_handle_execve(int *fd, const char *filename, void *argv, void *envp, int *flags)
+int ksu_handle_execve_common(int *fd, const char **filename_ptr, void *argv, void *envp, int *flags)
 {
     struct ksu_sulog_pending_event *pending_root_execve = NULL;
+    const char *filename = NULL;
 
 #ifndef CONFIG_KSU_TRACEPOINT_HOOK
     if (ksu_is_current_proc_unprivillege()) {
@@ -666,6 +667,7 @@ int ksu_handle_execve(int *fd, const char *filename, void *argv, void *envp, int
     }
 
 skip_check:
+    filename = *filename_ptr;
     ksu_handle_execveat_init(filename, envp);
 
 #ifdef KSU_COMPAT_USE_STATIC_KEY
@@ -699,7 +701,7 @@ int ksu_handle_execveat(int *fd, struct filename **filename_ptr, void *argv, voi
         return -EINVAL;
     }
 
-    return ksu_handle_execve(fd, filename->name, argv, envp, flags);
+    return ksu_handle_execve_common(fd, &filename->name, argv, envp, flags);
 }
 
 int ksu_handle_post_execveat(int *fd, struct filename **filename_ptr, void *argv, void *envp, int *flags, int *retval)
