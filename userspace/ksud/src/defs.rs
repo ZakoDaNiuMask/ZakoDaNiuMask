@@ -55,6 +55,7 @@ mod android {
     pub const UPDATE_FILE_NAME: &str = "update";
     pub const REMOVE_FILE_NAME: &str = "remove";
     pub const MODULE_INIT_RC_DIR: &str = "initrc";
+    pub const SKIP_MOUNT_FILE_NAME: &str = "skip_mount";
     pub const MODULE_PREINIT_DIR: &str = "preinit";
     pub const PREINIT_CONF: &str = "preinit.conf";
     // Written by installer.sh when customize.sh requests a hot install
