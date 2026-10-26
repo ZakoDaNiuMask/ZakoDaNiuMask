@@ -862,23 +862,9 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             .map(|v| v.split(' ').map(std::borrow::ToOwned::to_owned).collect())
             .unwrap_or_default();
 
-        let mut apply_config = |name: &str, value: &str, add: bool| {
-            let has_value = ksu_config.iter().any(|v| v == value);
-
-            if add {
-                println!("- Adding {name} config");
-                if !has_value {
-                    ksu_config.push(value.to_owned());
-                }
-            } else if has_value {
-                println!("- Removing {name} config");
-                ksu_config.retain(|v| v != value);
-            }
-        };
-
         config.apply(&mut ksu_config);
         if let Some(bundled) = bundled_lkm {
-            apply_config("bundled LKM", "bundled=1", bundled);
+            set_config_flag(&mut ksu_config, "bundled LKM", "bundled=1", bundled);
         }
 
         if ksu_config.is_empty() {
