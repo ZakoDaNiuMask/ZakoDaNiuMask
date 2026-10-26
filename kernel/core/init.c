@@ -297,6 +297,7 @@ int __init kernelsu_init(void)
 
         ksu_boot_completed = true;
         track_throne(TRACK_THRONE_FORCE_SYNCHRONOUS);
+        ksu_feature_apply_forced();
 
         if (!getenforce()) {
             pr_info("Permissive SELinux, enforcing\n");

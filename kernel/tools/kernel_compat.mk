@@ -319,3 +319,17 @@ ifeq ($(shell grep -q "struct file .dentry_open.const struct path .path, int fla
 $(info -- $(REPO_NAME)/compat: modern dentry_open found)
 ccflags-y += -DKSU_COMPAT_HAS_MODERN_DENTRY_OPEN
 endif
+
+# https://github.com/torvalds/linux/commit/6a4c264313c4ae32dc53821a9c57e0dc9696fb81
+# 3.18+
+ifeq ($(shell grep -q "KERNEL_PARAM_OPS_FL_NOARG" $(srctree)/include/linux/moduleparam.h 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found KERNEL_PARAM_OPS_FL_NOARG)
+ccflags-y += -DKSU_COMPAT_HAS_KERNEL_PARAM_OPS_FL_NOARG
+endif
+
+# https://github.com/torvalds/linux/commit/ab013c5f60b7ead254863c75b9adc2a47992d01b
+# 3.12+
+ifeq ($(shell grep -q "KERNEL_PARAM_FL_NOARG" $(srctree)/include/linux/moduleparam.h 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found KERNEL_PARAM_FL_NOARG)
+ccflags-y += -DKSU_COMPAT_HAS_KERNEL_PARAM_FL_NOARG
+endif

@@ -268,21 +268,30 @@ pub fn apply_config(features: &HashMap<u32, u64>) {
 
 pub fn get_feature(id: &str) -> Result<()> {
     let feature_id = parse_feature_id(id)?;
-    let (value, supported) = if let Some(ioctl) = is_downstream_feature(feature_id) {
+    let state = if let Some(ioctl) = is_downstream_feature(feature_id) {
         match get_extra_feature_ioctl(ioctl) {
-            Ok(value) => (value, true),
-            Err(_) => (0, false),
+            Ok(value) => ksucalls::FeatureState {
+                value,
+                supported: true,
+                forced: false,
+            },
+            Err(_) => ksucalls::FeatureState {
+                value: 0,
+                supported: false,
+                forced: false,
+            },
         }
     } else {
         ksucalls::get_feature(feature_id as u32)
             .with_context(|| format!("Failed to get feature {id}"))?
     };
 
-    if !supported {
+    if !state.supported {
         println!("Feature '{id}' is not supported by kernel");
         return Ok(());
     }
 
+    let value = state.value;
     println!("Feature: {} ({})", feature_id.name(), feature_id as u32);
     println!("Description: {}", feature_id.description());
     println!("Value: {value}");
@@ -290,6 +299,9 @@ pub fn get_feature(id: &str) -> Result<()> {
         "Status: {}",
         if value != 0 { "enabled" } else { "disabled" }
     );
+    if state.forced {
+        println!("Forced: true (pinned by the force_feature boot param)");
+    }
 
     Ok(())
 }
@@ -394,21 +406,23 @@ pub fn list_features() {
 
     for feature_id in &all_features {
         let id = *feature_id as u32;
-        let (value, supported) = ksucalls::get_feature(id).unwrap_or((0, false));
+        let state = ksucalls::get_feature(id).unwrap_or_default();
 
-        let status = if !supported {
+        let status = if !state.supported {
             "NOT_SUPPORTED".to_string()
-        } else if value != 0 {
-            format!("ENABLED ({value})")
+        } else if state.value != 0 {
+            format!("ENABLED ({})", state.value)
         } else {
             "DISABLED".to_string()
         };
 
         let managed_by = feature_to_modules.get(feature_id.name());
-        let managed_mark = if managed_by.is_some() {
-            " [MODULE_MANAGED]"
+        let managed_mark = if state.forced {
+            " [FORCED]".to_string()
+        } else if managed_by.is_some() {
+            " [MODULE_MANAGED]".to_string()
         } else {
-            ""
+            String::new()
         };
 
         println!(
@@ -461,11 +475,11 @@ pub fn save_config() -> Result<()> {
 
     for feature_id in &all_features {
         let id = *feature_id as u32;
-        if let Ok((value, supported)) = ksucalls::get_feature(id)
-            && supported
+        if let Ok(state) = ksucalls::get_feature(id)
+            && state.supported
         {
-            features.insert(id, value);
-            log::info!("Saved feature {} = {value}", feature_id.name());
+            features.insert(id, state.value);
+            log::info!("Saved feature {} = {}", feature_id.name(), state.value);
         }
     }
 
@@ -492,10 +506,10 @@ pub fn check_feature(id: &str) -> Result<()> {
     }
 
     // Check if the feature is supported by kernel
-    let (_value, supported) = ksucalls::get_feature(feature_id as u32)
+    let state = ksucalls::get_feature(feature_id as u32)
         .with_context(|| format!("Failed to get feature {id}"))?;
 
-    if supported {
+    if state.supported {
         println!("supported");
     } else {
         println!("unsupported");

@@ -201,7 +201,8 @@ bool set_su_enabled(bool enabled) {
 bool is_su_enabled() {
     struct ksu_get_feature_cmd cmd = {};
     cmd.feature_id = KSU_FEATURE_SU_COMPAT;
-    if (ksuctl(KSU_IOCTL_GET_FEATURE, &cmd) == 0 && cmd.supported) {
+    if (ksuctl(KSU_IOCTL_GET_FEATURE, &cmd) == 0 &&
+        (cmd.supported & KSU_FEATURE_FLAG_SUPPORTED)) {
         return cmd.value != 0;
     }
     return legacy_is_su_enabled();
@@ -214,7 +215,7 @@ static inline bool get_feature(uint32_t feature_id, uint64_t *out_value, bool *o
         return false;
     }
     if (out_value) *out_value = cmd.value;
-    if (out_supported) *out_supported = cmd.supported;
+    if (out_supported) *out_supported = cmd.supported & KSU_FEATURE_FLAG_SUPPORTED;
     return true;
 }
 
