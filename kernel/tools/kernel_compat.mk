@@ -366,4 +366,3 @@ ifeq ($(shell grep -q "^int context_add_hash" $(srctree)/security/selinux/ss/ser
 $(info -- $(REPO_NAME)/compat: found hash indexed sidtab)
 ccflags-y += -DKSU_COMPAT_HAS_CONTEXT_ADD_HASH
 endif
-endif
