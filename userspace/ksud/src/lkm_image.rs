@@ -2635,7 +2635,7 @@ pub fn patch_boot(args: &BootPatchV2Args) -> Result<()> {
         .dump(&mut raw_kernel, false)
         .context("cannot decompress boot kernel")?;
 
-    let module = if let Some(module) = &args.module {
+    let mut module = if let Some(module) = &args.module {
         println!("- Module: {}", module.display());
         fs::read(module)
             .with_context(|| format!("cannot read kernel module {}", module.display()))?
