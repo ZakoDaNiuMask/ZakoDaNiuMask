@@ -67,6 +67,8 @@ import com.zakodaniumask.manager.ui.viewmodel.SuSFSViewModel
 import com.zakodaniumask.manager.ui.viewmodel.awaitSuSFSBoolean
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.zakodaniumask.manager.ui.screen.susfs.subpages.PriorityUidFilterTab
+import com.zakodaniumask.manager.ui.screen.susfs.subpages.SusPathUidFilterTab
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -195,6 +197,26 @@ fun SuSFSConfigScreen() {
             title = stringResource(R.string.susfs_tab_sus_map),
         ) { innerPadding, nestedScrollConnection ->
             SusMapTab(
+                nestedScrollConnection = nestedScrollConnection,
+                innerPadding = innerPadding,
+                onRegisterRefresh = onRegisterRefresh,
+            )
+        },
+        SuSFSConfigSubpage(
+            requirePersist = true,
+            title = stringResource(R.string.susfs_priority_uid_filter_title),
+        ) { innerPadding, nestedScrollConnection ->
+            PriorityUidFilterTab(
+                nestedScrollConnection = nestedScrollConnection,
+                innerPadding = innerPadding,
+                onRegisterRefresh = onRegisterRefresh,
+            )
+        },
+        SuSFSConfigSubpage(
+            requirePersist = true,
+            title = stringResource(R.string.susfs_sus_path_uid_filter_title),
+        ) { innerPadding, nestedScrollConnection ->
+            SusPathUidFilterTab(
                 nestedScrollConnection = nestedScrollConnection,
                 innerPadding = innerPadding,
                 onRegisterRefresh = onRegisterRefresh,

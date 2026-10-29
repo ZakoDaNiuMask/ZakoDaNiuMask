@@ -13,10 +13,13 @@ import com.zakodaniumask.manager.domain.model.SusKstatType as DomainSusKstatType
 import com.zakodaniumask.manager.domain.model.SusPathItem as DomainSusPathItem
 import com.zakodaniumask.manager.domain.model.UnameConfig as DomainUnameConfig
 import androidx.core.net.toUri
+import com.zakodaniumask.manager.data.packageinfo.InstalledPackageRepository
+import com.zakodaniumask.manager.domain.model.SuSFSUidFilterApp
 
 class SuSFSRepository(
     private val application: Application,
     private val helper: SuSFSConfigHelper,
+    private val installedPackages: InstalledPackageRepository,
 ) {
     suspend fun getStatus(): SuSFSStatus {
         val version = runCatching { helper.showVersion() }.getOrDefault("")
@@ -78,6 +81,19 @@ class SuSFSRepository(
     suspend fun removeOpenRedirect(targetPath: String) = helper.removeOpenRedirect(targetPath)
     suspend fun addSusMap(path: String) = helper.addSusMap(path)
     suspend fun removeSusMap(path: String) = helper.removeSusMap(path)
+    suspend fun setPriorityUidFilter(packages: Set<String>) = helper.setPriorityUidFilter(packages)
+
+    suspend fun setSusPathUidFilter(packages: Set<String>) = helper.setSusPathUidFilter(packages)
+
+    suspend fun loadUidFilterApps(): List<SuSFSUidFilterApp> {
+        installedPackages.refresh().getOrThrow()
+        return installedPackages.packages.value
+            .filter { it.uid in 10000..19999 }
+            .distinctBy { it.packageName }
+            .map { SuSFSUidFilterApp(it.packageName, it.appLabel.ifBlank { it.packageName }) }
+            .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
+    }
+
     suspend fun exportConfig(uri: String) = helper.exportConfigToUri(application, uri.toUri())
     suspend fun importConfig(uri: String) = helper.importConfigFromUri(application, uri.toUri())
 
@@ -103,6 +119,8 @@ class SuSFSRepository(
             DomainOpenRedirectItem(it.target_path, it.redirected_path, it.uid_scheme.toDomain())
         },
         sus_map = sus_map,
+        priority_uid_filter = priority_uid_filter.orEmpty(),
+        sus_path_uid_filter = sus_path_uid_filter.orEmpty(),
     )
 
     private fun SuSFSStatusInfo.toDomain(): DomainSuSFSStatusInfo =
