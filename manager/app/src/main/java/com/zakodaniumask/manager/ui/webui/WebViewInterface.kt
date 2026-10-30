@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.zakodaniumask.manager.data.packageinfo.InstalledPackageRepository
 import com.zakodaniumask.manager.data.webui.WebUiRepository
 import com.zakodaniumask.manager.ui.webui.file.KsuIO
+import com.zakodaniumask.manager.ui.webui.pm.KsuPm
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -184,6 +185,7 @@ class WebViewInterface(
         return currentModuleInfo.toString()
     }
 
+    @Deprecated("Use ksu.pm().listPackages() instead")
     @JavascriptInterface
     fun listPackages(type: String): String {
         val packageNames = packageRepository.packages.value
@@ -204,6 +206,7 @@ class WebViewInterface(
         return jsonArray.toString()
     }
 
+    @Deprecated("Use ksu.pm().getPackagesInfo() instead")
     @JavascriptInterface
     fun getPackagesInfo(packageNamesJson: String): String {
         val packageNames = JSONArray(packageNamesJson)
@@ -238,6 +241,9 @@ class WebViewInterface(
 
     @JavascriptInterface
     fun io() = KsuIO
+
+    @JavascriptInterface
+    fun pm() = KsuPm(packageRepository)
 
     fun destroy() {
         KsuIO.destroy()
