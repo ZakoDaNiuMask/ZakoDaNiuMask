@@ -186,6 +186,8 @@ module_param(spoof_version, charp, 0);
 
 int __init kernelsu_init(void)
 {
+    int ret;
+
     // clang-format off
     
     // ddk in x86-64 doesn't have generated/compile.h
@@ -240,16 +242,13 @@ int __init kernelsu_init(void)
         pr_alert("shell is allowed at init!");
     }
 
-#ifdef CONFIG_ARM64
-    ksu_start_apatch_conflict_check();
-#endif
-
     ksu_cred = prepare_creds();
     if (!ksu_cred) {
         pr_err("prepare cred failed!\n");
         return -ENOSYS;
     }
 
+    pr_info("initializing symbol resolver\n");
     ksu_init_symbol_resolver();
     ksu_samsung_compat_probe();
     ksu_samsung_compat_init();
@@ -257,6 +256,15 @@ int __init kernelsu_init(void)
     if (spoof_release || spoof_version) {
         ksu_spoof_version(spoof_release, spoof_version);
     }
+    ret = ksu_selinux_inode_init();
+    if (ret) {
+        put_cred(ksu_cred);
+        ksu_cred = NULL;
+        return ret;
+    }
+#ifdef CONFIG_ARM64
+    ksu_start_apatch_conflict_check();
+#endif
     ksu_selinux_init();
     ksu_feature_init();
     ksu_sulog_init();
