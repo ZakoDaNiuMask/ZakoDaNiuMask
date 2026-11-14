@@ -372,3 +372,51 @@ ifeq ($(shell grep -q "^int context_add_hash" $(srctree)/security/selinux/ss/ser
 $(info -- $(REPO_NAME)/compat: found hash indexed sidtab)
 ccflags-y += -DKSU_COMPAT_HAS_CONTEXT_ADD_HASH
 endif
+
+# https://github.com/torvalds/linux/commit/6a4c264313c4ae32dc53821a9c57e0dc9696fb81
+# 3.18+
+ifeq ($(shell grep -q "KERNEL_PARAM_OPS_FL_NOARG" $(srctree)/include/linux/moduleparam.h 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found KERNEL_PARAM_OPS_FL_NOARG)
+ccflags-y += -DKSU_COMPAT_HAS_KERNEL_PARAM_OPS_FL_NOARG
+endif
+
+# https://github.com/torvalds/linux/commit/ab013c5f60b7ead254863c75b9adc2a47992d01b
+# 3.12+
+ifeq ($(shell grep -q "KERNEL_PARAM_FL_NOARG" $(srctree)/include/linux/moduleparam.h 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found KERNEL_PARAM_FL_NOARG)
+ccflags-y += -DKSU_COMPAT_HAS_KERNEL_PARAM_FL_NOARG
+endif
+
+ifeq ($(shell grep -q "ksu_handle_init_module" $(srctree)/kernel/module/main.c 2>/dev/null; echo $$?),0)
+  $(info -- $(REPO_NAME)/compat: found ksu_handle_init_module)
+  ifeq ($(shell grep -q "ksu_handle_finit_module" $(srctree)/kernel/module/main.c 2>/dev/null; echo $$?),0)
+    $(info -- $(REPO_NAME)/compat: found ksu_handle_finit_module)
+    ccflags-y += -DKSU_COMPAT_HAS_INSMOD_HOOK
+  else
+    $(error You must hook both init_module and finit_module if you want module blacklist)
+  endif
+endif
+
+ifeq ($(shell grep -q 'static int selinux_inode_setxattr. *struct user_namespace .*mnt_userns,' $(srctree)/security/selinux/hooks.c 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found 5.12 inode_setxattr prototype)
+ccflags-y += -DKSU_COMPAT_USE_5_12_INODE_SETXAATR
+endif
+
+ifeq ($(shell grep -q 'static int selinux_inode_setxattr. *struct mnt_idmap .*idmap,' $(srctree)/security/selinux/hooks.c 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found 6.3 inode_setxattr prototype)
+ccflags-y += -DKSU_COMPAT_USE_6_3_INODE_SETXAATR
+endif
+
+# https://github.com/torvalds/linux/commit/6f3be9f562e3027c77bc4482ccf2cea8600a7f74
+# 4.5
+ifeq ($(shell grep -q 'LABEL_INITIALIZED' $(srctree)/security/selinux/include/objsec.h 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found isec LABEL_INITIALIZED)
+ccflags-y += -DKSU_COMPAT_HAS_ISEC_LABEL_INITIALIZED
+endif
+
+# https://github.com/torvalds/linux/commit/cdfb6b341f0f2409aba24b84f3b4b2bba50be5c5
+# 4.18
+ifeq ($(shell grep -q -F 'static inline struct audit_context *audit_context(void)' $(srctree)/include/linux/audit.h 2>/dev/null; echo $$?),0)
+$(info -- $(REPO_NAME)/compat: found audit_context func)
+ccflags-y += -DKSU_COMPAT_HAS_AUDIT_CONTEXT
+endif
