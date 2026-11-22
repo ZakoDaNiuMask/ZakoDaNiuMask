@@ -55,6 +55,8 @@ import org.bakasu.bakasu.data.system.HomeRuntimeRepository
 import org.bakasu.bakasu.data.system.HomeStateRepository
 import org.bakasu.bakasu.data.text.HanziToPinyin
 import org.bakasu.bakasu.data.theme.MonetCompatColorSource
+import org.bakasu.bakasu.data.theme.ThemePackageRepository
+import org.bakasu.bakasu.data.theme.ThemePackageStorage
 import org.bakasu.bakasu.data.theme.ThemeRepository
 import org.bakasu.bakasu.data.update.ManagerUpdateRepository
 import org.bakasu.bakasu.data.webui.WebUiRepository
@@ -310,6 +312,8 @@ val repositoryModule = module {
     singleOf(::CardConfig)
     singleOf(::BackgroundManager)
     singleOf(::ThemeUtils)
+    single { ThemePackageStorage(File(androidApplication().filesDir, "themes")) }
+    single { ThemePackageRepository(androidApplication(), get()) }
     singleOf(::LocaleHelper)
     singleOf(::LocaleRepository)
     singleOf(::SettingsPlatformRepository)

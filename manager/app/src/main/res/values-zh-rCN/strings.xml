@@ -673,4 +673,22 @@
     <string name="superuser_root_access_required">加载应用列表需要 Root 权限。</string>
     <string name="superuser_service_start_failed">RootService 启动失败，请重试以加载应用列表。</string>
     <string name="superuser_packages_load_failed">从 RootService 加载应用列表失败，请重试。</string>
+    <string name="theme_package_section_title">主题包</string>
+    <string name="theme_package_import">导入主题包</string>
+    <string name="theme_package_import_summary">选择本地 zip 文件</string>
+    <string name="theme_package_empty">尚未导入主题包</string>
+    <string name="theme_package_delete">删除</string>
+    <string name="theme_package_delete_confirm_title">删除主题包？</string>
+    <string name="theme_package_delete_confirm_message">「%1$s」将从本机移除。</string>
+    <string name="theme_package_mode_adaptive">明暗双色</string>
+    <string name="theme_package_mode_single">单套配色</string>
+    <string name="theme_package_error_title">导入失败</string>
+    <string name="theme_package_error_unknown">主题包无法导入。</string>
+    <string name="theme_package_error_missing_manifest">压缩包内缺少 theme.json。</string>
+    <string name="theme_package_error_unsupported_version">不支持该主题包版本。</string>
+    <string name="theme_package_error_malformed_manifest">theme.json 格式错误。</string>
+    <string name="theme_package_error_entry_rejected">压缩包内包含不允许的文件。</string>
+    <string name="theme_package_error_too_large">主题包超出体积限制。</string>
+    <string name="theme_package_error_invalid_image">主题包内的图片无法使用。</string>
+    <string name="theme_package_error_invalid_id">主题包标识非法。</string>
 </resources>
