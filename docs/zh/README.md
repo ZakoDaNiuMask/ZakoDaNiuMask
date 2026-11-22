@@ -1,11 +1,15 @@
-# BakaSU
-<img align='right' src='../BakaSU_Full.svg' width='220px' alt="BakaSU Icon">
+# futaloliSU
+<img align='right' src='../BakaSU_Full.svg' width='220px' alt="futaloliSU Icon">
+
+> **futaloliSU** 基于 [**Baka-SU/BakaSU**](https://github.com/Baka-SU/BakaSU)（曾用名 ReSukiSU），后者是
+> [`tiann/KernelSU`](https://github.com/tiann/KernelSU) 的下游分支。本项目只做管理器侧的主题与本地化定制，内核保持上游基座不改。
+
+> **上游署名与许可**：`kernel/` 目录遵循 GPL-2.0-only，管理器及其余部分遵循 GPL-3.0-or-later。上游作者与贡献者的版权头完整保留，
+> 二次分发须同样遵循上述协议并注明来源。
 
 曾用名：ReSukiSU
 
 [English](../README.md) | **简体中文** 
-
-一个 [`tiann/KernelSU`](https://github.com/tiann/KernelSU) 的下游分支, 添加了一些个人修改。
 
 [![最新发行](https://img.shields.io/github/v/release/Baka-SU/BakaSU?label=Release&logo=github)](https://github.com/Baka-SU/BakaSU/releases/latest)
 [![最新 CI 构建（nightly.link）](https://img.shields.io/badge/nightly.link-%E6%9C%80%E6%96%B0%20CI%20%E6%9E%84%E5%BB%BA-800080)](https://nightly.link/Baka-SU/BakaSU/workflows/build-manager/main)

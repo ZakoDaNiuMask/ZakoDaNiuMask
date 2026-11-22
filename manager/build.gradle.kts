@@ -46,9 +46,10 @@ extra["androidTargetCompatibility"] = JavaVersion.VERSION_21
 extra["managerVersionCode"] = 30000 + getGitCommitCount() + 700
 extra["managerVersionName"] = getGitDescribe()
 extra["isPrBuild"] = project.findProperty("IS_PR_BUILD")?.toString()?.toBoolean() ?: false
-extra["defaultManagerPackageName"] = "com.resukisu.resukisu"
+// 本 Fork 的身份：只在 applicationId 上与上游区分，源码包名仍为 org.bakasu.bakasu。
+extra["defaultManagerPackageName"] = "com.saoiololi.futalolisu"
 extra["managerPackageName"] = project.findProperty("KSU_PACKAGE_NAME")?.toString() ?: extra["defaultManagerPackageName"]
-extra["defaultManagerAppName"] = if (extra["isPrBuild"] == true) "BakaSU PR" else "BakaSU"
+extra["defaultManagerAppName"] = if (extra["isPrBuild"] == true) "futaloliSU PR" else "futaloliSU"
 extra["managerName"] = project.findProperty("KSU_NAME")?.toString() ?: extra["defaultManagerAppName"]
 
 val isSpoofedBuild = project.findProperty("IS_SPOOFED_BUILD")?.toString()?.toBoolean() ?: false

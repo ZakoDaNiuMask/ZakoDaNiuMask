@@ -180,7 +180,7 @@ baselineProfile {
 
 base {
     archivesName.set(
-        "BakaSU_${managerVersionName}_$managerVersionCode",
+        "futaloliSU_${managerVersionName}_$managerVersionCode",
     )
 }
 

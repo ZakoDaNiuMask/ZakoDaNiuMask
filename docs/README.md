@@ -1,11 +1,17 @@
-# BakaSU
-<img align='right' src='BakaSU_Full.svg' width='220px' alt="BakaSU Icon">
+# futaloliSU
+<img align='right' src='BakaSU_Full.svg' width='220px' alt="futaloliSU Icon">
+
+> **futaloliSU** is a downstream fork of [**Baka-SU/BakaSU**](https://github.com/Baka-SU/BakaSU) (formerly ReSukiSU),
+> which itself is a downstream of [`tiann/KernelSU`](https://github.com/tiann/KernelSU). This fork only adds
+> manager-side theming and localization work; the kernel stays on the upstream BakaSU base.
+
+> **Upstream attribution and license**: everything under `kernel/` is licensed GPL-2.0-only; the manager and
+> the remaining parts are GPL-3.0-or-later. All upstream copyright notices are kept intact, and any
+> redistribution must follow the same licenses and credit the upstream projects.
 
 Formerly known as: ReSukiSU
 
 **English** | [简体中文](./zh/README.md)
-
-A [`tiann/KernelSU`](https://github.com/tiann/KernelSU)'s downstream, added some personal changes.
 
 [![Latest release](https://img.shields.io/github/v/release/Baka-SU/BakaSU?label=Release&logo=github)](https://github.com/Baka-SU/BakaSU/releases/latest)
 [![Latest CI build (nightly.link)](https://img.shields.io/badge/nightly.link-Latest%20CI%20Build-800080)](https://nightly.link/Baka-SU/BakaSU/workflows/build-manager/main)

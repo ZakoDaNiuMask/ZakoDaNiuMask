@@ -167,11 +167,11 @@ jobs:
         run: |
           export BUILD_EXTRA_ARGS=""
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            export KSU_PACKAGE_NAME="com.resukisu.resukisu.pr${{github.event.pull_request.number}}"
+            export KSU_PACKAGE_NAME="com.saoiololi.futalolisu.pr${{github.event.pull_request.number}}"
             export BUILD_EXTRA_ARGS="-PKSU_PACKAGE_NAME=$KSU_PACKAGE_NAME"
           elif [ "${{ github.ref_type }}" != "tag" ] && [ "${{ github.ref_name }}" != "main" ]; then
-            export KSU_PACKAGE_NAME="com.resukisu.resukisu.dev"
-            export KSU_NAME="BakaSU-DEV"
+            export KSU_PACKAGE_NAME="com.saoiololi.futalolisu.dev"
+            export KSU_NAME="futaloliSU-DEV"
             export BUILD_EXTRA_ARGS="-PKSU_PACKAGE_NAME=$KSU_PACKAGE_NAME -PKSU_NAME=$KSU_NAME"
           fi
 
