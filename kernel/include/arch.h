@@ -4,6 +4,12 @@
 #include <linux/version.h>
 #include <linux/types.h>
 
+/* is_compat_task() 是内核内联函数，只有包含该头文件时才可见；
+ * x86_64 分支原先未包含，LKM 因此把它当外部符号引用而加载失败。 */
+#ifdef CONFIG_COMPAT
+#include <linux/compat.h>
+#endif
+
 #if defined(__aarch64__)
 
 #define __PT_PARM1_REG regs[0]
