@@ -103,6 +103,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bakasu.bakasu.data.AppSettingsRepository
 import org.bakasu.bakasu.data.theme.MonetCompatColorSource
+import org.bakasu.bakasu.data.theme.ThemePackageData
 import org.bakasu.bakasu.data.theme.ThemeRepository
 import org.bakasu.bakasu.ui.overscroll.StretchOverscrollCompensationState
 import org.bakasu.bakasu.ui.util.LocalBackgroundBlurAnchor
@@ -153,6 +154,17 @@ class ThemeConfig(
     var bottomBarStyle by mutableStateOf(BottomBarStyle.MATERIAL3_EXPRESSIVE)
     var amoledBackground by mutableStateOf(false)
     var appearanceOverlay by mutableStateOf(AppearanceOverlay.None)
+    var appliedThemeId by mutableStateOf<String?>(null)
+    var appliedThemeData by mutableStateOf<ThemePackageData?>(null)
+
+    /** 解绑当前应用的主题包，并清掉它带来的背景与外观覆盖。 */
+    fun detachAppliedTheme() {
+        appliedThemeId = null
+        appliedThemeData = null
+        customBackgroundUri = null
+        amoledBackground = false
+        appearanceOverlay = AppearanceOverlay.None
+    }
 
     fun resetBackgroundState() {
         backgroundImageLoaded = false
@@ -171,6 +183,8 @@ class ThemeConfig(
         isThemeChanging = false
         amoledBackground = false
         appearanceOverlay = AppearanceOverlay.None
+        appliedThemeId = null
+        appliedThemeData = null
     }
 }
 
@@ -283,6 +297,17 @@ class BackgroundManager(
         }
     }
 
+    fun applyThemeBackground(uri: Uri?) {
+        saveBackgroundUri(uri)
+        config.customBackgroundUri = uri
+        cardConfig.updateBackground(uri != null)
+        config.backgroundImageLoaded = false
+    }
+
+    fun saveAppliedThemeId(id: String?) {
+        settings.putString("applied_theme_id", id)
+    }
+
     fun clearCustomBackground(context: Context) {
         saveBackgroundUri(null)
         config.customBackgroundUri = null
@@ -309,6 +334,7 @@ class BackgroundManager(
         config.isUseBackgroundSeedColor = prefs.getBoolean("use_background_seed_color", false)
         config.isHighContrastMode = prefs.getBoolean("high_contrast_mode", false)
         config.amoledBackground = prefs.getBoolean("amoled_background", false)
+        config.appliedThemeId = prefs.getString("applied_theme_id", null)
     }
 
     private fun saveBackgroundUri(uri: Uri?) {
@@ -366,6 +392,16 @@ fun KernelSUTheme(
     val resolvedDynamicColor = dynamicColor ?: themeConfig.useDynamicColor
     val context = LocalContext.current
     val systemIsDark = isSystemInDarkTheme()
+    val themeApplier = koinInject<ThemePackageApplier>()
+
+    LaunchedEffect(themeConfig.appliedThemeId, resolvedDarkTheme) {
+        if (themeConfig.appliedThemeId != null) {
+            if (themeConfig.appliedThemeData == null) {
+                themeApplier.restoreApplied()
+            }
+            themeApplier.reapplyForMode(resolvedDarkTheme)
+        }
+    }
 
     ThemeInitializer(
         context = context,

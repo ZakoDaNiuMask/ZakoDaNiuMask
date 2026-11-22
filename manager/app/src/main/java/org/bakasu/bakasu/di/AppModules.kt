@@ -177,6 +177,7 @@ import org.bakasu.bakasu.ui.component.ZipFileDetector
 import org.bakasu.bakasu.ui.theme.BackgroundManager
 import org.bakasu.bakasu.ui.theme.CardConfig
 import org.bakasu.bakasu.ui.theme.ThemeConfig
+import org.bakasu.bakasu.ui.theme.ThemePackageApplier
 import org.bakasu.bakasu.ui.util.Shortcut
 import org.bakasu.bakasu.ui.viewmodel.AppProfileViewModel
 import org.bakasu.bakasu.ui.viewmodel.DynamicManagerViewModel
@@ -314,6 +315,16 @@ val repositoryModule = module {
     singleOf(::ThemeUtils)
     single { ThemePackageStorage(File(androidApplication().filesDir, "themes")) }
     single { ThemePackageRepository(androidApplication(), get()) }
+    single {
+        ThemePackageApplier(
+            context = androidApplication(),
+            storage = get(),
+            themeConfig = get(),
+            cardConfig = get(),
+            backgroundManager = get(),
+            themeRepository = get(),
+        )
+    }
     singleOf(::LocaleHelper)
     singleOf(::LocaleRepository)
     singleOf(::SettingsPlatformRepository)

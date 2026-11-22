@@ -691,4 +691,14 @@
     <string name="theme_package_error_too_large">主题包超出体积限制。</string>
     <string name="theme_package_error_invalid_image">主题包内的图片无法使用。</string>
     <string name="theme_package_error_invalid_id">主题包标识非法。</string>
+    <string name="theme_package_apply_failed">无法应用该主题包。</string>
+    <string name="theme_package_current">使用中</string>
+    <string name="theme_package_export">导出当前主题</string>
+    <string name="theme_package_export_summary">将当前外观保存为 zip 文件</string>
+    <string name="theme_package_export_failed">主题导出失败。</string>
+    <string name="theme_package_export_success">主题已导出</string>
+    <string name="theme_package_reset">恢复默认外观</string>
+    <string name="theme_package_reset_summary">清除已应用主题、AMOLED 与背景</string>
+    <string name="theme_package_reset_confirm_title">恢复默认外观？</string>
+    <string name="theme_package_reset_confirm_message">已应用的主题包、AMOLED 与背景都会被清除。</string>
 </resources>

@@ -71,6 +71,11 @@ class ThemePackageStorage(private val rootDir: File) {
             StoredTheme(dir.name, dir, manifest, storedImages(dir))
         }
 
+    fun dirOf(id: String): File {
+        requireId(id)
+        return File(rootDir, id)
+    }
+
     fun delete(id: String): Boolean {
         requireId(id)
         return File(rootDir, id).deleteRecursively()
