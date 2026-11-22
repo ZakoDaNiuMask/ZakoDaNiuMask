@@ -656,6 +656,18 @@ private fun AppearanceSettings(
             )
         }
 
+        item {
+            SettingsSwitchWidget(
+                icon = Icons.TwoTone.Contrast,
+                title = stringResource(R.string.settings_config_enable_amoled),
+                description = stringResource(R.string.settings_config_enable_amoled_summary),
+                checked = themeConfig.amoledBackground,
+                onCheckedChange = { enabled ->
+                    backgroundManager.saveAmoledBackground(enabled)
+                },
+            )
+        }
+
         item(visible = isPortrait) {
             SettingsSwitchWidget(
                 icon = Icons.TwoTone.Dock,

@@ -225,6 +225,8 @@
     <string name="background_crop_rotation_angle">Rotation</string>
     <string name="settings_config_enable_blur">Enable Blur</string>
     <string name="settings_config_enable_blur_summary">Enable blur process for this app</string>
+    <string name="settings_config_enable_amoled">AMOLED Black</string>
+    <string name="settings_config_enable_amoled_summary">Force pure black surfaces in dark mode</string>
     <string name="settings_exp_draw_background_to_blur">Draw Custom background to blur</string>
     <string name="settings_exp_draw_background_to_blur_description">Experimental feature, proceed at your own risk</string>
     <string name="settings_config_use_custom_background_seed_color">Pick color from custom background</string>
