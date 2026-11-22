@@ -106,8 +106,8 @@ class ThemePackageApplier(
             themeConfig.monetCompatSeedColor = it
             if (persist) themeRepository.saveSeedColor(it)
         }
-        variant.cardBackgroundAlphaPercent?.let { cardConfig.cardAlpha = it / 100f }
-        variant.customBackgroundScrimPercent?.let { themeConfig.backgroundDim = it / 100f }
+        variant.cardBackgroundAlphaPercent?.let { cardConfig.cardAlpha = it.coerceIn(0, 100) / 100f }
+        variant.customBackgroundScrimPercent?.let { themeConfig.backgroundDim = it.coerceIn(0, 100) / 100f }
         variant.enableBlur?.let {
             themeConfig.isEnableBlur = it
             if (persist) backgroundManager.saveEnableBlur(it)

@@ -35,7 +35,13 @@ import org.bakasu.bakasu.ui.theme.ThemeConfig
 import org.bakasu.bakasu.ui.theme.ThemePackageApplier
 import org.koin.compose.koinInject
 
-private val IMPORT_MIME_TYPES = arrayOf("application/zip", "application/x-zip-compressed")
+private val IMPORT_MIME_TYPES = arrayOf(
+    "application/zip",
+    "application/x-zip-compressed",
+    "application/x-sukisu-theme",
+    "application/octet-stream",
+    "*/*",
+)
 private const val EXPORT_FILE_NAME = "futaloliSU-theme.zip"
 
 /**

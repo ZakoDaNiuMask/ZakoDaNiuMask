@@ -17,4 +17,7 @@ sealed class ThemePackageException(message: String) : Exception(message) {
     class InvalidImage(val entryName: String, val reason: String) : ThemePackageException("图片 $entryName 不可用：$reason")
 
     class InvalidId(val id: String) : ThemePackageException("主题 id 非法：$id")
+
+    /** `.sukisu` 只读兼容：SKTH 头缺失、密文损坏或 GCM tag 校验失败。 */
+    class IntegrityFailure(detail: String) : ThemePackageException("主题包校验失败：$detail")
 }

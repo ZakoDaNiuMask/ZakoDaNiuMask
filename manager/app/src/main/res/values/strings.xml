@@ -678,6 +678,7 @@
     <string name="superuser_service_start_failed">RootService failed to start. Retry to load applications.</string>
     <string name="superuser_packages_load_failed">Failed to load applications from RootService. Please retry.</string>
     <string name="theme_package_section_title">Theme packages</string>
+    <string name="theme_package_error_integrity">This theme package is corrupted or failed its integrity check.</string>
     <string name="theme_package_import">Import theme package</string>
     <string name="theme_package_import_summary">Pick a local .zip file</string>
     <string name="theme_package_empty">No theme packages imported</string>

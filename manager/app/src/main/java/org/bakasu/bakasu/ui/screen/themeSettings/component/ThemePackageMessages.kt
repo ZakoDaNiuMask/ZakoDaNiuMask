@@ -16,5 +16,6 @@ fun Throwable.themePackageMessageRes(): Int = when (this) {
     is ThemePackageException.TooLarge -> R.string.theme_package_error_too_large
     is ThemePackageException.InvalidImage -> R.string.theme_package_error_invalid_image
     is ThemePackageException.InvalidId -> R.string.theme_package_error_invalid_id
+    is ThemePackageException.IntegrityFailure -> R.string.theme_package_error_integrity
     else -> R.string.theme_package_error_unknown
 }

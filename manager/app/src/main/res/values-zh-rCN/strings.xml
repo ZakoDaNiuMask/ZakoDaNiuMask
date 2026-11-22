@@ -674,6 +674,7 @@
     <string name="superuser_service_start_failed">RootService 启动失败，请重试以加载应用列表。</string>
     <string name="superuser_packages_load_failed">从 RootService 加载应用列表失败，请重试。</string>
     <string name="theme_package_section_title">主题包</string>
+    <string name="theme_package_error_integrity">主题包已损坏，或完整性校验未通过。</string>
     <string name="theme_package_import">导入主题包</string>
     <string name="theme_package_import_summary">选择本地 zip 文件</string>
     <string name="theme_package_empty">尚未导入主题包</string>
