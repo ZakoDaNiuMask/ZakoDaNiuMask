@@ -126,8 +126,7 @@ class WebViewInterface(
                         };$callbackFunc.emit('error', err); } catch(e) { console.error('emitErr', e); } })();"
                     postToWebView { it.loadUrl(emitErrCode) }
                 }
-            }
-            }
+            },
         )
     }
 
