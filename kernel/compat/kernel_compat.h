@@ -12,7 +12,7 @@
 #include <linux/ptrace.h>
 #include <linux/syscalls.h>
 #ifdef CONFIG_COMPAT
-#include <asm/compat.h>
+#include <linux/compat.h>
 #endif
 #include "arch.h"
 
@@ -357,13 +357,18 @@ static inline u64 ksu_ktime_get_ns(void)
 #define untagged_addr(addr) (addr)
 #endif
 
-/*
- * in_compat_syscall() has been available since 4.17 and is a static inline on
- * current kernels, so #ifndef cannot detect it. Only older kernels fall back to
- * is_compat_task(), which 6.x dropped on x86_64.
- */
+#ifdef CONFIG_COMPAT
+#if defined(__x86_64__)
+/* in_compat_syscall() only exists from 4.17 on; older x86_64 kernels still
+ * provide is_compat_task(). */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 17, 0)
-#define in_compat_syscall() is_compat_task()
+#define ksu_is_compat_task() is_compat_task()
+#else
+#define ksu_is_compat_task() in_compat_syscall()
+#endif
+#else
+#define ksu_is_compat_task() is_compat_task()
+#endif
 #endif
 
 extern void ksu_run_in_init_if_possible(void (*callback)(void *), void *data);
@@ -586,7 +591,7 @@ static struct user_arg_ptr ksu_take_user_argv(const char __user *const __user *a
     struct user_arg_ptr argv;
 
 #ifdef CONFIG_COMPAT
-    if (in_compat_syscall()) {
+    if (ksu_is_compat_task()) {
         argv.is_compat = true;
         argv.ptr.compat = (const compat_uptr_t __user *)argv_user;
         return argv;
@@ -597,4 +602,12 @@ static struct user_arg_ptr ksu_take_user_argv(const char __user *const __user *a
     argv.ptr.native = argv_user;
     return argv;
 }
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 18, 0) && !defined(KSU_COMPAT_HAS_AUDIT_CONTEXT)
+static inline struct audit_context *audit_context(void)
+{
+    return current->audit_context;
+}
+#endif
+
 #endif
