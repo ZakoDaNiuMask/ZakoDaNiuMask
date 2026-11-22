@@ -974,7 +974,7 @@ void ksu_execve_hook_ksud(const struct pt_regs *regs)
     struct user_arg_ptr argv;
 
 #ifdef CONFIG_COMPAT
-    argv.is_compat = is_compat_task();
+    argv.is_compat = in_compat_syscall();
     if (argv.is_compat)
         argv.ptr.compat = (const compat_uptr_t __user *)PT_REGS_USER_PTR(regs, 2);
     else
@@ -990,7 +990,7 @@ void ksu_execveat_hook_ksud(const struct pt_regs *regs)
     struct user_arg_ptr argv;
 
 #ifdef CONFIG_COMPAT
-    argv.is_compat = is_compat_task();
+    argv.is_compat = in_compat_syscall();
     if (argv.is_compat)
         argv.ptr.compat = (const compat_uptr_t __user *)PT_REGS_USER_PTR(regs, 3);
     else

@@ -357,7 +357,12 @@ static inline u64 ksu_ktime_get_ns(void)
 #define untagged_addr(addr) (addr)
 #endif
 
-#ifndef in_compat_syscall
+/*
+ * in_compat_syscall() has been available since 4.17 and is a static inline on
+ * current kernels, so #ifndef cannot detect it. Only older kernels fall back to
+ * is_compat_task(), which 6.x dropped on x86_64.
+ */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 17, 0)
 #define in_compat_syscall() is_compat_task()
 #endif
 

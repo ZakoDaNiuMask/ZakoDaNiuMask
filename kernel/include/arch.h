@@ -4,8 +4,9 @@
 #include <linux/version.h>
 #include <linux/types.h>
 
-/* is_compat_task() 是内核内联函数，只有包含该头文件时才可见；
- * x86_64 分支原先未包含，LKM 因此把它当外部符号引用而加载失败。 */
+/* in_compat_syscall()/is_compat_task() are defined behind linux/compat.h on
+ * every architecture; keeping the include here makes them visible to the hook
+ * files that only pull in arch.h. */
 #ifdef CONFIG_COMPAT
 #include <linux/compat.h>
 #endif
