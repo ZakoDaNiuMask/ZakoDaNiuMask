@@ -52,6 +52,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.ui.activity.PermissionRequestInterface
 import com.zakodaniumask.manager.ui.animation.predictiveback.installerNavTransition
 import com.zakodaniumask.manager.ui.navigation.IntentDispatcher
