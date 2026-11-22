@@ -22,6 +22,14 @@ import java.io.File
 import java.util.Properties
 
 /**
+ * Thrown when a bundled native helper (libksud.so / libadbroot.so) is missing from this build.
+ *
+ * Release-lite and repacked APKs strip the KSU natives on purpose, so callers must treat this as
+ * an expected "feature unavailable" signal rather than a programming error.
+ */
+class KsudUnavailableException(message: String) : IllegalStateException(message)
+
+/**
  * @author weishu
  * @date 2023/1/1.
  */
@@ -32,13 +40,24 @@ class KsuCliRepository(context: Context) {
 
     private val nativeLibraryDir = context.applicationInfo.nativeLibraryDir
 
-    private fun getNativeLibraryPath(name: String): String {
+    /** Absolute path of a bundled native library, or null when this build does not ship it. */
+    private fun findNativeLibrary(name: String): String? {
         val library = File(nativeLibraryDir, System.mapLibraryName(name))
-        require(library.isFile) {
-            "${library.name} was not found in the application native library path"
-        }
-        return library.absolutePath
+        return if (library.isFile) library.absolutePath else null
     }
+
+    private fun getNativeLibraryPath(name: String): String {
+        val libraryName = System.mapLibraryName(name)
+        return findNativeLibrary(name) ?: throw KsudUnavailableException(
+            "$libraryName was not found in the application native library path",
+        )
+    }
+
+    /**
+     * True when this build bundles libksud.so. Builds that strip the KSU natives return false and
+     * every ksud-backed read degrades to an empty result instead of throwing.
+     */
+    fun isKsudAvailable(): Boolean = findNativeLibrary("ksud") != null
 
     fun getKsuDaemonPath(): String = getNativeLibraryPath("ksud")
 
@@ -191,12 +210,15 @@ class KsuCliRepository(context: Context) {
         Log.w(TAG, "install result: $result, cost: ${SystemClock.elapsedRealtime() - start}ms")
     }
 
-    fun listModules(): String {
+    fun listModules(): String = try {
         val shell = getRootShell()
 
         val out = shell.newJob()
             .add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec().out
-        return out.joinToString("\n").ifBlank { "[]" }
+        out.joinToString("\n").ifBlank { "[]" }
+    } catch (e: KsudUnavailableException) {
+        Log.w(TAG, "module list skipped: ${e.message}")
+        "[]"
     }
 
     fun mountStatusJson(): String {
@@ -249,15 +271,23 @@ class KsuCliRepository(context: Context) {
 
     private fun shq(value: String): String = "'" + value.replace("'", "'\\''") + "'"
 
-    fun getModuleCount(): Int {        val result = listModules()
-        runCatching {
-            val array = JSONArray(result)
-            return array.length()
-        }.getOrElse { return 0 }
+    fun getModuleCount(): Int {
+        if (!isKsudAvailable()) {
+            Log.i(TAG, "libksud.so missing; module count defaults to 0")
+            return 0
+        }
+        return runCatching {
+            JSONArray(listModules()).length()
+        }.getOrElse {
+            Log.w(TAG, "module count unavailable", it)
+            0
+        }
     }
 
-    fun getSuperuserCount(): Int {
-        return Natives.getSuperuserCount()
+    /** JNI 计数在缺少 libkernelsu.so 时抛 [LinkageError]，这里统一降级为 0。 */
+    fun getSuperuserCount(): Int = runCatching { Natives.getSuperuserCount() }.getOrElse {
+        Log.w(TAG, "superuser count unavailable", it)
+        0
     }
 
     fun toggleModule(id: String, enable: Boolean): Boolean {

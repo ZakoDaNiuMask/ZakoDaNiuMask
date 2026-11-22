@@ -1,5 +1,6 @@
 package com.zakodaniumask.manager.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zakodaniumask.manager.data.count.CountRepository
@@ -102,7 +103,10 @@ class HomeViewModel(
 
     init {
         applyUserSettings()
-        viewModelScope.launch { countRepository.refresh() }
+        viewModelScope.launch {
+            runCatching { countRepository.refresh() }
+                .onFailure { Log.w(TAG, "initial count refresh failed", it) }
+        }
     }
 
     suspend fun awaitInitialData() {
@@ -262,6 +266,7 @@ class HomeViewModel(
     private fun completedJob(): Job = Job().apply { complete() }
 
     private companion object {
+        const val TAG = "HomeViewModel"
         const val PREF_CHECK_UPDATE = "check_update"
         const val PREF_CHECK_BETA_UPDATE = "check_beta_update"
         const val PREF_SIMPLE_MODE = "is_simple_mode"
