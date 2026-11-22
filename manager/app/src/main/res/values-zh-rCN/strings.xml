@@ -676,7 +676,7 @@
     <string name="theme_package_section_title">主题包</string>
     <string name="theme_package_error_integrity">主题包已损坏，或完整性校验未通过。</string>
     <string name="theme_package_import">导入主题包</string>
-    <string name="theme_package_import_summary">选择本地 zip 文件</string>
+    <string name="theme_package_import_summary">选择本地 .zip / .sukisu 文件</string>
     <string name="theme_package_empty">尚未导入主题包</string>
     <string name="theme_package_delete">删除</string>
     <string name="theme_package_delete_confirm_title">删除主题包？</string>

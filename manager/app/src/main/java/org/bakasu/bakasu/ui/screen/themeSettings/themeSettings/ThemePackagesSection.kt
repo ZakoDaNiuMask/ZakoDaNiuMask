@@ -66,17 +66,18 @@ fun ThemePackagesSection() {
         packages = repository.list()
     }
 
-    fun reload() {
-        scope.launch { packages = repository.list() }
-    }
-
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
     ) { uri ->
         if (uri != null) {
             scope.launch {
                 runCatching { repository.importPackage(uri) }
-                    .onSuccess { reload() }
+                    .onSuccess { stored ->
+                        packages = repository.list()
+                        if (!applier.apply(stored.id, darkMode)) {
+                            errorRes = R.string.theme_package_apply_failed
+                        }
+                    }
                     .onFailure { errorRes = it.themePackageMessageRes() }
             }
         }

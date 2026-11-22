@@ -680,7 +680,7 @@
     <string name="theme_package_section_title">Theme packages</string>
     <string name="theme_package_error_integrity">This theme package is corrupted or failed its integrity check.</string>
     <string name="theme_package_import">Import theme package</string>
-    <string name="theme_package_import_summary">Pick a local .zip file</string>
+    <string name="theme_package_import_summary">Select local .zip / .sukisu file</string>
     <string name="theme_package_empty">No theme packages imported</string>
     <string name="theme_package_delete">Delete</string>
     <string name="theme_package_delete_confirm_title">Delete theme package?</string>
