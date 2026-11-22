@@ -263,4 +263,6 @@ dependencies {
     implementation(libs.lsposed.cxx)
 
     implementation(libs.accompanist.drawablepainter)
+
+    testImplementation(libs.junit)
 }

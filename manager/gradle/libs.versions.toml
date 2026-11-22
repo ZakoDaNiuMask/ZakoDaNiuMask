@@ -2,6 +2,7 @@
 accompanist-drawablepainter = "0.37.3"
 agp = "9.4.1"
 gson = "2.14.0"
+junit = "4.13.2"
 kotlin = "2.4.20"
 materialKolor = "5.0.1"
 monetCompat = "0.4.1"
@@ -51,6 +52,7 @@ aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "abo
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
 [libraries]
+junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
 xz = { module = "org.tukaani:xz", version.ref = "xz" }
