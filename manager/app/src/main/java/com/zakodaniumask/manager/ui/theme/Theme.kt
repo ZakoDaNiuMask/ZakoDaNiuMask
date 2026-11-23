@@ -140,6 +140,8 @@ class ThemeConfig(
     var isEnableBlurExp by mutableStateOf(false)
     var isUseBackgroundSeedColor by mutableStateOf(false)
     var bottomBarStyle by mutableStateOf(BottomBarStyle.MATERIAL3_EXPRESSIVE)
+    var amoledBackground by mutableStateOf(false)
+    var appearanceOverlay by mutableStateOf(AppearanceOverlay.None)
 
     // 主题变化检测
     private var lastDarkModeState: Boolean? = null
@@ -168,6 +170,8 @@ class ThemeConfig(
         backgroundImageLoaded = false
         isThemeChanging = false
         preventBackgroundRefresh = false
+        amoledBackground = false
+        appearanceOverlay = AppearanceOverlay.None
         lastDarkModeState = null
     }
 }
@@ -220,6 +224,11 @@ class BackgroundManager(
     fun saveEnableBlurExp(enable: Boolean) {
         config.isEnableBlurExp = enable
         settings.putBoolean("enable_blur_exp", enable)
+    }
+
+    fun saveAmoledBackground(enable: Boolean) {
+        config.amoledBackground = enable
+        settings.putBoolean("amoled_background", enable)
     }
 
     fun saveBottomBarStyle(style: BottomBarStyle) {
@@ -291,6 +300,7 @@ class BackgroundManager(
         config.isEnableBlurExp = prefs.getBoolean("enable_blur_exp", false)
         config.isUseBackgroundSeedColor = prefs.getBoolean("use_background_seed_color", false)
         config.isHighContrastMode = prefs.getBoolean("high_contrast_mode", false)
+        config.amoledBackground = prefs.getBoolean("amoled_background", false)
     }
 
     private fun saveBackgroundUri(uri: Uri?) {
@@ -366,12 +376,15 @@ fun KernelSUTheme(
     )
 
     // 创建颜色方案
+    val appearance = themeConfig.toAppearanceState(cardAlpha = cardConfig.cardAlpha)
     val colorScheme = createColorScheme(
         resolvedDarkTheme,
         resolvedDynamicColor,
         themeConfig,
         backgroundRenderState,
     )
+        .amoledBackground(appearance.amoled && resolvedDarkTheme)
+        .withAppearance(appearance.overlay)
 
     // 系统栏样式
     SystemBarController(resolvedDarkTheme)
