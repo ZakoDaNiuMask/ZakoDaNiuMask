@@ -18,6 +18,7 @@ fragment = "1.8.9"
 activity-compose = "1.13.0"
 core-splashscreen = "1.2.0"
 kotlinx-coroutines = "1.11.0"
+kotlinx-serialization = "1.11.0"
 coil-compose = "2.7.0"
 ucrop = "2.2.11"
 markdown = "4.6.2"
@@ -58,6 +59,7 @@ aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "abo
 
 [libraries]
 junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
 xz = { module = "org.tukaani:xz", version.ref = "xz" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
