@@ -1355,4 +1355,8 @@
     <string name="home_working_version">版本：%s</string>
     <string name="jailbreak_reboot_warning">当前处于越狱模式，重启后将失去 Root 权限，开机后需要重新越狱。确定要重启吗？</string>
     <string name="selinux_status_unknown">未知</string>
+
+    <!-- KernelSU UI misc -->
+    <string name="download_dialog_title">输入链接</string>
+    <string name="processing">处理中…</string>
 </resources>

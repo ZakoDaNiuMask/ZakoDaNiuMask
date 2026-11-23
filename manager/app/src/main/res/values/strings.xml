@@ -1355,4 +1355,8 @@
     <string name="home_working_version">Version: %s</string>
     <string name="jailbreak_reboot_warning">You are in Jailbreak mode. Rebooting will lose root access, and you will have to jailbreak again after the device starts up. Reboot anyway?</string>
     <string name="selinux_status_unknown">Unknown</string>
+
+    <!-- KernelSU UI misc -->
+    <string name="download_dialog_title">Enter URL</string>
+    <string name="processing">Processing…</string>
 </resources>
