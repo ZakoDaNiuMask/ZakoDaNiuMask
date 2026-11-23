@@ -33,7 +33,9 @@ fun getGitCommitCount(): Int {
 
 fun getGitDescribe(): String {
     val desc = providers.exec {
-        commandLine("git", "describe", "--tags", "--always", "--abbrev=0")
+        // Only version tags should drive the manager version. Safety/backup tags such as
+        // pre-futaloli-* or pre-bakasu-* must never leak into the displayed version.
+        commandLine("git", "describe", "--tags", "--match", "v*", "--always", "--abbrev=0")
     }.standardOutput.asText.get().trim()
     if (isSpoofedBuild) {
         return "$desc-spoofed"
