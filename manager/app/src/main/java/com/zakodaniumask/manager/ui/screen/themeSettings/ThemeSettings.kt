@@ -359,6 +359,11 @@ fun ThemeSettingsScreen(
             }
 
             item {
+                // 主题包
+                ThemePackagesSection()
+            }
+
+            item {
                 // Predictive Back Settings
                 SegmentedColumn(
                     title = stringResource(R.string.predictive_back_settings)

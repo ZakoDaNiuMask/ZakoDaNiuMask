@@ -90,6 +90,11 @@ private val PORTED_COMPONENTS = listOf(
         website = "https://github.com/Baka-SU/BakaSU",
     ),
     PortedComponent(
+        name = "futaloliSU (saoiololi)",
+        licenseName = "GPL-3.0",
+        website = "https://github.com/saoiololi/futaloliSU",
+    ),
+    PortedComponent(
         name = "SukiSU-Ultra",
         licenseName = "GPL-3.0",
         website = "https://github.com/SukiSU-Ultra/SukiSU-Ultra",

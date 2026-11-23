@@ -1309,4 +1309,35 @@
     <string name="susfs_sus_path_uid_filter_description">Select apps that can see paths hidden by SUSFS. Other ordinary apps cannot see these paths. Only app UIDs 10000–19999 can be selected. Changes take effect immediately and are restored after reboot. Apps sharing a UID are affected together.</string>
     <string name="susfs_uid_filter_search">Search apps</string>
     <string name="susfs_uid_filter_loading">Loading apps…</string>
+
+    <!-- Theme packages -->
+    <string name="theme_package_apply_failed">Unable to apply this theme package.</string>
+    <string name="theme_package_current">In use</string>
+    <string name="theme_package_delete">Delete</string>
+    <string name="theme_package_delete_confirm_message">“%1$s” will be removed from this device.</string>
+    <string name="theme_package_delete_confirm_title">Delete theme package?</string>
+    <string name="theme_package_empty">No theme packages imported</string>
+    <string name="theme_package_error_entry_rejected">The archive contains a disallowed file.</string>
+    <string name="theme_package_error_integrity">This theme package is corrupted or failed its integrity check.</string>
+    <string name="theme_package_error_invalid_id">Invalid theme package identifier.</string>
+    <string name="theme_package_error_invalid_image">An image inside the package is unusable.</string>
+    <string name="theme_package_error_malformed_manifest">theme.json is malformed.</string>
+    <string name="theme_package_error_missing_manifest">The archive has no theme.json.</string>
+    <string name="theme_package_error_title">Import failed</string>
+    <string name="theme_package_error_too_large">The package exceeds the size limits.</string>
+    <string name="theme_package_error_unknown">The package could not be imported.</string>
+    <string name="theme_package_error_unsupported_version">This theme package version is not supported.</string>
+    <string name="theme_package_export">Export current theme</string>
+    <string name="theme_package_export_failed">Unable to export the theme.</string>
+    <string name="theme_package_export_success">Theme exported</string>
+    <string name="theme_package_export_summary">Save the current appearance as a .zip file</string>
+    <string name="theme_package_import">Import theme package</string>
+    <string name="theme_package_import_summary">Select local .zip / .sukisu file</string>
+    <string name="theme_package_mode_adaptive">Light and dark variants</string>
+    <string name="theme_package_mode_single">Single palette</string>
+    <string name="theme_package_reset">Restore default appearance</string>
+    <string name="theme_package_reset_confirm_message">The applied theme package, AMOLED and background will be cleared.</string>
+    <string name="theme_package_reset_confirm_title">Restore default appearance?</string>
+    <string name="theme_package_reset_summary">Clear the applied theme package, AMOLED and background</string>
+    <string name="theme_package_section_title">Theme packages</string>
 </resources>

@@ -70,6 +70,8 @@ import com.zakodaniumask.manager.data.system.HomeRuntimeRepository
 import com.zakodaniumask.manager.data.system.HomeStateRepository
 import com.zakodaniumask.manager.data.text.HanziToPinyin
 import com.zakodaniumask.manager.data.theme.MonetCompatColorSource
+import com.zakodaniumask.manager.data.theme.ThemePackageRepository
+import com.zakodaniumask.manager.data.theme.ThemePackageStorage
 import com.zakodaniumask.manager.data.theme.ThemeRepository
 import com.zakodaniumask.manager.data.update.ManagerUpdateRepository
 import com.zakodaniumask.manager.data.privilege.PrivilegeManager
@@ -211,6 +213,7 @@ import com.zakodaniumask.manager.ui.component.ZipFileDetector
 import com.zakodaniumask.manager.ui.theme.BackgroundManager
 import com.zakodaniumask.manager.ui.theme.CardConfig
 import com.zakodaniumask.manager.ui.theme.ThemeConfig
+import com.zakodaniumask.manager.ui.theme.ThemePackageApplier
 import com.zakodaniumask.manager.ui.util.module.Shortcut
 import com.zakodaniumask.manager.ui.viewmodel.AppProfileViewModel
 import com.zakodaniumask.manager.ui.viewmodel.DynamicManagerViewModel
@@ -405,6 +408,18 @@ val repositoryModule = module {
     singleOf(::CardConfig)
     singleOf(::BackgroundManager)
     singleOf(::ThemeUtils)
+    single { ThemePackageStorage(File(androidApplication().filesDir, "themes")) }
+    single { ThemePackageRepository(androidApplication(), get()) }
+    single {
+        ThemePackageApplier(
+            context = androidApplication(),
+            storage = get(),
+            themeConfig = get(),
+            cardConfig = get(),
+            backgroundManager = get(),
+            themeRepository = get(),
+        )
+    }
     singleOf(::LocaleHelper)
     singleOf(::LocaleRepository)
     singleOf(::SettingsPlatformRepository)
