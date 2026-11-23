@@ -55,6 +55,8 @@ fun ThemePackagesSection() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val darkMode = themeConfig.forceDarkMode ?: isSystemInDarkTheme()
+    val exportSuccessText = stringResource(R.string.theme_package_export_success)
+    val exportFailedText = stringResource(R.string.theme_package_export_failed)
     var packages by remember { mutableStateOf<List<StoredTheme>>(emptyList()) }
     var pendingDelete by remember { mutableStateOf<StoredTheme?>(null) }
     var pendingReset by remember { mutableStateOf(false) }
@@ -93,7 +95,7 @@ fun ThemePackagesSection() {
                 busy = false
                 Toast.makeText(
                     context,
-                    context.getString(if (ok) R.string.theme_package_export_success else R.string.theme_package_export_failed),
+                    if (ok) exportSuccessText else exportFailedText,
                     Toast.LENGTH_SHORT,
                 ).show()
             }
