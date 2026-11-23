@@ -1,5 +1,6 @@
 package com.zakodaniumask.manager.ksuui.ui.screen.home
 
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -108,7 +109,11 @@ fun HomePagerMiuix(
             )
         },
         popupHost = { },
-        contentWindowInsets = WindowInsets.systemBars.add(WindowInsets.displayCutout).only(WindowInsetsSides.Horizontal)
+        contentWindowInsets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowInsets.systemBars.add(WindowInsets.displayCutout).only(WindowInsetsSides.Horizontal)
+        } else {
+            WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)
+        }
     ) { innerPadding ->
         Box(modifier = if (backdrop != null) Modifier.layerBackdrop(backdrop) else Modifier) {
             LazyColumn(

@@ -1,6 +1,7 @@
 package com.zakodaniumask.manager.ksuui.ui.theme
 
 import android.app.Activity
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -45,8 +46,12 @@ fun MiuixKernelSUTheme(
     val resolvedKeyColor: Color? = when {
         appSettings.keyColor != 0 -> Color(appSettings.keyColor)
         appSettings.colorMode.isMonet ->
-            if (darkTheme) dynamicDarkColorScheme(context).primary
-            else dynamicLightColorScheme(context).primary
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (darkTheme) dynamicDarkColorScheme(context).primary
+                else dynamicLightColorScheme(context).primary
+            } else {
+                Color(0xFF6750A4)
+            }
 
         else -> null
     }
