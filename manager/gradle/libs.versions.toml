@@ -2,6 +2,7 @@
 accompanist-drawablepainter = "0.37.3"
 agp = "9.4.1"
 gson = "2.14.0"
+junit = "4.13.2"
 jsoup = "1.18.3"
 reorderable = "2.4.3"
 okhttp = "4.12.0"
@@ -56,6 +57,7 @@ lsplugin-apksign = { id = "org.lsposed.lsplugin.apksign", version.ref = "apksign
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 
 [libraries]
+junit = { module = "junit:junit", version.ref = "junit" }
 commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
 xz = { module = "org.tukaani:xz", version.ref = "xz" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }

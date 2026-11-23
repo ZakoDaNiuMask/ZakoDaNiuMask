@@ -127,3 +127,7 @@ jobs:
       - name: Check Manager Lint
         run: |
           ./gradlew lintDebug
+
+      - name: Run Manager Unit Tests
+        run: |
+          ./gradlew testDebugUnitTest
