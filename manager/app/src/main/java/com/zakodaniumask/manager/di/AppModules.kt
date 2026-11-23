@@ -3,6 +3,9 @@ package com.zakodaniumask.manager.di
 import coil.ImageLoader
 import com.zakodaniumask.manager.BuildConfig
 import com.zakodaniumask.manager.data.AppSettingsRepository
+import com.zakodaniumask.manager.ksuui.ManagerUiModeController
+import com.zakodaniumask.manager.ksuui.data.KsuSettingsRepository
+import com.zakodaniumask.manager.ksuui.data.repository.SettingsRepository
 import com.zakodaniumask.manager.data.application.ApplicationControlRepository
 import com.zakodaniumask.manager.data.application.DynamicManagerRepository
 import com.zakodaniumask.manager.data.bootscript.BootScriptRepository
@@ -408,6 +411,8 @@ val repositoryModule = module {
     singleOf(::CardConfig)
     singleOf(::BackgroundManager)
     singleOf(::ThemeUtils)
+    single { ManagerUiModeController(get()) }
+    single<SettingsRepository> { KsuSettingsRepository(get(), get(), get(), get()) }
     single { ThemePackageStorage(File(androidApplication().filesDir, "themes")) }
     single { ThemePackageRepository(androidApplication(), get()) }
     single {

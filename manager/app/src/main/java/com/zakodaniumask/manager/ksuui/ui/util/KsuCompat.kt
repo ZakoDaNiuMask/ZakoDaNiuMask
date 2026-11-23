@@ -1,0 +1,20 @@
+package com.zakodaniumask.manager.ksuui.ui.util
+
+import com.topjohnwu.superuser.Shell
+import com.zakodaniumask.manager.ksuui.ui.util.module.LatestVersionInfo
+
+/** Phase 0: update checks are disabled until the KernelSU downloader is ported. */
+fun checkNewVersion(): LatestVersionInfo = LatestVersionInfo()
+
+fun rootAvailable(): Boolean = runCatching { Shell.getShell().isRoot }.getOrDefault(false)
+
+fun reboot(reason: String = "") {
+    val command = if (reason.isBlank()) {
+        "/system/bin/svc power reboot || /system/bin/reboot"
+    } else {
+        "/system/bin/svc power reboot $reason || /system/bin/reboot $reason"
+    }
+    runCatching {
+        Shell.Builder.create().build().newJob().add(command).exec()
+    }
+}

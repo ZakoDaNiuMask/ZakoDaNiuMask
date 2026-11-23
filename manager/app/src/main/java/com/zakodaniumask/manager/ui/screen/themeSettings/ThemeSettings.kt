@@ -100,6 +100,8 @@ import com.zakodaniumask.manager.ui.component.settings.SegmentedColumn
 import com.zakodaniumask.manager.ui.component.settings.SegmentedColumnScope
 import com.zakodaniumask.manager.ui.component.settings.SettingsBaseWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsChooseDialog
+import com.zakodaniumask.manager.ksuui.ManagerUiMode
+import com.zakodaniumask.manager.ksuui.ManagerUiModeController
 import com.zakodaniumask.manager.ui.component.settings.SettingsChooseWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsJumpPageWidget
 import com.zakodaniumask.manager.ui.component.settings.SettingsSwitchWidget
@@ -361,6 +363,21 @@ fun ThemeSettingsScreen(
             item {
                 // 主题包
                 ThemePackagesSection()
+            }
+
+            item {
+                val uiModeController: ManagerUiModeController = koinInject()
+                SettingsChooseWidget(
+                    icon = Icons.TwoTone.Style,
+                    title = "Manager UI",
+                    items = ManagerUiMode.entries.map { it.label },
+                    selectedIndex = ManagerUiMode.entries.indexOf(uiModeController.mode),
+                    onSelectedIndexChange = { index ->
+                        uiModeController.set(
+                            ManagerUiMode.entries.getOrElse(index) { ManagerUiMode.ZAKO },
+                        )
+                    },
+                )
             }
 
             item {

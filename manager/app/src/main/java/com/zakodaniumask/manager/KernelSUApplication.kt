@@ -7,6 +7,8 @@ import com.zakodaniumask.manager.data.applock.AppLockLifecycleObserver
 import com.zakodaniumask.manager.data.applock.AppLockManager
 import com.zakodaniumask.manager.di.appModules
 import com.zakodaniumask.manager.domain.usecase.InitializeApplicationUseCase
+import com.zakodaniumask.manager.ksuui.KsuServiceLocator
+import com.zakodaniumask.manager.ksuui.data.repository.SettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.koin.androidContext
@@ -39,6 +41,9 @@ class KernelSUApplication : Application() {
         runBlocking(Dispatchers.IO) {
             koin.get<InitializeApplicationUseCase>()()
         }
+
+        // Must run after the settings preload so the persisted UI mode is visible.
+        KsuServiceLocator.init(this, koin.get<SettingsRepository>())
 
         // Re-lock the manager when the whole process returns to the foreground.
         ProcessLifecycleOwner.get().lifecycle.addObserver(

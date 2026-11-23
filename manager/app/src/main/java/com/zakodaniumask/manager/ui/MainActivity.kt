@@ -22,6 +22,9 @@ import com.zakodaniumask.manager.domain.model.StartupState
 import com.zakodaniumask.manager.domain.usecase.ApplyLanguageUseCase
 import com.zakodaniumask.manager.domain.usecase.EnsureManagerInstalledUseCase
 import com.zakodaniumask.manager.domain.usecase.ObserveStartupStateUseCase
+import com.zakodaniumask.manager.ksuui.KsuHomePreview
+import com.zakodaniumask.manager.ksuui.ManagerUiMode
+import com.zakodaniumask.manager.ksuui.ManagerUiModeController
 import com.zakodaniumask.manager.ui.activity.util.ThemeChangeContentObserver
 import com.zakodaniumask.manager.ui.screen.applock.AppLockScreen
 import com.zakodaniumask.manager.ui.activity.util.ThemeUtils
@@ -39,6 +42,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.compose.koinInject
 
 class MainActivity : FragmentActivity() {
     private val appLockManager: AppLockManager by inject()
@@ -120,15 +124,25 @@ class MainActivity : FragmentActivity() {
             }
 
             setContent {
-                KernelSUTheme {
-                    when (val state = startupState.collectAsStateWithLifecycle().value) {
-                        is StartupState.Failed -> StartupFailureContent(state.message)
-                        else -> {
-                            val locked = appLockManager.locked.collectAsStateWithLifecycle().value
-                            if (locked) {
-                                AppLockScreen()
-                            } else {
-                                NavContainer(settingsViewModel, intentChannel)
+                val uiModeController: ManagerUiModeController = koinInject()
+                if (uiModeController.mode.isKsu) {
+                    KernelSUTheme {
+                        KsuHomePreview(
+                            mode = uiModeController.mode,
+                            onExit = { uiModeController.set(ManagerUiMode.ZAKO) },
+                        )
+                    }
+                } else {
+                    KernelSUTheme {
+                        when (val state = startupState.collectAsStateWithLifecycle().value) {
+                            is StartupState.Failed -> StartupFailureContent(state.message)
+                            else -> {
+                                val locked = appLockManager.locked.collectAsStateWithLifecycle().value
+                                if (locked) {
+                                    AppLockScreen()
+                                } else {
+                                    NavContainer(settingsViewModel, intentChannel)
+                                }
                             }
                         }
                     }

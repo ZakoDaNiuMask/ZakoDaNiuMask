@@ -1340,4 +1340,19 @@
     <string name="theme_package_reset_confirm_title">恢复默认外观？</string>
     <string name="theme_package_reset_summary">清除已应用主题、AMOLED 与背景</string>
     <string name="theme_package_section_title">主题包</string>
+
+    <!-- KernelSU UI home -->
+    <string name="home_click_to_learn_kernelsu">了解如何安装 KernelSU 以及如何开发模块</string>
+    <string name="home_fingerprint">系统指纹</string>
+    <string name="home_gki_warning">自 v3.0.0 起 GKI 工作模式将仅用于测试环境，我们不建议用于日常使用，也不再提供镜像文件</string>
+    <string name="home_learn_kernelsu">了解 KernelSU</string>
+    <string name="home_learn_kernelsu_url">https://kernelsu.org/zh_CN/guide/what-is-kernelsu.html</string>
+    <string name="home_lkm_custom">自定义</string>
+    <string name="home_lkm_update_available">内嵌 LKM 有可用更新，点击更新</string>
+    <string name="home_pr_kernel_warning">当前内核包含 PR 签名支持，这不是一个生产内核！</string>
+    <string name="home_support_content">KernelSU 将保持免费开源，向开发者捐赠以表示支持</string>
+    <string name="home_support_title">支持开发</string>
+    <string name="home_working_version">版本：%s</string>
+    <string name="jailbreak_reboot_warning">当前处于越狱模式，重启后将失去 Root 权限，开机后需要重新越狱。确定要重启吗？</string>
+    <string name="selinux_status_unknown">未知</string>
 </resources>
