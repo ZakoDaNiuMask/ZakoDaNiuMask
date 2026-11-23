@@ -22,7 +22,7 @@ import com.zakodaniumask.manager.domain.model.StartupState
 import com.zakodaniumask.manager.domain.usecase.ApplyLanguageUseCase
 import com.zakodaniumask.manager.domain.usecase.EnsureManagerInstalledUseCase
 import com.zakodaniumask.manager.domain.usecase.ObserveStartupStateUseCase
-import com.zakodaniumask.manager.ksuui.KsuHomePreview
+import com.zakodaniumask.manager.ksuui.KsuMainShell
 import com.zakodaniumask.manager.ksuui.ManagerUiMode
 import com.zakodaniumask.manager.ksuui.ManagerUiModeController
 import com.zakodaniumask.manager.ui.activity.util.ThemeChangeContentObserver
@@ -127,7 +127,7 @@ class MainActivity : FragmentActivity() {
                 val uiModeController: ManagerUiModeController = koinInject()
                 if (uiModeController.mode.isKsu) {
                     KernelSUTheme {
-                        KsuHomePreview(
+                        KsuMainShell(
                             mode = uiModeController.mode,
                             onExit = { uiModeController.set(ManagerUiMode.ZAKO) },
                         )
