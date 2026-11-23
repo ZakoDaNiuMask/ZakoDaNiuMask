@@ -6,6 +6,6 @@ enum class BottomBarStyle {
 
     companion object {
         fun fromOrdinal(ordinal: Int): BottomBarStyle =
-            entries.getOrElse(ordinal) { MATERIAL3_EXPRESSIVE }
+            entries.getOrElse(ordinal) { FLOATING }
     }
 }

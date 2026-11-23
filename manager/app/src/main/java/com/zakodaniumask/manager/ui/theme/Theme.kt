@@ -140,7 +140,7 @@ class ThemeConfig(
     var isEnableBlur by mutableStateOf(false)
     var isEnableBlurExp by mutableStateOf(false)
     var isUseBackgroundSeedColor by mutableStateOf(false)
-    var bottomBarStyle by mutableStateOf(BottomBarStyle.MATERIAL3_EXPRESSIVE)
+    var bottomBarStyle by mutableStateOf(BottomBarStyle.FLOATING)
     var amoledBackground by mutableStateOf(false)
     var appearanceOverlay by mutableStateOf(AppearanceOverlay.None)
     var appliedThemeId by mutableStateOf<String?>(null)
@@ -182,6 +182,9 @@ class ThemeConfig(
         backgroundImageLoaded = false
         isThemeChanging = false
         preventBackgroundRefresh = false
+        isEnableBlur = false
+        isEnableBlurExp = false
+        bottomBarStyle = BottomBarStyle.FLOATING
         amoledBackground = false
         appearanceOverlay = AppearanceOverlay.None
         appliedThemeId = null
@@ -495,7 +498,9 @@ private fun ThemeInitializer(
                 themeConfig.dynamicColorSpec,
             )
             themeConfig.isEnableBlur = settings.getBoolean("enable_blur", false)
-            themeConfig.bottomBarStyle = BottomBarStyle.fromOrdinal(settings.getInt("bottom_bar_style", 0))
+            themeConfig.bottomBarStyle = BottomBarStyle.fromOrdinal(
+                settings.getInt("bottom_bar_style", BottomBarStyle.FLOATING.ordinal),
+            )
             cardConfig.load()
 
             if (!themeConfig.backgroundImageLoaded && !themeConfig.preventBackgroundRefresh) {
