@@ -1384,4 +1384,19 @@
     <string name="module_preinit_error">preinit skipped: invalid preinit directory</string>
     <string name="module_preinit_bootloop">preinit disabled after repeated boot failures</string>
     <string name="module_preinit_unsupported">preinit skipped: not supported by the current kernel</string>
+
+    <!-- KernelSU Settings -->
+    <string name="enable_web_debugging">WebView debugging</string>
+    <string name="enable_web_debugging_summary">Can be used to debug WebUI. Please enable only when needed.</string>
+    <string name="feature_status_forced_summary">This feature is forced by boot config</string>
+    <string name="settings_check_update">Check for updates</string>
+    <string name="settings_check_update_summary">Automatically check for updates when opening the app.</string>
+    <string name="settings_mode_enable_by_default">Enable (Default)</string>
+    <string name="settings_module_check_update">Check for module updates</string>
+    <string name="settings_shell_su_adb_only">Restrict shell root to ADB</string>
+    <string name="settings_shell_su_adb_only_summary">Extra check when Shell is granted root: only processes spawned by adbd or a KernelSU root process (e.g. an ADB module) can use it, preventing apps that obtain shell privileges from escalating to root</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_summary">Choose the app theme mode.</string>
+    <string name="settings_ui_mode">UI Style</string>
+    <string name="settings_ui_mode_summary">Choose the interface style.</string>
 </resources>

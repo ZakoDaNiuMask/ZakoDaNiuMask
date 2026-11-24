@@ -1384,4 +1384,19 @@
     <string name="module_preinit_error">preinit 未生效：preinit 目录无效</string>
     <string name="module_preinit_bootloop">多次启动失败，preinit 已停用</string>
     <string name="module_preinit_unsupported">preinit 未生效：当前内核不支持</string>
+
+    <!-- KernelSU Settings -->
+    <string name="enable_web_debugging">WebView 调试</string>
+    <string name="enable_web_debugging_summary">可用于调试 WebUI，请仅在需要时启用</string>
+    <string name="feature_status_forced_summary">此功能已被启动配置强制指定</string>
+    <string name="settings_check_update">检查更新</string>
+    <string name="settings_check_update_summary">在应用启动后自动检查是否有最新版</string>
+    <string name="settings_mode_enable_by_default">启用（默认）</string>
+    <string name="settings_module_check_update">检查模块更新</string>
+    <string name="settings_shell_su_adb_only">限制 Shell 仅可通过 ADB 获取 Root</string>
+    <string name="settings_shell_su_adb_only_summary">授权 Shell 后的额外检查：仅由 adbd 或 KernelSU Root 进程（如 ADB 模块）启动的 shell 进程可获取 Root，防止应用提权到 shell 后进一步获取 Root</string>
+    <string name="settings_theme">主题设置</string>
+    <string name="settings_theme_summary">自定义更多主题选项</string>
+    <string name="settings_ui_mode">界面风格</string>
+    <string name="settings_ui_mode_summary">选择应用的界面风格</string>
 </resources>
