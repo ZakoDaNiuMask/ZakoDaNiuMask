@@ -7,7 +7,7 @@ import com.zakodaniumask.manager.data.AppSettingsRepository
 import com.zakodaniumask.manager.ksuui.ui.UiMode
 
 enum class ManagerUiMode(val value: String, val label: String) {
-    ZAKO("zako", "Zako"),
+    ZAKO("zako", "Baka MD3E"),
     KSU_MATERIAL("ksu_material", "KernelSU Material"),
     KSU_MIUIX("ksu_miuix", "KernelSU Miuix"),
     ;
