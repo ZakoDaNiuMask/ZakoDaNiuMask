@@ -598,7 +598,7 @@ private fun ModuleShortcutSheet(
                             .background(Color.White)
                     )
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        painter = painterResource(id = R.mipmap.ic_launcher_alt),
                         contentDescription = null,
                         contentScale = FixedScale(1.5f)
                     )
