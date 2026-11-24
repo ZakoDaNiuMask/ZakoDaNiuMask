@@ -3,6 +3,7 @@ package com.zakodaniumask.manager.ksuui.ui.util
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Process
 import android.os.UserManager
 import android.util.Log
@@ -74,7 +75,9 @@ object AppIconCache {
             val profiles = um.userProfiles
             var foundMainUserId = userId(Process.myUid())
             try {
-                HiddenApiBypass.addHiddenApiExemptions("Landroid/os/UserManager;->hasBadge(I)Z")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    HiddenApiBypass.addHiddenApiExemptions("Landroid/os/UserManager;->hasBadge(I)Z")
+                }
                 val hasBadgeMethod = UserManager::class.java.getMethod("hasBadge", Int::class.javaPrimitiveType)
                 for (profile in profiles) {
                     val id = profile.hashCode()
