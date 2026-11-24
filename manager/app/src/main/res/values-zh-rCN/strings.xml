@@ -1359,4 +1359,17 @@
     <!-- KernelSU UI misc -->
     <string name="download_dialog_title">输入链接</string>
     <string name="processing">处理中…</string>
+
+    <!-- KernelSU SuperUser -->
+    <string name="menu_sort">排序</string>
+    <string name="refresh_complete">刷新成功</string>
+    <string name="refresh_pulling">下拉刷新</string>
+    <string name="refresh_refresh">正在刷新…</string>
+    <string name="refresh_release">松开刷新</string>
+    <string name="show_only_primary_user_apps">只显示主用户应用</string>
+    <string name="sort_by_install_time">安装时间</string>
+    <string name="sort_by_name">应用名</string>
+    <string name="sort_by_package_name">包名</string>
+    <string name="sort_by_update_time">更新时间</string>
+    <string name="sort_reverse">倒序</string>
 </resources>

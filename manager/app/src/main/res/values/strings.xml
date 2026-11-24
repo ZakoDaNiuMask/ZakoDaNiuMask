@@ -1359,4 +1359,17 @@
     <!-- KernelSU UI misc -->
     <string name="download_dialog_title">Enter URL</string>
     <string name="processing">Processing…</string>
+
+    <!-- KernelSU SuperUser -->
+    <string name="menu_sort">Sort</string>
+    <string name="refresh_complete">Refreshed successfully</string>
+    <string name="refresh_pulling">Pull down to refresh</string>
+    <string name="refresh_refresh">Refreshing…</string>
+    <string name="refresh_release">Release to refresh</string>
+    <string name="show_only_primary_user_apps">Show only primary user apps</string>
+    <string name="sort_by_install_time">Install time</string>
+    <string name="sort_by_name">Application name</string>
+    <string name="sort_by_package_name">Package name</string>
+    <string name="sort_by_update_time">Update time</string>
+    <string name="sort_reverse">Reverse</string>
 </resources>

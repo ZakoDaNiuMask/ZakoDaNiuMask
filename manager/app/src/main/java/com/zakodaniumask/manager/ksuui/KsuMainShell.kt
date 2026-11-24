@@ -1,5 +1,6 @@
 package com.zakodaniumask.manager.ksuui
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -40,15 +41,17 @@ import com.zakodaniumask.manager.ksuui.data.repository.SettingsRepository
 import com.zakodaniumask.manager.ksuui.ui.LocalUiMode
 import com.zakodaniumask.manager.ksuui.ui.UiMode
 import com.zakodaniumask.manager.ksuui.ui.screen.home.HomePager
+import com.zakodaniumask.manager.ksuui.ui.screen.superuser.SuperUserPager
 import com.zakodaniumask.manager.ksuui.ui.theme.KernelSUTheme as KsuTheme
 import com.zakodaniumask.manager.ksuui.ui.theme.ThemeController
 import com.zakodaniumask.manager.ui.activity.PermissionRequestInterface
 import com.zakodaniumask.manager.ui.navigation.LocalNavigator
 import com.zakodaniumask.manager.ui.navigation.Navigator
 import com.zakodaniumask.manager.ui.navigation.Route
+import com.zakodaniumask.manager.ui.screen.AppProfileScreen
+import com.zakodaniumask.manager.ui.screen.SulogScreen
 import com.zakodaniumask.manager.ui.screen.main.ModulePage
 import com.zakodaniumask.manager.ui.screen.main.SettingsPage
-import com.zakodaniumask.manager.ui.screen.main.SuperUserPage
 import com.zakodaniumask.manager.ui.util.LocalBlurState
 import com.zakodaniumask.manager.ui.util.LocalPermissionRequestInterface
 import com.zakodaniumask.manager.ui.util.LocalSnackbarHost
@@ -94,48 +97,60 @@ fun KsuMainShell(
             appSettings = appSettings,
             uiMode = ksuMode,
         ) {
-            val bottomBar: @Composable () -> Unit = {
-                KsuBottomBar(
-                    uiMode = ksuMode,
-                    selected = selectedTab,
-                    onSelect = { selectedTab = it },
-                )
-            }
-            val content: @Composable (PaddingValues) -> Unit = { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                ) {
-                    when (KsuTab.entries.getOrElse(selectedTab) { KsuTab.Home }) {
-                        KsuTab.Home -> HomePager(
-                            navigator = navigator,
-                            bottomInnerPadding = 0.dp,
+            val topRoute = navigator.backStack.lastOrNull()
+            BackHandler(enabled = topRoute != Route.Main) { navigator.pop() }
+            when (topRoute) {
+                is Route.AppProfile -> AppProfileScreen(topRoute.uid, topRoute.packageName)
+                is Route.Sulog -> SulogScreen()
+                else -> {
+                    val bottomBar: @Composable () -> Unit = {
+                        KsuBottomBar(
+                            uiMode = ksuMode,
+                            selected = selectedTab,
+                            onSelect = { selectedTab = it },
                         )
-
-                        KsuTab.SuperUser -> SuperUserPage(bottomPadding = 0.dp)
-                        KsuTab.Module -> ModulePage(bottomPadding = 0.dp)
-                        KsuTab.Settings -> SettingsPage(bottomPadding = 0.dp)
                     }
-                    SnackbarHost(
-                        hostState = snackbarHostState,
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                    )
-                    androidx.compose.material3.TextButton(
-                        onClick = onExit,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(top = 8.dp, end = 8.dp),
-                    ) {
-                        Text("Zako UI")
+                    val content: @Composable (PaddingValues) -> Unit = { innerPadding ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                        ) {
+                            when (KsuTab.entries.getOrElse(selectedTab) { KsuTab.Home }) {
+                                KsuTab.Home -> HomePager(
+                                    navigator = navigator,
+                                    bottomInnerPadding = 0.dp,
+                                )
+
+                                KsuTab.SuperUser -> SuperUserPager(
+                                    navigator = navigator,
+                                    bottomInnerPadding = 0.dp,
+                                )
+
+                                KsuTab.Module -> ModulePage(bottomPadding = 0.dp)
+                                KsuTab.Settings -> SettingsPage(bottomPadding = 0.dp)
+                            }
+                            SnackbarHost(
+                                hostState = snackbarHostState,
+                                modifier = Modifier.align(Alignment.BottomCenter),
+                            )
+                            androidx.compose.material3.TextButton(
+                                onClick = onExit,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 8.dp, end = 8.dp),
+                            ) {
+                                Text("Zako UI")
+                            }
+                        }
+                    }
+
+                    if (ksuMode == UiMode.Miuix) {
+                        MiuixScaffold(bottomBar = bottomBar, content = content)
+                    } else {
+                        Scaffold(bottomBar = bottomBar, content = content)
                     }
                 }
-            }
-
-            if (ksuMode == UiMode.Miuix) {
-                MiuixScaffold(bottomBar = bottomBar, content = content)
-            } else {
-                Scaffold(bottomBar = bottomBar, content = content)
             }
         }
     }
