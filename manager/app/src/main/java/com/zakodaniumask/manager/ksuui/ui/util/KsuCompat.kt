@@ -18,3 +18,18 @@ fun reboot(reason: String = "") {
         Shell.Builder.create().build().newJob().add(command).exec()
     }
 }
+
+private val rootShell: Shell by lazy { Shell.Builder.create().build() }
+
+fun getRootShell(globalMnt: Boolean = false): Shell = rootShell
+
+fun android.net.Uri.getFileName(context: android.content.Context): String? {
+    val resolver = context.contentResolver
+    resolver.query(this, null, null, null, null)?.use { cursor ->
+        if (cursor.moveToFirst()) {
+            val index = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            if (index >= 0) return cursor.getString(index)
+        }
+    }
+    return null
+}

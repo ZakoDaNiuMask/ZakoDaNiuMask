@@ -1372,4 +1372,10 @@
     <string name="sort_by_package_name">Package name</string>
     <string name="sort_by_update_time">Update time</string>
     <string name="sort_reverse">Reverse</string>
+
+    <!-- KernelSU Module -->
+    <string name="module_install">Install</string>
+    <string name="module_install_prompt_with_name">The following modules will be installed: %1$s</string>
+    <string name="module_repos">Repos</string>
+    <string name="undo">Undo</string>
 </resources>

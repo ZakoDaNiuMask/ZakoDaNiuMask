@@ -41,6 +41,7 @@ import com.zakodaniumask.manager.ksuui.data.repository.SettingsRepository
 import com.zakodaniumask.manager.ksuui.ui.LocalUiMode
 import com.zakodaniumask.manager.ksuui.ui.UiMode
 import com.zakodaniumask.manager.ksuui.ui.screen.home.HomePager
+import com.zakodaniumask.manager.ksuui.ui.screen.module.ModulePager
 import com.zakodaniumask.manager.ksuui.ui.screen.superuser.SuperUserPager
 import com.zakodaniumask.manager.ksuui.ui.theme.KernelSUTheme as KsuTheme
 import com.zakodaniumask.manager.ksuui.ui.theme.ThemeController
@@ -50,7 +51,6 @@ import com.zakodaniumask.manager.ui.navigation.Navigator
 import com.zakodaniumask.manager.ui.navigation.Route
 import com.zakodaniumask.manager.ui.screen.AppProfileScreen
 import com.zakodaniumask.manager.ui.screen.SulogScreen
-import com.zakodaniumask.manager.ui.screen.main.ModulePage
 import com.zakodaniumask.manager.ui.screen.main.SettingsPage
 import com.zakodaniumask.manager.ui.util.LocalBlurState
 import com.zakodaniumask.manager.ui.util.LocalPermissionRequestInterface
@@ -127,7 +127,7 @@ fun KsuMainShell(
                                     bottomInnerPadding = 0.dp,
                                 )
 
-                                KsuTab.Module -> ModulePage(bottomPadding = 0.dp)
+                                KsuTab.Module -> ModulePager(bottomInnerPadding = 0.dp)
                                 KsuTab.Settings -> SettingsPage(bottomPadding = 0.dp)
                             }
                             SnackbarHost(

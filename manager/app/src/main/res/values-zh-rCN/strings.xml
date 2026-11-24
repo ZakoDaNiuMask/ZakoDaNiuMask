@@ -1372,4 +1372,10 @@
     <string name="sort_by_package_name">包名</string>
     <string name="sort_by_update_time">更新时间</string>
     <string name="sort_reverse">倒序</string>
+
+    <!-- KernelSU Module -->
+    <string name="module_install">安装</string>
+    <string name="module_install_prompt_with_name">将安装以下模块：%1$s</string>
+    <string name="module_repos">模块仓库</string>
+    <string name="undo">撤销</string>
 </resources>
