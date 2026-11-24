@@ -464,6 +464,19 @@ fun SettingPagerMiuix(
                             onDismissRequest = { showSendLogDialog.value = false },
                             loadingDialog = loadingDialog
                         )
+                        val baka = stringResource(id = R.string.baka_md3e_settings)
+                        ArrowPreference(
+                            title = baka,
+                            startAction = {
+                                Icon(
+                                    Icons.Rounded.DisplaySettings,
+                                    modifier = Modifier.padding(end = 6.dp),
+                                    contentDescription = baka,
+                                    tint = colorScheme.onBackground
+                                )
+                            },
+                            onClick = actions.onOpenZakoSettings,
+                        )
                         val about = stringResource(id = R.string.about)
                         ArrowPreference(
                             title = about,

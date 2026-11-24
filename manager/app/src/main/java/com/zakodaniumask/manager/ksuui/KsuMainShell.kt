@@ -143,7 +143,7 @@ fun KsuMainShell(
                                     .align(Alignment.TopEnd)
                                     .padding(top = 8.dp, end = 8.dp),
                             ) {
-                                Text("Zako UI")
+                                Text("Baka MD3E")
                             }
                         }
                     }

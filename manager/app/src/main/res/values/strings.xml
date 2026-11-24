@@ -1399,4 +1399,5 @@
     <string name="settings_theme_summary">Choose the app theme mode.</string>
     <string name="settings_ui_mode">UI Style</string>
     <string name="settings_ui_mode_summary">Choose the interface style.</string>
+    <string name="baka_md3e_settings">Baka MD3E settings</string>
 </resources>

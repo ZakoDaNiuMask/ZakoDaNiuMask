@@ -106,6 +106,7 @@ fun rememberKsuSettingsController(
                 viewModel.dispatch(SettingsUiAction.SetUseSoftReboot(it))
             },
             onOpenAbout = { navigator.push(Route.About) },
+            onOpenZakoSettings = { managerUiMode.set(ManagerUiMode.ZAKO) },
         )
     }
 

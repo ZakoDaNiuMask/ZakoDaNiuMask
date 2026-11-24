@@ -359,6 +359,16 @@ fun SettingPagerMaterial(
                         )
                     },
                     {
+                        val baka = stringResource(R.string.baka_md3e_settings)
+                        SegmentedListItem(
+                            onClick = actions.onOpenZakoSettings,
+                            headlineContent = { Text(baka) },
+                            leadingContent = {
+                                Icon(Icons.Filled.DisplaySettings, baka)
+                            },
+                        )
+                    },
+                    {
                         SegmentedListItem(
                             onClick = actions.onOpenAbout,
                             headlineContent = { Text(stringResource(id = R.string.about)) },
