@@ -1,7 +1,7 @@
 package com.zakodaniumask.manager.ksuui.ui.screen.module
 
 import androidx.annotation.StringRes
-import com.zakodaniumask.manager.ksuui.R
+import com.zakodaniumask.manager.R
 import com.zakodaniumask.manager.ksuui.data.model.Module
 
 /** Message for a module whose preinit actions will not run on the next boot, null otherwise. */
