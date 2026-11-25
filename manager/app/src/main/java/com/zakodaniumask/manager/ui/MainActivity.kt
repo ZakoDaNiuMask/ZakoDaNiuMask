@@ -125,7 +125,7 @@ class MainActivity : FragmentActivity() {
 
             setContent {
                 val uiModeController: ManagerUiModeController = koinInject()
-                if (uiModeController.mode.isKsu) {
+                if (uiModeController.mode.isCustomUi) {
                     KernelSUTheme {
                         KsuMainShell(
                             mode = uiModeController.mode,

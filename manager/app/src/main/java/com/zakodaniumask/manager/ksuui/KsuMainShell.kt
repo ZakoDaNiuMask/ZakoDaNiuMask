@@ -137,6 +137,14 @@ fun KsuMainShell(
                                 hostState = snackbarHostState,
                                 modifier = Modifier.align(Alignment.BottomCenter),
                             )
+                            if (mode.isSuki) {
+                                androidx.compose.material3.Text(
+                                    text = "SukiSU UI WIP",
+                                    modifier = Modifier
+                                        .align(Alignment.TopStart)
+                                        .padding(top = 8.dp, start = 8.dp),
+                                )
+                            }
                             androidx.compose.material3.TextButton(
                                 onClick = onExit,
                                 modifier = Modifier

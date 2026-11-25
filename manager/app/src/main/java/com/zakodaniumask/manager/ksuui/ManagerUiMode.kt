@@ -10,13 +10,21 @@ enum class ManagerUiMode(val value: String, val label: String) {
     ZAKO("zako", "Baka MD3E"),
     KSU_MATERIAL("ksu_material", "KernelSU Material"),
     KSU_MIUIX("ksu_miuix", "KernelSU Miuix"),
+    SUKI_MATERIAL("suki_material", "SukiSU Material"),
+    SUKI_MIUIX("suki_miuix", "SukiSU Miuix"),
     ;
 
     val isKsu: Boolean
+        get() = this == KSU_MATERIAL || this == KSU_MIUIX
+
+    val isSuki: Boolean
+        get() = this == SUKI_MATERIAL || this == SUKI_MIUIX
+
+    val isCustomUi: Boolean
         get() = this != ZAKO
 
     fun toKsuUiMode(): UiMode = when (this) {
-        KSU_MATERIAL -> UiMode.Material
+        KSU_MATERIAL, SUKI_MATERIAL -> UiMode.Material
         else -> UiMode.Miuix
     }
 
