@@ -352,6 +352,7 @@ jobs:
 
       - name: Delete gradle build
         uses: GeekyEggo/delete-artifact@v6
+        continue-on-error: true
         with:
           name: Manager-gradle-${{ matrix.build_type }}
         
