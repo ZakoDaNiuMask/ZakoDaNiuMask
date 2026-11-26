@@ -1400,4 +1400,9 @@
     <string name="settings_ui_mode">UI Style</string>
     <string name="settings_ui_mode_summary">Choose the interface style.</string>
     <string name="baka_md3e_settings">Baka MD3E settings</string>
+
+    <!-- SukiSU hook labels -->
+    <string name="manual_hook">Manual Hook</string>
+    <string name="inline_hook">Inline Hook</string>
+    <string name="tracepoint_hook">Tracepoint Hook</string>
 </resources>
