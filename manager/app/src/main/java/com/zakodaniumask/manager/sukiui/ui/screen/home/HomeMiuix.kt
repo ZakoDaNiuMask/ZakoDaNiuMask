@@ -275,7 +275,7 @@ private fun TopBar(
     backdrop: LayerBackdrop?,
     onOpenThemeStore: () -> Unit = {},
 ) {
-    BlurredBar(backdrop = backdrop, scrollBehavior = scrollBehavior) {
+    BlurredBar(backdrop = backdrop) {
         TopAppBar(
             color = Color.Transparent,
             title = customText(CustomTextKey.HOME_TITLE),
