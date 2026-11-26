@@ -52,6 +52,33 @@ fun SukiHomeMaterialScreen(
 }
 
 @Composable
+fun SukiHomeMiuixScreen(
+    navigator: Navigator,
+    bottomInnerPadding: Dp,
+    onOpenSuperuser: () -> Unit,
+    onOpenModule: () -> Unit,
+) {
+    val viewModel = koinViewModel<HomeViewModel>()
+    val dashboard by viewModel.uiState.collectAsStateWithLifecycle()
+    val (state, actions) = rememberSukiHomeState(
+        dashboard = dashboard,
+        navigator = navigator,
+        onOpenSuperuser = onOpenSuperuser,
+        onOpenModule = onOpenModule,
+    )
+
+    LaunchedEffect(Unit) {
+        viewModel.dispatch(HomeUiAction.AwaitInitialData)
+    }
+
+    HomePagerMiuix(
+        state = state,
+        actions = actions,
+        bottomInnerPadding = bottomInnerPadding,
+    )
+}
+
+@Composable
 private fun rememberSukiHomeState(
     dashboard: HomeDashboardState,
     navigator: Navigator,

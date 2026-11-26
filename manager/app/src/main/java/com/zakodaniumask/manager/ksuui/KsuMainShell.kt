@@ -44,6 +44,7 @@ import com.zakodaniumask.manager.ksuui.ui.screen.home.HomePager
 import com.zakodaniumask.manager.ksuui.ui.screen.module.ModulePager
 import com.zakodaniumask.manager.ksuui.ui.screen.settings.SettingPager
 import com.zakodaniumask.manager.sukiui.ui.screen.home.SukiHomeMaterialScreen
+import com.zakodaniumask.manager.sukiui.ui.screen.home.SukiHomeMiuixScreen
 import com.zakodaniumask.manager.ksuui.ui.screen.superuser.SuperUserPager
 import com.zakodaniumask.manager.ksuui.ui.theme.KernelSUTheme as KsuTheme
 import com.zakodaniumask.manager.ksuui.ui.theme.ThemeController
@@ -118,15 +119,22 @@ fun KsuMainShell(
                                 .padding(innerPadding),
                         ) {
                             when (KsuTab.entries.getOrElse(selectedTab) { KsuTab.Home }) {
-                                KsuTab.Home -> if (mode == ManagerUiMode.SUKI_MATERIAL) {
-                                    SukiHomeMaterialScreen(
+                                KsuTab.Home -> when (mode) {
+                                    ManagerUiMode.SUKI_MATERIAL -> SukiHomeMaterialScreen(
                                         navigator = navigator,
                                         bottomInnerPadding = 0.dp,
                                         onOpenSuperuser = { selectedTab = KsuTab.SuperUser.ordinal },
                                         onOpenModule = { selectedTab = KsuTab.Module.ordinal },
                                     )
-                                } else {
-                                    HomePager(
+
+                                    ManagerUiMode.SUKI_MIUIX -> SukiHomeMiuixScreen(
+                                        navigator = navigator,
+                                        bottomInnerPadding = 0.dp,
+                                        onOpenSuperuser = { selectedTab = KsuTab.SuperUser.ordinal },
+                                        onOpenModule = { selectedTab = KsuTab.Module.ordinal },
+                                    )
+
+                                    else -> HomePager(
                                         navigator = navigator,
                                         bottomInnerPadding = 0.dp,
                                     )
